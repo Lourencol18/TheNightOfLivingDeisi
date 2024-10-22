@@ -66,11 +66,11 @@ public class GameManager {
 
 
     public JPanel getCreditsPanel() {
-            // Criação do painel de créditos
+
             JPanel creditsPanel = new JPanel();
             creditsPanel.setLayout(new BorderLayout());
 
-            // Mensagem engraçada dos créditos
+
             String creditsText = "<html><center><h1>Créditos</h1>"
                     + "<p>Desenvolvido por: Ruben Graça e Lourenço Luís</p>"
                     + "<p>Apoio moral: Meu gato, que dormiu o projeto todo.</p>"
@@ -79,10 +79,10 @@ public class GameManager {
                     + "<p><i>Agradecimentos especiais à procrastinação, sem ela, este projeto teria sido entregue a tempo.</i></p>"
                     + "</center></html>";
 
-            // Criando o rótulo com o texto de créditos
+
             JLabel creditsLabel = new JLabel(creditsText, SwingConstants.CENTER);
 
-            // Adicionando o texto ao painel
+            
             creditsPanel.add(creditsLabel, BorderLayout.CENTER);
 
             return creditsPanel;
