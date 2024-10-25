@@ -142,7 +142,10 @@ return true;
     }
 
     public boolean gameIsOver(){
-        return true;
+        if (tabuleiro.rodada > 12){
+            return true;
+        }
+        return false;
     }
 
     public ArrayList<String> getSurvivors(){
