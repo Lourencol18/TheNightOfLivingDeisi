@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 public class GameManager {
      Tabuleiro tabuleiro;
+    int initialTeamId;
 
     public boolean loadGame(File file) {
         try (Scanner scanner = new Scanner(file)) {
@@ -21,12 +22,12 @@ public class GameManager {
                 return false;
             }
 
-            // Cria e armazena o Tabuleiro na variável de instância
+            // Cria uma instância de Tabuleiro e armazena no GameManager
             tabuleiro = new Tabuleiro(width, height);
 
-            // Ler ID da equipe inicial
-            int teamId = scanner.nextInt();
-            if (teamId != 0 && teamId != 1) {
+            // Lê o ID da equipe inicial e valida
+            initialTeamId = scanner.nextInt();
+            if (initialTeamId != 0 && initialTeamId != 1) {
                 return false;
             }
 
@@ -64,9 +65,7 @@ public class GameManager {
 
             // Ler e processar equipamentos
             int numEquipments = scanner.nextInt();
-            if (numEquipments < 0) {
-                return false;
-            }
+
 
             for (int i = 0; i < numEquipments; i++) {
                 int id = scanner.nextInt();
@@ -101,7 +100,7 @@ public class GameManager {
 
 
     public int getInitialTeamId(){
-    return 0;
+        return initialTeamId;
     }
 
     public int getCurrentTeamId(){
