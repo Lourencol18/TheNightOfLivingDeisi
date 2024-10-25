@@ -3,13 +3,30 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 import java.util.ArrayList;
 
 public class Tabuleiro {
-    ArrayList<Integer> tamanho;
+     int width;
+    int height;
     int rodada;
     String turno;
-    Boolean  dia;
+    boolean dia;
     boolean vazio;
 
+    public Tabuleiro(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public ArrayList<Integer> getTamanho() {
+        ArrayList<Integer> tamanho = new ArrayList<>();
+        tamanho.add(width);
+        tamanho.add(height);
         return tamanho;
     }
 
@@ -28,7 +45,8 @@ public class Tabuleiro {
     public boolean isVazio() {
         return vazio;
     }
-    public boolean estaVazio(){
+
+    public boolean estaVazio() {
         return true;
     }
 }

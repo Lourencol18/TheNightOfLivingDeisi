@@ -9,25 +9,20 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class GameManager {
-
+     Tabuleiro tabuleiro;
 
     public boolean loadGame(File file) {
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(file);
+        try (Scanner scanner = new Scanner(file)) {
+            // Lê e valida as dimensões do tabuleiro
+            int width = scanner.nextInt();
+            int height = scanner.nextInt();
 
-            // Criar tabuleiro
-            Tabuleiro tabuleiro = new Tabuleiro();
-
-            // Ler dimensões do tabuleiro
-            ArrayList<Integer> tamanho = new ArrayList<>();
-            tamanho.add(scanner.nextInt()); // width
-            tamanho.add(scanner.nextInt()); // height
-            tabuleiro.tamanho = tamanho;
-
-            if (tabuleiro.getTamanho().get(0) <= 0 || tabuleiro.getTamanho().get(1) <= 0) {
+            if (width <= 0 || height <= 0) {
                 return false;
             }
+
+            // Cria e armazena o Tabuleiro na variável de instância
+            tabuleiro = new Tabuleiro(width, height);
 
             // Ler ID da equipe inicial
             int teamId = scanner.nextInt();
@@ -41,14 +36,14 @@ public class GameManager {
                 return false;
             }
 
-            // Ler cada criatura
+            // Processa criaturas e suas coordenadas
             for (int i = 0; i < numCreatures; i++) {
                 int id = scanner.nextInt();
                 scanner.next(); // Ler ":"
                 int team = scanner.nextInt();
                 scanner.next(); // Ler ":"
 
-                // Ler nome (pode conter espaço)
+                // Ler nome da criatura (pode conter espaços)
                 StringBuilder nomeBuilder = new StringBuilder(scanner.next());
                 String token;
                 while (!(token = scanner.next()).equals(":")) {
@@ -56,23 +51,18 @@ public class GameManager {
                 }
                 String nome = nomeBuilder.toString();
 
+                // Coordenadas
                 int x = scanner.nextInt();
                 scanner.next(); // Ler ":"
                 int y = scanner.nextInt();
 
-                // Validar coordenadas
-                if (x < 0 || x >= tabuleiro.getTamanho().get(0) ||
-                        y < 0 || y >= tabuleiro.getTamanho().get(1)) {
+                // Verifica se as coordenadas são válidas
+                if (x < 0 || x >= width || y < 0 || y >= height) {
                     return false;
                 }
-
-                // Criar lista de coordenadas
-                ArrayList<Integer> coordenadas = new ArrayList<>();
-                coordenadas.add(x);
-                coordenadas.add(y);
             }
 
-            // Ler equipamentos
+            // Ler e processar equipamentos
             int numEquipments = scanner.nextInt();
             if (numEquipments < 0) {
                 return false;
@@ -87,9 +77,8 @@ public class GameManager {
                 scanner.next(); // Ler ":"
                 int y = scanner.nextInt();
 
-                // Validar coordenadas
-                if (x < 0 || x >= tabuleiro.getTamanho().get(0) ||
-                        y < 0 || y >= tabuleiro.getTamanho().get(1)) {
+                // Valida as coordenadas do equipamento
+                if (x < 0 || x >= width || y < 0 || y >= height) {
                     return false;
                 }
             }
@@ -98,24 +87,14 @@ public class GameManager {
 
         } catch (FileNotFoundException e) {
             return false;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
         }
     }
-
-
     public int[] getWorldSize() {
-        Tabuleiro tabuleiro = new Tabuleiro();
-        if (tabuleiro.getTamanho() != null) {
-            int width = tabuleiro.getTamanho().get(0);
-            int height = tabuleiro.getTamanho().get(1);
-            return new int[]{height, width};
+        // Usa o tabuleiro armazenado para obter as dimensões
+        if (tabuleiro != null) {
+            return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
         }
-        return new int[]{0, 0}; // Caso não tenha sido inicializado
+        return new int[]{0, 0}; // Caso o tabuleiro não esteja inicializado
     }
 
 
@@ -188,7 +167,7 @@ return true;
 
             JLabel creditsLabel = new JLabel(creditsText, SwingConstants.CENTER);
 
-            
+
             creditsPanel.add(creditsLabel, BorderLayout.CENTER);
 
             return creditsPanel;
