@@ -3,17 +3,20 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class GameManager {
 
-    public boolean loadGame(File file){
 
+    public boolean loadGame(File file) {
+        Scanner scanner = null;
         try {
-            Scanner scanner = new Scanner(file);
+            scanner = new Scanner(file);
 
-            // 1. Criar e configurar o Tabuleiro
+            // Criar tabuleiro
             Tabuleiro tabuleiro = new Tabuleiro();
 
             // Ler dimensões do tabuleiro
@@ -31,19 +34,12 @@ public class GameManager {
             if (teamId != 0 && teamId != 1) {
                 return false;
             }
-            tabuleiro.turno = (teamId == 0) ? "Zombie" : "Humano";
-            tabuleiro.rodada = 0;
-            tabuleiro.dia = true;
 
             // Ler número de criaturas
             int numCreatures = scanner.nextInt();
             if (numCreatures < 0) {
                 return false;
             }
-
-            // Criar listas temporárias para armazenar criaturas
-            ArrayList<Zombie> zombies = new ArrayList<>();
-            ArrayList<Humano> humanos = new ArrayList<>();
 
             // Ler cada criatura
             for (int i = 0; i < numCreatures; i++) {
@@ -74,13 +70,6 @@ public class GameManager {
                 ArrayList<Integer> coordenadas = new ArrayList<>();
                 coordenadas.add(x);
                 coordenadas.add(y);
-
-                // Criar criatura baseada no time
-                if (team == 0) {
-                    zombies.add(new Zombie(id, "Zombie", nome, coordenadas, null));
-                } else {
-                    humanos.add(new Humano(id, "Humano", coordenadas, nome, null));
-                }
             }
 
             // Ler equipamentos
@@ -88,8 +77,6 @@ public class GameManager {
             if (numEquipments < 0) {
                 return false;
             }
-
-            ArrayList<Equipamento> equipamentos = new ArrayList<>();
 
             for (int i = 0; i < numEquipments; i++) {
                 int id = scanner.nextInt();
@@ -105,13 +92,23 @@ public class GameManager {
                         y < 0 || y >= tabuleiro.getTamanho().get(1)) {
                     return false;
                 }
-
-                String nomeEquipamento = tipo == 0 ? "Escudo" : "Espada Samurai";
-                equipamentos.add(new Equipamento(id, nomeEquipamento));
             }
+
+            return true;
+
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
     }
 
-    public int[] getWorldSize(){
+
+        public int[] getWorldSize(){
 
 
         return new int[]{0};
