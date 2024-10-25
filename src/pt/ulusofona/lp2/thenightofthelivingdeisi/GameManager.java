@@ -108,11 +108,18 @@ public class GameManager {
     }
 
 
-        public int[] getWorldSize(){
-
-
-        return new int[]{0};
+    public int[] getWorldSize() {
+        Tabuleiro tabuleiro = new Tabuleiro();
+        if (tabuleiro.getTamanho() != null) {
+            int width = tabuleiro.getTamanho().get(0);
+            int height = tabuleiro.getTamanho().get(1);
+            return new int[]{height, width};
+        }
+        return new int[]{0, 0}; // Caso não tenha sido inicializado
     }
+
+
+
 
     public int getInitialTeamId(){
     return 0;
@@ -123,7 +130,8 @@ public class GameManager {
     }
 
     public boolean isDay(){
-    return true;
+return true;
+
     }
 
     public String getSquareInfo(int x, int y){
