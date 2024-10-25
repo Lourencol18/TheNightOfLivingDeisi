@@ -108,8 +108,12 @@ public class GameManager {
     }
 
     public boolean isDay(){
-return true;
 
+        return switch (tabuleiro.rodada){
+            case 1,2,5,6,9,10 -> true;
+            case 3,4,7,8,11,12 -> false;
+            default -> true;
+        };
     }
 
     public String getSquareInfo(int x, int y){
