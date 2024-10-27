@@ -122,12 +122,25 @@ public class GameManager {
     }
 
     public boolean isDay(){
- return true;
+        return dia;
+
     }
 
-    public String getSquareInfo(int x, int y){
-    return "ola";
+    public String getSquareInfo(int x, int y) {
+        for (Creature creature : personagens) {
+            if (creature.getX() == x && creature.getY() == y) {
+                return creature.toString();  // Retorna info da criatura
+            }
+        }
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getX() == x && equipment.getY() == y) {
+                return equipment.toString();  // Retorna info do equipamento
+            }
+        }
+        return "Vazio"; // Caso não haja nada na posição
     }
+
+
 
     public String[] getCreatureInfo(int id){
        return new String[]{"ola"};
@@ -154,7 +167,7 @@ public class GameManager {
     }
 
     public boolean gameIsOver(){
-        return false;
+        return terminado;
     }
 
     public ArrayList<String> getSurvivors(){

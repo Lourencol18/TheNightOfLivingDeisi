@@ -12,6 +12,15 @@ public class Equipamento {
         this.x = x;
         this.y = y;
     }
+    // Na classe Creature
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
 
     @Override
     public String toString() {
@@ -20,4 +29,6 @@ public class Equipamento {
         }
         return id + " Escudo" + " @ (" + x + ", " + y + ")";
     }
+
+
 }

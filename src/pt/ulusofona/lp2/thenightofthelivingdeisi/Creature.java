@@ -23,6 +23,15 @@ public class Creature {
     public void apanhaEquipamento() {
         // Implementação da lógica para apanhar o equipamento
     }
+    // Na classe Creature
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
 
     @Override
     public String toString() {

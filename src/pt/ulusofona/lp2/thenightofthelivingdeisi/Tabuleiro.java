@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Tabuleiro {
      int width;
     int height;
-    int turno;
+    int equipaInicial;
     boolean dia;
     boolean vazio;
 
@@ -34,7 +34,7 @@ public class Tabuleiro {
     }
 
     public int getTurno() {
-        return turno;
+        return equipaInicial;
     }
 
 
