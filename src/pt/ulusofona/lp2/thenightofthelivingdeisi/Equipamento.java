@@ -1,15 +1,22 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
+import java.util.ArrayList;
+
 public class Equipamento {
     int id;
-    String nome;
+    int tipo;
+    ArrayList<Integer> coordenadas;
 
-    public Equipamento(int id, String nome) {
+    public Equipamento(int id,int tipo, ArrayList<Integer> coordenadas) {
         this.id = id;
-        this.nome = nome;
+        this.tipo = tipo;
+        this.coordenadas = coordenadas;
     }
 
-    public int getId() {
-        return id;
+    @Override
+    public String toString() { // id tanto faz tipo 1 espada e 0 escudo
+        if (tipo == 1) {
+            return id + "Espada Samurai" + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
+        }else return id + "Escudo" + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
     }
 }

@@ -12,7 +12,6 @@ public class GameManager {
      Tabuleiro tabuleiro ;
     int equipaInicial;
     int equipaAtual;
-    int numCreatures;
     ArrayList<Equipamento> equipamentos = new ArrayList<>();
     ArrayList<Creature> personagens = new ArrayList<>();
     int turno = 0;
@@ -45,63 +44,121 @@ public class GameManager {
             }
 
 
-            // Ler número de criaturas
             String numCreaturesStr = scanner.next();
+            int numCreatures;
             try {
-                  numCreatures = Integer.parseInt(numCreaturesStr);
+                numCreatures = Integer.parseInt(numCreaturesStr);
                 if (numCreatures < 0) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false;
+            }
+
+
+            for (int i = 0; i < numCreatures; i++) {
+                if (scanner.hasNextLine()) {
+                    // Lê a linha completa e divide em partes usando " : " como delimitador
+                    String[] criaturaData = scanner.nextLine().split(" : ");
+
+                    // Verifica se todos os elementos necessários estão presentes
+                    if (criaturaData.length < 5) {
+                        return false;
+                    }
+
+                    // Extrai os dados da criatura
+                    int id;
+                    int tipoCriatura;
+                    int x;
+                    int y;
+                    try {
+                        id = Integer.parseInt(criaturaData[0]);
+                        tipoCriatura = Integer.parseInt(criaturaData[1]);
+                        x = Integer.parseInt(criaturaData[3]);
+                        y = Integer.parseInt(criaturaData[4]);
+                    } catch (NumberFormatException e) {
+                        return false; // Retorna false se a conversão falhar
+                    }
+
+                    // Verifica se as coordenadas são válidas
+                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
+                        return false;
+                    }
+
+                    // Constrói o nome (parte que pode conter espaços)
+                    String nome = criaturaData[2];
+
+                    // Cria uma lista de coordenadas
+                    ArrayList<Integer> coordenadas = new ArrayList<>();
+                    coordenadas.add(x);
+                    coordenadas.add(y);
+
+                    // Cria uma instância de Creature e adiciona ao ArrayList
+                    Creature criatura = new Creature(id, tipoCriatura, nome, coordenadas, null); // Equipamento está como null inicialmente
+                    personagens.add(criatura);
+                } else {
+                    return false; // Retorna false se não houver mais linhas para ler
+                }
+            }
+            // Inicializa o ArrayList de equipamentos
+            ArrayList<Equipamento> equipamentos = new ArrayList<>();
+
+// Ler e processar o número de equipamentos
+            String numEquipmentsStr = scanner.next();
+            int numEquipments;
+            try {
+                numEquipments = Integer.parseInt(numEquipmentsStr);
+                if (numEquipments < 0) {
                     return false;
                 }
             } catch (NumberFormatException e) {
                 return false; // Retorna false se não puder converter para int
             }
 
-
-            // Processa criaturas e suas coordenadas
-            for (int i = 0; i < numCreatures; i++) {
-                int id = scanner.nextInt();
-                scanner.next(); // Ler ":"
-                int team = scanner.nextInt();
-                scanner.next(); // Ler ":"
-
-                // Ler nome da criatura (pode conter espaços)
-                StringBuilder nomeBuilder = new StringBuilder(scanner.next());
-                String token;
-                while (!(token = scanner.next()).equals(":")) {
-                    nomeBuilder.append(" ").append(token);
-                }
-                String nome = nomeBuilder.toString();
-
-                // Coordenadas
-                int x = scanner.nextInt();
-                scanner.next(); // Ler ":"
-                int y = scanner.nextInt();
-
-                // Verifica se as coordenadas são válidas
-                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
-                    return false;
-                }
-            }
-
-            // Ler e processar equipamentos
-            int numEquipments = scanner.nextInt();
-
             for (int i = 0; i < numEquipments; i++) {
-                int id = scanner.nextInt();
-                scanner.next(); // Ler ":"
-                int tipo = scanner.nextInt();
-                scanner.next(); // Ler ":"
-                int x = scanner.nextInt();
-                scanner.next(); // Ler ":"
-                int y = scanner.nextInt();
+                if (scanner.hasNextLine()) {
+                    // Lê a linha completa e divide em partes usando " : " como delimitador
+                    String[] equipamentoData = scanner.nextLine().split(" : ");
 
-                // Valida as coordenadas do equipamento
-                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
-                    return false;
+                    // Verifica se todos os elementos necessários estão presentes
+                    if (equipamentoData.length < 4) {
+                        return false;
+                    }
+
+                    // Extrai os dados do equipamento
+                    int id;
+                    int tipo;
+                    int x;
+                    int y;
+                    try {
+                        id = Integer.parseInt(equipamentoData[0]);
+                        tipo = Integer.parseInt(equipamentoData[1]);
+                        x = Integer.parseInt(equipamentoData[2]);
+                        y = Integer.parseInt(equipamentoData[3]);
+                    } catch (NumberFormatException e) {
+                        return false; // Retorna false se a conversão falhar
+                    }
+
+                    // Verifica se as coordenadas são válidas
+                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
+                        return false;
+                    }
+
+                    // Cria uma lista de coordenadas
+                    ArrayList<Integer> coordenadas = new ArrayList<>();
+                    coordenadas.add(x);
+                    coordenadas.add(y);
+
+                    // Cria uma instância de Equipamento e adiciona ao ArrayList
+                    Equipamento equipamento = new Equipamento(id, tipo, coordenadas);
+                    equipamentos.add(equipamento);
+                } else {
+                    return false; // Retorna false se não houver mais linhas para ler
                 }
             }
 
             return true;
+
 
         } catch (FileNotFoundException | NumberFormatException e) {
             return false;

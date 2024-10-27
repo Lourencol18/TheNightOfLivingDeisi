@@ -22,4 +22,11 @@ public class Creature {
         public void apanhaEquipamento(){
 
         }
-}
+
+    @Override
+    public String toString() {
+        String equipamentoStr = (equipamento != null) ? equipamento.toString() : "-";
+            if (tipoCriatura == 0){
+                return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
+            }else return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
+}}
