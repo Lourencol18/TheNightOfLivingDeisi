@@ -31,6 +31,13 @@ public class Creature {
     public int getY() {
         return y;
     }
+    public int getId() {
+        return id;
+    }
+
+    public int getTipo() {
+        return tipoCriatura;
+    }
 
 
     @Override

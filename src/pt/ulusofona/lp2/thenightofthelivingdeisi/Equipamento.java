@@ -20,6 +20,9 @@ public class Equipamento {
     public int getY() {
         return y;
     }
+    public int getId() {
+        return id;
+    }
 
 
     @Override
