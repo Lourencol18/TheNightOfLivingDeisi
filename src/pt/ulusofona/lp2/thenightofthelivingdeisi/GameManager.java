@@ -10,9 +10,11 @@ import java.util.Scanner;
 
 public class GameManager {
      Tabuleiro tabuleiro ;
-    int initialTeamId;
+    int equipaInicial;
     int equipaAtual;
+    int numCreatures;
     ArrayList<Equipamento> equipamentos = new ArrayList<>();
+    ArrayList<Creature> personagens = new ArrayList<>();
     int turno = 0;
     boolean dia = true;
     boolean terminado = false;
@@ -24,30 +26,36 @@ public class GameManager {
             // Lê e valida as dimensões do tabuleiro a partir da linha
             if (scanner.hasNextLine()) {
                 String[] tamanho = scanner.nextLine().split(" ");
-                tabuleiro.width = Integer.parseInt(tamanho[0]);
-                tabuleiro.height = Integer.parseInt(tamanho[1]);
-
-                if (tabuleiro.width <= 0 || tabuleiro.height <= 0) {
-                    return false;
+                if (tamanho.length == 2) {
+                    tabuleiro = new Tabuleiro(Integer.parseInt(tamanho[0]), Integer.parseInt(tamanho[0]));
                 }
-
-                // Cria uma instância de Tabuleiro e armazena no GameManager
-                tabuleiro = new Tabuleiro(tabuleiro.width, tabuleiro.height);
             } else {
                 return false;
             }
 
             // Lê o ID da equipe inicial e valida
-            initialTeamId = scanner.nextInt();
-            if (initialTeamId != 0 && initialTeamId != 1) {
-                return false;
+            String equipaInicialStr = scanner.next();
+            try {
+                equipaInicial = Integer.parseInt(equipaInicialStr);
+                if (equipaInicial != 0 && equipaInicial != 1) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false; // Retorna false se não puder converter para int
             }
 
+
             // Ler número de criaturas
-            int numCreatures = scanner.nextInt();
-            if (numCreatures < 0) {
-                return false;
+            String numCreaturesStr = scanner.next();
+            try {
+                  numCreatures = Integer.parseInt(numCreaturesStr);
+                if (numCreatures < 0) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false; // Retorna false se não puder converter para int
             }
+
 
             // Processa criaturas e suas coordenadas
             for (int i = 0; i < numCreatures; i++) {
@@ -109,7 +117,7 @@ public class GameManager {
 
 
     public int getInitialTeamId(){
-        return initialTeamId;
+        return equipaInicial;
     }
 
     public int getCurrentTeamId(){
