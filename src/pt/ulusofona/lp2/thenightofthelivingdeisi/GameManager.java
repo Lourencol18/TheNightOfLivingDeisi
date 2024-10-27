@@ -20,152 +20,91 @@ public class GameManager {
 
     public boolean loadGame(File file) {
         try (Scanner scanner = new Scanner(file)) {
-            System.out.println("Iniciando a leitura do arquivo...");
-
             // Lê as dimensões do tabuleiro
-            if (!scanner.hasNextLine()) {
-                System.out.println("Erro: Dimensões do tabuleiro ausentes.");
-                return false;
-            }
+            if (!scanner.hasNextLine()) return false;
             String[] tamanho = scanner.nextLine().split(" ");
-            if (tamanho.length != 2) {
-                System.out.println("Erro: Dimensões do tabuleiro inválidas.");
-                return false;
-            }
+            if (tamanho.length != 2) return false;
             int width = Integer.parseInt(tamanho[0]);
             int height = Integer.parseInt(tamanho[1]);
             tabuleiro = new Tabuleiro(width, height);
-            System.out.println("Dimensões do tabuleiro lidas com sucesso: " + width + " x " + height);
 
             // Lê a equipe inicial
-            if (!scanner.hasNext()) {
-                System.out.println("Erro: Equipe inicial ausente.");
-                return false;
-            }
+            if (!scanner.hasNext()) return false;
             equipaInicial = Integer.parseInt(scanner.next());
-            if (equipaInicial != 0 && equipaInicial != 1) {
-                System.out.println("Erro: Equipe inicial inválida.");
-                return false;
-            }
-            System.out.println("Equipe inicial lida com sucesso: " + equipaInicial);
+            if (equipaInicial != 0 && equipaInicial != 1) return false;
 
             // Lê o número de criaturas
-            if (!scanner.hasNext()) {
-                System.out.println("Erro: Número de criaturas ausente.");
-                return false;
-            }
+            if (!scanner.hasNext()) return false;
             int numCreatures = Integer.parseInt(scanner.next());
-            if (numCreatures < 0) {
-                System.out.println("Erro: Número de criaturas inválido.");
-                return false;
-            }
-            System.out.println("Número de criaturas lido com sucesso: " + numCreatures);
+            if (numCreatures < 0) return false;
 
             personagens.clear();
-
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
                 String linhaCriatura;
 
                 // Lê até encontrar uma linha não vazia
                 do {
-                    if (!scanner.hasNextLine()) {
-                        System.out.println("Erro: Dados da criatura " + i + " ausentes.");
-                        return false;
-                    }
+                    if (!scanner.hasNextLine()) return false;
                     linhaCriatura = scanner.nextLine().trim();
-                } while (linhaCriatura.isEmpty()); // Continua até encontrar uma linha não vazia
-
-                System.out.println("Linha da criatura " + i + ": " + linhaCriatura);  // Imprime a linha exata da criatura para depuração
+                } while (linhaCriatura.isEmpty());
 
                 String[] criaturaData = linhaCriatura.split(" : ");
-                if (criaturaData.length != 5) {
-                    System.out.println("Erro: Dados da criatura " + i + " incompletos ou em formato incorreto. Partes encontradas: " + criaturaData.length);
+                if (criaturaData.length != 5) return false;
+
+                try {
+                    int id = Integer.parseInt(criaturaData[0].trim());
+                    int tipoCriatura = Integer.parseInt(criaturaData[1].trim());
+                    String nome = criaturaData[2].trim();
+                    int x = Integer.parseInt(criaturaData[3].trim());
+                    int y = Integer.parseInt(criaturaData[4].trim());
+
+                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) return false;
+
+                    personagens.add(new Creature(id, tipoCriatura, nome, x, y));
+                } catch (NumberFormatException e) {
                     return false;
                 }
-
-                int id = Integer.parseInt(criaturaData[0].trim());
-                int tipoCriatura = Integer.parseInt(criaturaData[1].trim());
-                String nome = criaturaData[2].trim();
-                int x = Integer.parseInt(criaturaData[3].trim());
-                int y = Integer.parseInt(criaturaData[4].trim());
-
-                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
-                    System.out.println("Erro: Coordenadas da criatura " + i + " fora dos limites.");
-                    return false;
-                }
-
-                personagens.add(new Creature(id, tipoCriatura, nome, x, y));
-                System.out.println("Criatura " + nome + " adicionada com sucesso: ID=" + id + ", Tipo=" + tipoCriatura + ", Coordenadas=(" + x + ", " + y + ")");
             }
-
-
-
 
             // Lê o número de equipamentos
-            equipamentos.clear();
-            if (!scanner.hasNext()) {
-                System.out.println("Erro: Número de equipamentos ausente.");
-                return false;
-            }
+            if (!scanner.hasNext()) return false;
             int numEquipments = Integer.parseInt(scanner.next());
-            if (numEquipments < 0) {
-                System.out.println("Erro: Número de equipamentos inválido.");
-                return false;
-            }
-            System.out.println("Número de equipamentos lido com sucesso: " + numEquipments);
+            if (numEquipments < 0) return false;
 
+            equipamentos.clear();
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
                 String linhaEquipamento;
 
                 // Lê até encontrar uma linha não vazia
                 do {
-                    if (!scanner.hasNextLine()) {
-                        System.out.println("Erro: Dados do equipamento " + i + " ausentes.");
-                        return false;
-                    }
+                    if (!scanner.hasNextLine()) return false;
                     linhaEquipamento = scanner.nextLine().trim();
-                } while (linhaEquipamento.isEmpty()); // Continua até encontrar uma linha não vazia
-
-                System.out.println("Linha do equipamento " + i + ": " + linhaEquipamento);  // Imprime a linha exata do equipamento para depuração
+                } while (linhaEquipamento.isEmpty());
 
                 String[] equipamentoData = linhaEquipamento.split(" : ");
-                // Verifica se há exatamente 4 elementos na linha
-                if (equipamentoData.length != 4) {
-                    System.out.println("Erro: Dados do equipamento " + i + " incompletos ou em formato incorreto. Partes encontradas: " + equipamentoData.length);
+                if (equipamentoData.length != 4) return false;
+
+                try {
+                    int id = Integer.parseInt(equipamentoData[0].trim());
+                    int tipo = Integer.parseInt(equipamentoData[1].trim());
+                    int x = Integer.parseInt(equipamentoData[2].trim());
+                    int y = Integer.parseInt(equipamentoData[3].trim());
+
+                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) return false;
+
+                    equipamentos.add(new Equipamento(id, tipo, x, y));
+                } catch (NumberFormatException e) {
                     return false;
                 }
-
-                int id = Integer.parseInt(equipamentoData[0].trim());
-                int tipo = Integer.parseInt(equipamentoData[1].trim());
-                int x = Integer.parseInt(equipamentoData[2].trim());
-                int y = Integer.parseInt(equipamentoData[3].trim());
-
-                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
-                    System.out.println("Erro: Coordenadas do equipamento " + i + " fora dos limites.");
-                    return false;
-                }
-
-                equipamentos.add(new Equipamento(id, tipo, x, y));
-                System.out.println("Equipamento adicionado com sucesso: ID=" + id + ", Tipo=" + tipo + ", Coordenadas=(" + x + ", " + y + ")");
             }
 
-
-            System.out.println("Arquivo carregado com sucesso.");
             return true;
         } catch (FileNotFoundException | NumberFormatException e) {
-            e.printStackTrace();
             return false;
         }
     }
-
-
-
-
-
-
-
 
     public int[] getWorldSize() {
         return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
