@@ -26,7 +26,7 @@ public class GameManager {
             if (scanner.hasNextLine()) {
                 String[] tamanho = scanner.nextLine().split(" ");
                 if (tamanho.length == 2) {
-                    tabuleiro = new Tabuleiro(Integer.parseInt(tamanho[0]), Integer.parseInt(tamanho[0]));
+                    tabuleiro = new Tabuleiro(Integer.parseInt(tamanho[0]), Integer.parseInt(tamanho[1]));
                 }
             } else {
                 return false;
@@ -58,10 +58,7 @@ public class GameManager {
 
             for (int i = 0; i < numCreatures; i++) {
                 if (scanner.hasNextLine()) {
-                    // Lê a linha completa e divide em partes usando " : " como delimitador
-                    String[] criaturaData = scanner.nextLine().split(" ");
-
-
+                    String[] criaturaData = scanner.nextLine().split(" : ");
                     // Verifica se todos os elementos necessários estão presentes
                     if (criaturaData.length < 5) {
                         return false;
@@ -119,7 +116,7 @@ public class GameManager {
             for (int i = 0; i < numEquipments; i++) {
                 if (scanner.hasNextLine()) {
                     // Lê a linha completa e divide em partes usando " : " como delimitador
-                    String[] equipamentoData = scanner.nextLine().split(" ");
+                    String[] equipamentoData = scanner.nextLine().split(" : ");
 
                     // Verifica se todos os elementos necessários estão presentes
                     if (equipamentoData.length < 4) {
