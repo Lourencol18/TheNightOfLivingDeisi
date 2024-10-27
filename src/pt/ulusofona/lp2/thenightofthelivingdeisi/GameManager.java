@@ -21,6 +21,7 @@ public class GameManager {
     public boolean loadGame(File file) {
         try (Scanner scanner = new Scanner(file)) {
             System.out.println("Iniciando a leitura do arquivo...");
+
             // Lê as dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
                 System.out.println("Erro: Dimensões do tabuleiro ausentes.");
@@ -34,7 +35,7 @@ public class GameManager {
             int width = Integer.parseInt(tamanho[0]);
             int height = Integer.parseInt(tamanho[1]);
             tabuleiro = new Tabuleiro(width, height);
-            System.out.println("Dimensões do tabuleiro lidas com sucesso.");
+            System.out.println("Dimensões do tabuleiro lidas com sucesso: " + width + " x " + height);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
@@ -61,32 +62,45 @@ public class GameManager {
             System.out.println("Número de criaturas lido com sucesso: " + numCreatures);
 
             personagens.clear();
+
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
-                if (!scanner.hasNextLine()) {
-                    System.out.println("Erro: Dados da criatura " + i + " ausentes.");
+                String linhaCriatura;
+
+                // Lê até encontrar uma linha não vazia
+                do {
+                    if (!scanner.hasNextLine()) {
+                        System.out.println("Erro: Dados da criatura " + i + " ausentes.");
+                        return false;
+                    }
+                    linhaCriatura = scanner.nextLine().trim();
+                } while (linhaCriatura.isEmpty()); // Continua até encontrar uma linha não vazia
+
+                System.out.println("Linha da criatura " + i + ": " + linhaCriatura);  // Imprime a linha exata da criatura para depuração
+
+                String[] criaturaData = linhaCriatura.split(" : ");
+                if (criaturaData.length != 5) {
+                    System.out.println("Erro: Dados da criatura " + i + " incompletos ou em formato incorreto. Partes encontradas: " + criaturaData.length);
                     return false;
                 }
-                String[] criaturaData = scanner.nextLine().split(" : ");
-                if (criaturaData.length < 5) {
-                    System.out.println("Erro: Dados da criatura " + i + " incompletos.");
-                    return false;
-                }
-                int id = Integer.parseInt(criaturaData[0]);
-                int tipoCriatura = Integer.parseInt(criaturaData[1]);
-                String nome = criaturaData[2];
-                int x = Integer.parseInt(criaturaData[3]);
-                int y = Integer.parseInt(criaturaData[4]);
+
+                int id = Integer.parseInt(criaturaData[0].trim());
+                int tipoCriatura = Integer.parseInt(criaturaData[1].trim());
+                String nome = criaturaData[2].trim();
+                int x = Integer.parseInt(criaturaData[3].trim());
+                int y = Integer.parseInt(criaturaData[4].trim());
+
                 if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
                     System.out.println("Erro: Coordenadas da criatura " + i + " fora dos limites.");
                     return false;
                 }
-                ArrayList<Integer> coordenadas = new ArrayList<>();
-                coordenadas.add(x);
-                coordenadas.add(y);
-                personagens.add(new Creature(id, tipoCriatura, nome, coordenadas));
-                System.out.println("Criatura " + nome + " adicionada com sucesso.");
+
+                personagens.add(new Creature(id, tipoCriatura, nome, x, y));
+                System.out.println("Criatura " + nome + " adicionada com sucesso: ID=" + id + ", Tipo=" + tipoCriatura + ", Coordenadas=(" + x + ", " + y + ")");
             }
+
+
+
 
             // Lê o número de equipamentos
             equipamentos.clear();
@@ -103,29 +117,41 @@ public class GameManager {
 
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
-                if (!scanner.hasNextLine()) {
-                    System.out.println("Erro: Dados do equipamento " + i + " ausentes.");
+                String linhaEquipamento;
+
+                // Lê até encontrar uma linha não vazia
+                do {
+                    if (!scanner.hasNextLine()) {
+                        System.out.println("Erro: Dados do equipamento " + i + " ausentes.");
+                        return false;
+                    }
+                    linhaEquipamento = scanner.nextLine().trim();
+                } while (linhaEquipamento.isEmpty()); // Continua até encontrar uma linha não vazia
+
+                System.out.println("Linha do equipamento " + i + ": " + linhaEquipamento);  // Imprime a linha exata do equipamento para depuração
+
+                String[] equipamentoData = linhaEquipamento.split(" : ");
+                // Verifica se há exatamente 4 elementos na linha
+                if (equipamentoData.length != 4) {
+                    System.out.println("Erro: Dados do equipamento " + i + " incompletos ou em formato incorreto. Partes encontradas: " + equipamentoData.length);
                     return false;
                 }
-                String[] equipamentoData = scanner.nextLine().split(" : ");
-                if (equipamentoData.length < 4) {
-                    System.out.println("Erro: Dados do equipamento " + i + " incompletos.");
-                    return false;
-                }
-                int id = Integer.parseInt(equipamentoData[0]);
-                int tipo = Integer.parseInt(equipamentoData[1]);
-                int x = Integer.parseInt(equipamentoData[2]);
-                int y = Integer.parseInt(equipamentoData[3]);
+
+                int id = Integer.parseInt(equipamentoData[0].trim());
+                int tipo = Integer.parseInt(equipamentoData[1].trim());
+                int x = Integer.parseInt(equipamentoData[2].trim());
+                int y = Integer.parseInt(equipamentoData[3].trim());
+
                 if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
                     System.out.println("Erro: Coordenadas do equipamento " + i + " fora dos limites.");
                     return false;
                 }
-                ArrayList<Integer> coordenadas = new ArrayList<>();
-                coordenadas.add(x);
-                coordenadas.add(y);
-                equipamentos.add(new Equipamento(id, tipo, coordenadas));
-                System.out.println("Equipamento adicionado com sucesso.");
+
+                equipamentos.add(new Equipamento(id, tipo, x, y));
+                System.out.println("Equipamento adicionado com sucesso: ID=" + id + ", Tipo=" + tipo + ", Coordenadas=(" + x + ", " + y + ")");
             }
+
+
             System.out.println("Arquivo carregado com sucesso.");
             return true;
         } catch (FileNotFoundException | NumberFormatException e) {
@@ -133,6 +159,7 @@ public class GameManager {
             return false;
         }
     }
+
 
 
 

@@ -1,32 +1,35 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-import java.util.ArrayList;
-
 public class Creature {
-        int id;
-        int tipoCriatura;
-        String nome;;
-        ArrayList<Integer> coordenadas;
-        Equipamento equipamento;
+    int id;
+    int tipoCriatura;
+    String nome;
+    int x;
+    int y;
+    Equipamento equipamento;
 
-        public Creature(int id, int tipoCriatura, String nome, ArrayList<Integer> coordenadas) {
-            this.id = id;
-            this.tipoCriatura = tipoCriatura;
-            this.nome = nome;
-            this.coordenadas = coordenadas;
-        }
-        public void destruirEquipamento(){
+    public Creature(int id, int tipoCriatura, String nome, int x, int y) {
+        this.id = id;
+        this.tipoCriatura = tipoCriatura;
+        this.nome = nome;
+        this.x = x;
+        this.y = y;
+    }
 
-        }
-        public void apanhaEquipamento(){
+    public void destruirEquipamento() {
+        // Implementação da lógica para destruir o equipamento
+    }
 
-        }
+    public void apanhaEquipamento() {
+        // Implementação da lógica para apanhar o equipamento
+    }
 
     @Override
     public String toString() {
         String equipamentoStr = (equipamento != null) ? equipamento.toString() : "-";
-            if (tipoCriatura == 0){
-                return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
-            }
-                return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
-}}
+        if (tipoCriatura == 0) {
+            return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
+        }
+        return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
+    }
+}
