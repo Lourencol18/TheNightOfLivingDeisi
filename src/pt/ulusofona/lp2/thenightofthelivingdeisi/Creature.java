@@ -39,6 +39,14 @@ public class Creature {
         return tipoCriatura;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public Equipamento getEquipamento() {
+        return equipamento;
+    }
+
 
     @Override
     public String toString() {

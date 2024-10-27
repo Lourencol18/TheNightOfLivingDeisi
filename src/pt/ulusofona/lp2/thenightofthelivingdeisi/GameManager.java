@@ -156,19 +156,25 @@ public class GameManager {
     }
 
     public String getSquareInfo(int x, int y) {
+        // Verifica se há uma criatura na posição
         for (Creature creature : personagens) {
             if (creature.getX() == x && creature.getY() == y) {
-                String tipo = (creature.getTipo() == 0) ? "H" : "Z";  // Assumindo 0 para humano e 1 para zumbi
+                String tipo = (creature.getTipo() == 0) ? "H" : "Z";  // 0 = Humano, 1 = Zumbi
                 return tipo + ":" + creature.getId();
             }
         }
+
+        // Verifica se há um equipamento na posição
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == x && equipment.getY() == y) {
                 return "E:" + equipment.getId();
             }
         }
+
         return "Vazio"; // Caso não haja nada na posição
     }
+
+
 
 
 
@@ -178,9 +184,17 @@ public class GameManager {
        return new String[]{"ola"};
     }
 
-    public String getCreatureInfoAsString(int id){
-    return "ola";
+    public String getCreatureInfoAsString(int id) {
+        for (Creature creature : personagens) {
+            if (creature.getId() == id) {
+                String tipo = (creature.getTipo() == 0) ? "Humano" : "Zombie"; // 0 para Humano, 1 para Zombie
+                String equipamento = (creature.getEquipamento() != null) ? creature.getEquipamento().toString() : "+"; // Se tiver equipamento
+                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " + equipamento + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+            }
+        }
+        return "Criatura não encontrada";
     }
+
 
     public String[] getEquipmentInfo(int id){
         return new String[]{"ola"};
