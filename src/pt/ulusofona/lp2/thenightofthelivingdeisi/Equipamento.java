@@ -17,6 +17,7 @@ public class Equipamento {
     public String toString() { // id tanto faz tipo 1 espada e 0 escudo
         if (tipo == 1) {
             return id + "Espada Samurai" + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
-        }else return id + "Escudo" + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
+        }
+            return id + "Escudo" + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
     }
 }

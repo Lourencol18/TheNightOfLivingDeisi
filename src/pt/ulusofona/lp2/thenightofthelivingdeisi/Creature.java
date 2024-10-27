@@ -28,5 +28,6 @@ public class Creature {
         String equipamentoStr = (equipamento != null) ? equipamento.toString() : "-";
             if (tipoCriatura == 0){
                 return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
-            }else return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
+            }
+                return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + coordenadas.get(0) + ", " + coordenadas.get(1) + ")";
 }}

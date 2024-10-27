@@ -59,7 +59,8 @@ public class GameManager {
             for (int i = 0; i < numCreatures; i++) {
                 if (scanner.hasNextLine()) {
                     // Lê a linha completa e divide em partes usando " : " como delimitador
-                    String[] criaturaData = scanner.nextLine().split(" : ");
+                    String[] criaturaData = scanner.nextLine().split(" ");
+
 
                     // Verifica se todos os elementos necessários estão presentes
                     if (criaturaData.length < 5) {
@@ -101,9 +102,9 @@ public class GameManager {
                 }
             }
             // Inicializa o ArrayList de equipamentos
-            ArrayList<Equipamento> equipamentos = new ArrayList<>();
+            equipamentos = new ArrayList<>();
 
-// Ler e processar o número de equipamentos
+            // Ler e processar o número de equipamentos
             String numEquipmentsStr = scanner.next();
             int numEquipments;
             try {
@@ -118,7 +119,7 @@ public class GameManager {
             for (int i = 0; i < numEquipments; i++) {
                 if (scanner.hasNextLine()) {
                     // Lê a linha completa e divide em partes usando " : " como delimitador
-                    String[] equipamentoData = scanner.nextLine().split(" : ");
+                    String[] equipamentoData = scanner.nextLine().split(" ");
 
                     // Verifica se todos os elementos necessários estão presentes
                     if (equipamentoData.length < 4) {
