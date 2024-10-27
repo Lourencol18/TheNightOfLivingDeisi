@@ -9,21 +9,33 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class GameManager {
-     Tabuleiro tabuleiro;
+     Tabuleiro tabuleiro ;
     int initialTeamId;
+    int equipaAtual;
+    ArrayList<Equipamento> equipamentos = new ArrayList<>();
+    int turno = 0;
+    boolean dia = true;
+    boolean terminado = false;
 
     public boolean loadGame(File file) {
-        try (Scanner scanner = new Scanner(file)) {
-            // Lê e valida as dimensões do tabuleiro
-            int width = scanner.nextInt();
-            int height = scanner.nextInt();
 
-            if (width <= 0 || height <= 0) {
+        try (Scanner scanner = new Scanner(file)) {
+
+            // Lê e valida as dimensões do tabuleiro a partir da linha
+            if (scanner.hasNextLine()) {
+                String[] tamanho = scanner.nextLine().split(" ");
+                tabuleiro.width = Integer.parseInt(tamanho[0]);
+                tabuleiro.height = Integer.parseInt(tamanho[1]);
+
+                if (tabuleiro.width <= 0 || tabuleiro.height <= 0) {
+                    return false;
+                }
+
+                // Cria uma instância de Tabuleiro e armazena no GameManager
+                tabuleiro = new Tabuleiro(tabuleiro.width, tabuleiro.height);
+            } else {
                 return false;
             }
-
-            // Cria uma instância de Tabuleiro e armazena no GameManager
-            tabuleiro = new Tabuleiro(width, height);
 
             // Lê o ID da equipe inicial e valida
             initialTeamId = scanner.nextInt();
@@ -58,14 +70,13 @@ public class GameManager {
                 int y = scanner.nextInt();
 
                 // Verifica se as coordenadas são válidas
-                if (x < 0 || x >= width || y < 0 || y >= height) {
+                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
                     return false;
                 }
             }
 
             // Ler e processar equipamentos
             int numEquipments = scanner.nextInt();
-
 
             for (int i = 0; i < numEquipments; i++) {
                 int id = scanner.nextInt();
@@ -77,23 +88,21 @@ public class GameManager {
                 int y = scanner.nextInt();
 
                 // Valida as coordenadas do equipamento
-                if (x < 0 || x >= width || y < 0 || y >= height) {
+                if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
                     return false;
                 }
             }
 
             return true;
 
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NumberFormatException e) {
             return false;
         }
     }
+
+
     public int[] getWorldSize() {
-        // Usa o tabuleiro armazenado para obter as dimensões
-        if (tabuleiro != null) {
-            return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
-        }
-        return new int[]{0, 0}; // Caso o tabuleiro não esteja inicializado
+        return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
     }
 
 
@@ -108,12 +117,7 @@ public class GameManager {
     }
 
     public boolean isDay(){
-
-        return switch (tabuleiro.rodada){
-            case 1,2,5,6,9,10 -> true;
-            case 3,4,7,8,11,12 -> false;
-            default -> true;
-        };
+ return true;
     }
 
     public String getSquareInfo(int x, int y){
@@ -145,9 +149,6 @@ public class GameManager {
     }
 
     public boolean gameIsOver(){
-        if (tabuleiro.rodada > 12){
-            return true;
-        }
         return false;
     }
 

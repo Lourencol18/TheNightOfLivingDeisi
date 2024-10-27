@@ -5,8 +5,7 @@ import java.util.ArrayList;
 public class Tabuleiro {
      int width;
     int height;
-    int rodada;
-    String turno;
+    int turno;
     boolean dia;
     boolean vazio;
 
@@ -34,13 +33,11 @@ public class Tabuleiro {
         return dia;
     }
 
-    public String getTurno() {
+    public int getTurno() {
         return turno;
     }
 
-    public int getRodada() {
-        return rodada;
-    }
+
 
     public boolean isVazio() {
         return vazio;
