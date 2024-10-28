@@ -193,8 +193,8 @@ public class GameManager {
                 if (creature.getEquipamento() != null) {
                     equipamentoStr = creature.getEquipamento().toString();
                 } else {
-                    // Mostra o contador de equipamentos com o sinal +
-                    equipamentoStr = "+" + creature.getContadorEquipamentos();
+                    String sinal = (creature.getTipo() == 1) ? "+" : "-";
+                    equipamentoStr = sinal + creature.getContadorEquipamentos();
                 }
 
                 return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
