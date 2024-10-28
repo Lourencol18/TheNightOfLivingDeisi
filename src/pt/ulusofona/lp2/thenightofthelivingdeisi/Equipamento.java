@@ -5,6 +5,7 @@ public class Equipamento {
     int tipo;
     int x;
     int y;
+    boolean captured = false;
 
     public Equipamento(int id, int tipo, int x, int y) {
         this.id = id;
@@ -12,7 +13,13 @@ public class Equipamento {
         this.x = x;
         this.y = y;
     }
-    // Na classe Creature
+    public void setCaptured(boolean captured) {
+        this.captured = captured;
+    }
+
+    public boolean isCaptured() {
+        return captured;
+    }
     public int getX() {
         return x;
     }

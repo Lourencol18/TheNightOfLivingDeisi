@@ -236,23 +236,21 @@ public class GameManager {
     }
 
 
-    public String getEquipmentInfoAsString(int id){
+    public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                String tipoEquipamento = (equipment.tipo == 0) ?
-                        "Escudo de madeira" : "Espada samurai";
+                // Verifica se o equipamento foi capturado
+                if (equipment.isCaptured()) {
+                    return null; // Retorna null se o equipamento foi capturado
+                }
+
+                String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
-
-        // Caso o ID seja negativo, retornar null
-        if (id < 0) {
-            return null;
-        }
-
-        // Caso o equipamento não seja encontrado
-        return "Equipamento não encontrado";
+        return null; // Retorna null se o equipamento não for encontrado
     }
+
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId){
