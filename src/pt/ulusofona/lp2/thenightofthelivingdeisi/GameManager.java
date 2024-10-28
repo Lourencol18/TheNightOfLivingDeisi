@@ -180,9 +180,32 @@ public class GameManager {
 
 
 
-    public String[] getCreatureInfo(int id){
-        return new String[]{"ola"};
+    public String[] getCreatureInfo(int id) {
+        for (Creature creature : personagens) {
+            if (creature.getId() == id) {
+                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
+                String equipamentoStr;
+
+                if (creature.getEquipamento() != null) {
+                    equipamentoStr = creature.getEquipamento().toString();
+                } else {
+                    String sinal = (creature.getTipo() == 1) ? "+" : "-";
+                    equipamentoStr = sinal + creature.getContadorEquipamentos();
+                }
+
+                return new String[]{
+                        String.valueOf(creature.getId()),        // ID
+                        tipo,                                    // Tipo
+                        creature.getNome(),                      // Nome
+                        equipamentoStr,                          // Equipamento ou contador
+                        String.valueOf(creature.getX()),         // Posição X
+                        String.valueOf(creature.getY())          // Posição Y
+                };
+            }
+        }
+        return null; // Se a criatura com o ID fornecido não for encontrada
     }
+
 
     public String getCreatureInfoAsString(int id) {
         for (Creature creature : personagens) {
