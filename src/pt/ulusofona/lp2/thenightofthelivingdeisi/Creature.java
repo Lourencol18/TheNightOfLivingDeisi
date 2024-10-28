@@ -7,6 +7,7 @@ public class Creature {
     int x;
     int y;
     Equipamento equipamento;
+    int contadorEquipamentos = 0;
 
     public Creature(int id, int tipoCriatura, String nome, int x, int y) {
         this.id = id;
