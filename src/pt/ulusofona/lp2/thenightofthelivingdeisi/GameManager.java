@@ -210,16 +210,7 @@ public class GameManager {
     }
 
     public String getEquipmentInfoAsString(int id){
-        public String getEquipmentInfoAsString(int id) {
-            for (Equipamento equipment : equipamentos) {
-                if (equipment.getId() == id) {
-                    String tipoEquipamento = (equipment.tipo == 0) ?
-                            "Escudo de madeira" : "Espada samurai";
-                    return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
-                }
-            }
-            return "Equipamento nao encontrado";
-        }
+        return "ola";
     }
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId){
