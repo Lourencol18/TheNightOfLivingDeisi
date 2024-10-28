@@ -239,10 +239,6 @@ public class GameManager {
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Verifica se o equipamento foi capturado
-                if (equipment.isCaptured()) {
-                    return null; // Retorna null se o equipamento foi capturado
-                }
 
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
@@ -253,9 +249,24 @@ public class GameManager {
 
 
 
-    public boolean hasEquipment(int creatureId, int equipmentTypeId){
-        return true;
+    public boolean hasEquipment(int creatureId, int equipmentTypeId) {
+        for (Creature creature : personagens) {
+            if (creature.getId() == creatureId) {
+                // Verifica se é um zumbi (supondo que o tipo 1 é humano e tipo 0 é zumbi)
+                if (creature.getTipo() == 0) { // Zumbi
+                    return false;
+                }
+
+                // Se for humano, verifica se possui o equipamento especificado
+                Equipamento equipamento = creature.getEquipamento();
+                if (equipamento != null && equipamento.getTipo() == equipmentTypeId) {
+                    return true;
+                }
+            }
+        }
+        return false; // Retorna false se a criatura não for encontrada ou se não atender às condições
     }
+
 
     public boolean move(int xO, int yO, int xD, int yD){
         return true;
