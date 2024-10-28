@@ -147,7 +147,13 @@ public class GameManager {
     }
 
     public int getCurrentTeamId(){
-        return 0;
+        if (turno == 0) {
+            return equipaInicial;
+        }
+        // Muda de equipe a cada 2 turnos
+        int numeroMudancas = turno / 2;
+        return (equipaInicial + numeroMudancas) % 2;
+    }
     }
 
     public boolean isDay(){
@@ -210,16 +216,7 @@ public class GameManager {
     }
 
     public String getEquipmentInfoAsString(int id){
-        public String getEquipmentInfoAsString(int id) {
-            for (Equipamento equipment : equipamentos) {
-                if (equipment.getId() == id) {
-                    String tipoEquipamento = (equipment.tipo == 0) ?
-                            "Escudo de madeira" : "Espada samurai";
-                    return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
-                }
-            }
-            return null; // Retorna null se o equipamento não for encontrado
-        }
+        return "ola";
     }
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId){
