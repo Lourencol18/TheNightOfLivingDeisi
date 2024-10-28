@@ -30,7 +30,7 @@ public class Equipamento {
         if (tipo == 1) {
             return id + " Espada Samurai" + " @ (" + x + ", " + y + ")";
         }
-        return id + " Escudo" + " @ (" + x + ", " + y + ")";
+        return id + " Escudo de madeira" + " @ (" + x + ", " + y + ")";
     }
 
 

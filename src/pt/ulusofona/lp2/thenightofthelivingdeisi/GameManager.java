@@ -171,7 +171,7 @@ public class GameManager {
             }
         }
 
-        return "Vazio"; // Caso não haja nada na posição
+        return ""; // Caso não haja nada na posição
     }
 
 
@@ -187,9 +187,18 @@ public class GameManager {
     public String getCreatureInfoAsString(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
-                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie"; // 0 para Humano, 1 para Zombie
-                String equipamento = (creature.getEquipamento() != null) ? creature.getEquipamento().toString() : "+"; // Se tiver equipamento
-                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " + equipamento + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
+                String equipamentoStr;
+
+                if (creature.getEquipamento() != null) {
+                    equipamentoStr = creature.getEquipamento().toString();
+                } else {
+                    // Mostra o contador de equipamentos com o sinal +
+                    equipamentoStr = "+" + creature.getContadorEquipamentos();
+                }
+
+                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
+                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
             }
         }
         return "Criatura não encontrada";
@@ -201,7 +210,15 @@ public class GameManager {
     }
 
     public String getEquipmentInfoAsString(int id){
-        return "ola";
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getId() == id) {
+                String tipoEquipamento = (equipment.tipo == 0) ?
+                        "Escudo de madeira" : "Espada samurai";
+                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
+            }
+        }
+        return null; // Retorna null se o equipamento não for encontrado
+    }
     }
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId){

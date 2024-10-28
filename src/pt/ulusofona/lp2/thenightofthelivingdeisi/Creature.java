@@ -17,11 +17,15 @@ public class Creature {
     }
 
     public void destruirEquipamento() {
-        // Implementação da lógica para destruir o equipamento
+        this.equipamento = equipamento;
+        this.contadorEquipamentos++;
     }
 
     public void apanhaEquipamento() {
-        // Implementação da lógica para apanhar o equipamento
+        if (this.equipamento != null) {
+            this.equipamento = null;
+            this.contadorEquipamentos--;  // Decrementa quando perde equipamento
+        }
     }
     // Na classe Creature
     public int getX() {
