@@ -210,7 +210,7 @@ public class GameManager {
     }
 
     public String getEquipmentInfoAsString(int id){
-        return "ola"
+        return "ola";
     }
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId){
