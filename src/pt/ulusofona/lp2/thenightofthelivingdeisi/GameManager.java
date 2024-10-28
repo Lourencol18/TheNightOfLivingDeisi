@@ -183,28 +183,20 @@ public class GameManager {
     public String[] getCreatureInfo(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
-                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
-                String equipamentoStr;
-
-                if (creature.getEquipamento() != null) {
-                    equipamentoStr = creature.getEquipamento().toString();
-                } else {
-                    String sinal = (creature.getTipo() == 1) ? "+" : "-";
-                    equipamentoStr = sinal + creature.getContadorEquipamentos();
-                }
-
+                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";  // 1 = Humano, 0 = Zumbi
                 return new String[]{
-                        String.valueOf(creature.getId()),        // ID
-                        tipo,                                    // Tipo
-                        creature.getNome(),                      // Nome
-                        equipamentoStr,                          // Equipamento ou contador
-                        String.valueOf(creature.getX()),         // Posição X
-                        String.valueOf(creature.getY())          // Posição Y
+                        String.valueOf(creature.getId()),    // ID
+                        tipo,                                // Tipo
+                        creature.getNome(),                  // Nome
+                        String.valueOf(creature.getX()),     // Posição X
+                        String.valueOf(creature.getY()),     // Posição Y
+                        "null"                               // PNG
                 };
             }
         }
         return null; // Se a criatura com o ID fornecido não for encontrada
     }
+
 
 
     public String getCreatureInfoAsString(int id) {
@@ -228,9 +220,21 @@ public class GameManager {
     }
 
 
-    public String[] getEquipmentInfo(int id){
-        return new String[]{"ola"};
+    public String[] getEquipmentInfo(int id) {
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getId() == id) {
+                return new String[]{
+                        String.valueOf(equipment.getId()),    // ID
+                        String.valueOf(equipment.getTipo()),  // Tipo
+                        String.valueOf(equipment.getX()),     // Posição X
+                        String.valueOf(equipment.getY()),     // Posição Y
+                        "null"                                // PNG
+                };
+            }
+        }
+        return null; // Se o equipamento com o ID fornecido não for encontrado
     }
+
 
     public String getEquipmentInfoAsString(int id){
         for (Equipamento equipment : equipamentos) {

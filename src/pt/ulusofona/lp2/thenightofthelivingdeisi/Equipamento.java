@@ -23,6 +23,10 @@ public class Equipamento {
     public int getId() {
         return id;
     }
+    public int getTipo() {
+        return tipo;
+    }
+
 
 
     @Override
