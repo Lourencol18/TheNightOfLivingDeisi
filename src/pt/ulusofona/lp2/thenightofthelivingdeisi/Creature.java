@@ -17,6 +17,10 @@ public class Creature {
         this.y = y;
     }
 
+    public void setEquipamento(Equipamento equipamento) {
+        this.equipamento = equipamento;
+    }
+
     public void destruirEquipamento() {
         this.equipamento = equipamento;
         this.contadorEquipamentos++;
