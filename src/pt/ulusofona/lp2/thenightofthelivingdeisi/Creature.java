@@ -1,5 +1,8 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Creature {
     int id;
     int tipoCriatura;
@@ -25,6 +28,14 @@ public class Creature {
         this.equipamento = equipamento;
         this.contadorEquipamentos++;
     }
+    public List<Equipamento> getEquipamentos() {
+        List<Equipamento> equipamentosList = new ArrayList<>();
+        if (equipamento != null) {
+            equipamentosList.add(equipamento);
+        }
+        return equipamentosList;
+    }
+
 
     public void apanhaEquipamento() {
         if (this.equipamento != null) {
@@ -32,7 +43,7 @@ public class Creature {
             this.contadorEquipamentos--;  // Decrementa quando perde equipamento
         }
     }
-    // Na classe Creature
+
     public int getX() {
         return x;
     }
@@ -52,9 +63,7 @@ public class Creature {
         return nome;
     }
 
-    public Equipamento getEquipamento() {
-        return equipamento;
-    }
+
 
     public int getContadorEquipamentos() {
         return contadorEquipamentos;

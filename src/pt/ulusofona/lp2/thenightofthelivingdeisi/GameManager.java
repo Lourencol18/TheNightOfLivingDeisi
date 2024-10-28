@@ -205,8 +205,8 @@ public class GameManager {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
                 String equipamentoStr;
 
-                if (creature.getEquipamento() != null) {
-                    equipamentoStr = creature.getEquipamento().toString();
+                if (creature.getEquipamentos() != null) {
+                    equipamentoStr = creature.getEquipamentos().toString();
                 } else {
                     String sinal = (creature.getTipo() == 1) ? "+" : "-";
                     equipamentoStr = sinal + creature.getContadorEquipamentos();
@@ -250,28 +250,25 @@ public class GameManager {
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
-        // Verifica se o tipo de equipamento é válido (0 ou 1)
-        if (equipmentTypeId != 0 && equipmentTypeId != 1) {
-            return false; // Retorna false se o equipmentTypeId for inválido
-        }
-
         for (Creature creature : personagens) {
             if (creature.getId() == creatureId) {
-                // Se for zumbi (tipoCriatura == 1), retorna false imediatamente
+
                 if (creature.getTipo() == 1) {
                     return false;
                 }
 
-                // Se for humano (tipoCriatura == 0), verifica se possui o equipamento do tipo especificado
-                Equipamento equipamento = creature.getEquipamento();
-                if (equipamento != null && equipamento.getTipo() == equipmentTypeId) {
-                    return true; // Retorna true se o humano possui o equipamento do tipo especificado
+
+                for (Equipamento equipamento : creature.getEquipamentos()) {
+                    if (equipamento.getTipo() == equipmentTypeId) {
+                        return true;
+                    }
                 }
-                return false; // Retorna false se o humano não possui o equipamento do tipo especificado
+                return false;
             }
         }
-        return false; // Retorna false se a criatura com o ID fornecido não for encontrada
+        return false;
     }
+
 
 
 

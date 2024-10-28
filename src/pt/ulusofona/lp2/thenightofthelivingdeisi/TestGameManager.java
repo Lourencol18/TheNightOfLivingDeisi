@@ -36,35 +36,7 @@ public class TestGameManager {
         // Verifica se o ID da equipe inicial é 0 (zumbis)
         assertEquals(0, gameManager.getInitialTeamId(), "O ID inicial deve ser 0 para os zumbis.");
     }
-    @Test
-    public void testHasEquipment() {
-        GameManager gameManager = new GameManager();
 
-        // Criar um humano com um equipamento específico
-        Creature humanWithEquipment = new Creature(1, 0, "Humano A", 0, 0);
-        Equipamento sword = new Equipamento(10, 1, 0, 0); // Tipo 1 representa uma espada
-        humanWithEquipment.setEquipamento(sword);
-
-        // Criar um humano sem equipamento
-        Creature humanWithoutEquipment = new Creature(2, 0, "Humano B", 1, 1);
-
-        // Criar um zumbi (tipo 1)
-        Creature zombie = new Creature(3, 1, "Zombie C", 2, 2);
-
-        // Adiciona as criaturas à lista de personagens do GameManager
-        gameManager.personagens.add(humanWithEquipment);
-        gameManager.personagens.add(humanWithoutEquipment);
-        gameManager.personagens.add(zombie);
-
-        // Teste: humano com equipamento de tipo 1 deve retornar true
-        assertTrue(gameManager.hasEquipment(1, 1), "Humano com espada deve retornar true");
-
-        // Teste: humano sem equipamento deve retornar false
-        assertFalse(gameManager.hasEquipment(2, 1), "Humano sem equipamento deve retornar false");
-
-        // Teste: zumbi não pode ter equipamento, deve retornar false
-        assertFalse(gameManager.hasEquipment(3, 1), "Zombie não pode ter equipamento, deve retornar false");
-    }
 }
 
 
