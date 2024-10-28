@@ -259,7 +259,7 @@ public class GameManager {
 
                 // Se for humano (tipo 0), verifica se possui o equipamento especificado
                 Equipamento equipamento = creature.getEquipamento();
-                if (equipamento != null && equipamento.getTipo() == equipmentTypeId) {
+                if (equipamento != null) {
                     return true;
                 } else {
                     return false; // Retorna false se o humano não possui o equipamento do tipo especificado
