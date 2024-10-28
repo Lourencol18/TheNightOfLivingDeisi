@@ -147,13 +147,7 @@ public class GameManager {
     }
 
     public int getCurrentTeamId(){
-        if (turno == 0) {
-            return equipaInicial;
-        }
-        // Muda de equipe a cada 2 turnos
-        int numeroMudancas = turno / 2;
-        return (equipaInicial + numeroMudancas) % 2;
-    }
+        return 0;
     }
 
     public boolean isDay(){
