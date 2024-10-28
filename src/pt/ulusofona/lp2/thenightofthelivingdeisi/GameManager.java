@@ -147,7 +147,13 @@ public class GameManager {
     }
 
     public int getCurrentTeamId(){
-    return 0;
+        if (turno == 0) {
+            return equipaInicial;
+        }
+        // Muda de equipe a cada 2 turnos
+        int numeroMudancas = turno / 2;
+        return (equipaInicial + numeroMudancas) % 2;
+    }
     }
 
     public boolean isDay(){
@@ -181,7 +187,23 @@ public class GameManager {
 
 
     public String[] getCreatureInfo(int id){
-       return new String[]{"ola"};
+        for (Creature creature : personagens) {
+            if (creature.getId() == id) {
+                String tipo = (creature.getTipo() == 0) ? "Humano" : "Zombie";
+                String equipamentoStr = (creature.getEquipamento() != null) ?
+                        creature.getEquipamento().toString() : "-";
+
+                return new String[]{
+                        String.valueOf(creature.getId()),        // ID
+                        tipo,                                   // Tipo
+                        creature.getNome(),                     // Nome
+                        String.valueOf(creature.getX()),        // Posição X
+                        String.valueOf(creature.getY()),        // Posição Y
+                        equipamentoStr                          // Equipamento
+                };
+            }
+        }
+        return null;
     }
 
     public String getCreatureInfoAsString(int id) {
