@@ -252,12 +252,12 @@ public class GameManager {
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
         for (Creature creature : personagens) {
             if (creature.getId() == creatureId) {
-                // Verifica se é um zumbi (assumindo que o tipo 0 representa zumbis)
-                if (creature.getTipo() == 0) { // Zumbi
+                // Verifica se é um zumbi (tipo 1)
+                if (creature.getTipo() == 1) { // Zumbi
                     return false;
                 }
 
-                // Se for humano, verifica se possui o equipamento especificado
+                // Se for humano (tipo 0), verifica se possui o equipamento especificado
                 Equipamento equipamento = creature.getEquipamento();
                 if (equipamento != null && equipamento.getTipo() == equipmentTypeId) {
                     return true;
@@ -268,6 +268,7 @@ public class GameManager {
         }
         return false; // Retorna false se a criatura não for encontrada
     }
+
 
 
 
