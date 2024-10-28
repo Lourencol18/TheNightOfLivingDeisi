@@ -244,7 +244,14 @@ public class GameManager {
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
-        return null; // Retorna null se o equipamento não for encontrado
+
+        // Caso o ID seja negativo, retornar null
+        if (id < 0) {
+            return null;
+        }
+
+        // Caso o equipamento não seja encontrado
+        return "Equipamento não encontrado";
     }
 
 
