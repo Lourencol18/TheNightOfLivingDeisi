@@ -63,7 +63,9 @@ public class Creature {
         return nome;
     }
 
-
+    public Equipamento getEquipamento() {
+        return equipamento;
+    }
 
     public int getContadorEquipamentos() {
         return contadorEquipamentos;

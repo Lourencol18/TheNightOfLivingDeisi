@@ -205,8 +205,8 @@ public class GameManager {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
                 String equipamentoStr;
 
-                if (creature.getEquipamentos() != null) {
-                    equipamentoStr = creature.getEquipamentos().toString();
+                if (creature.getEquipamento() != null) {
+                    equipamentoStr = creature.getEquipamento().toString();
                 } else {
                     String sinal = (creature.getTipo() == 1) ? "+" : "-";
                     equipamentoStr = sinal + creature.getContadorEquipamentos();
