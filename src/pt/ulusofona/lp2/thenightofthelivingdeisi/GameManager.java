@@ -187,23 +187,7 @@ public class GameManager {
 
 
     public String[] getCreatureInfo(int id){
-        for (Creature creature : personagens) {
-            if (creature.getId() == id) {
-                String tipo = (creature.getTipo() == 0) ? "Humano" : "Zombie";
-                String equipamentoStr = (creature.getEquipamento() != null) ?
-                        creature.getEquipamento().toString() : "-";
-
-                return new String[]{
-                        String.valueOf(creature.getId()),        // ID
-                        tipo,                                   // Tipo
-                        creature.getNome(),                     // Nome
-                        String.valueOf(creature.getX()),        // Posição X
-                        String.valueOf(creature.getY()),        // Posição Y
-                        equipamentoStr                          // Equipamento
-                };
-            }
-        }
-        return null;
+        return new String[]{"ola"};
     }
 
     public String getCreatureInfoAsString(int id) {
