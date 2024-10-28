@@ -52,6 +52,9 @@ public class Creature {
         return equipamento;
     }
 
+    public int getContadorEquipamentos() {
+        return contadorEquipamentos;
+    }
 
     @Override
     public String toString() {
