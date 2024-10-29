@@ -62,12 +62,11 @@ public class GameManager {
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
                 String linhaCriatura;
-                // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
                         return false;
                     }
-                    linhaCriatura = scanner.nextLine().trim();
+                    linhaCriatura = scanner.nextLine();
                 } while (linhaCriatura.isEmpty());
 
                 String[] criaturaData = linhaCriatura.split(" : ");
@@ -76,11 +75,11 @@ public class GameManager {
                 }
 
                 try {
-                    int id = Integer.parseInt(criaturaData[0].trim());
-                    int tipoCriatura = Integer.parseInt(criaturaData[1].trim());
-                    String nome = criaturaData[2].trim();
-                    int x = Integer.parseInt(criaturaData[3].trim());
-                    int y = Integer.parseInt(criaturaData[4].trim());
+                    int id = Integer.parseInt(criaturaData[0]);
+                    int tipoCriatura = Integer.parseInt(criaturaData[1]);
+                    String nome = criaturaData[2];
+                    int x = Integer.parseInt(criaturaData[3]);
+                    int y = Integer.parseInt(criaturaData[4]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         return false;
@@ -105,12 +104,11 @@ public class GameManager {
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
                 String linhaEquipamento;
-                // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
                         return false;
                     }
-                    linhaEquipamento = scanner.nextLine().trim();
+                    linhaEquipamento = scanner.nextLine();
                 } while (linhaEquipamento.isEmpty());
 
                 String[] equipamentoData = linhaEquipamento.split(" : ");
@@ -119,10 +117,10 @@ public class GameManager {
                 }
 
                 try {
-                    int id = Integer.parseInt(equipamentoData[0].trim());
-                    int tipo = Integer.parseInt(equipamentoData[1].trim());
-                    int x = Integer.parseInt(equipamentoData[2].trim());
-                    int y = Integer.parseInt(equipamentoData[3].trim());
+                    int id = Integer.parseInt(equipamentoData[0]);
+                    int tipo = Integer.parseInt(equipamentoData[1]);
+                    int x = Integer.parseInt(equipamentoData[2]);
+                    int y = Integer.parseInt(equipamentoData[3]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         return false;
@@ -142,6 +140,7 @@ public class GameManager {
             return false;
         }
     }
+
 
 
 
@@ -192,13 +191,15 @@ public class GameManager {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";  // 1 = Humano, 0 = Zumbi
+                String iconPath = (creature.getTipo() == 1) ? "humano.png" : "zombie.png";// Defina o ícone com base no tipo
+
                 return new String[]{
                         String.valueOf(creature.getId()),    // ID
                         tipo,                                // Tipo
                         creature.getNome(),                  // Nome
                         String.valueOf(creature.getX()),     // Posição X
                         String.valueOf(creature.getY()),     // Posição Y
-                        "null"                               // PNG
+                        iconPath                              // PNG
                 };
             }
         }
@@ -270,8 +271,85 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
+        // Verifica se as coordenadas estão dentro do tabuleiro
+        if (xD < 0 || xD >= tabuleiro.getWidth() || yD < 0 || yD >= tabuleiro.getHeight()) {
+            return false;
+        }
+
+        // Encontra a criatura na posição de origem
+        Creature creatureToMove = null;
+        for (Creature creature : personagens) {
+            if (creature.getX() == xO && creature.getY() == yO) {
+                creatureToMove = creature;
+                break;
+            }
+        }
+
+        // Se não houver criatura na origem, retorna falso
+        if (creatureToMove == null) {
+            return false;
+        }
+
+        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia)
+        if ((dia && creatureToMove.getTipo() == 1) || (!dia && creatureToMove.getTipo() == 0)) {
+            return false;
+        }
+
+        // Verifica se há outra criatura no destino
+        for (Creature creature : personagens) {
+            if (creature.getX() == xD && creature.getY() == yD) {
+                return false;
+            }
+        }
+
+        // Verifica se o movimento é válido (distância)
+        int distanciaX = Math.abs(xD - xO);
+        int distanciaY = Math.abs(yD - yO);
+
+        // Movimento na diagonal
+        if (distanciaX == 1 && distanciaY == 1) {
+            // Zumbis não podem mover na diagonal
+            if (creatureToMove.getTipo() == 1) {
+                return false;
+            }
+        }
+        // Movimento em linha reta
+        else if ((distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1)) {
+            // Movimento válido para ambos
+        }
+        // Qualquer outro padrão de movimento é inválido
+        else {
+            return false;
+        }
+
+        // Verifica equipamentos na posição de destino
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getX() == xD && equipment.getY() == yD) {
+                // Zumbis não podem pegar equipamentos
+                if (creatureToMove.getTipo() == 1) {
+                    return false;
+                }
+                // Humanos podem pegar equipamentos
+                creatureToMove.setEquipamento(equipment);
+                equipamentos.remove(equipment);
+                break;
+            }
+        }
+
+        // Executa o movimento
+        creatureToMove.x = xD;
+        creatureToMove.y = yD;
+
+        // Se for um movimento válido, incrementa o turno
+        turno++;
+        // A cada 2 turnos, muda entre dia e noite
+        if (turno % 2 == 0) {
+            dia = !dia;
+        }
+
         return true;
     }
+
 
     public boolean gameIsOver() {
         return terminado;
