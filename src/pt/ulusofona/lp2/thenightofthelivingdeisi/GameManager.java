@@ -300,7 +300,7 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia tivemos de inverter a ordem porque so assim funciona)
+        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia)
         if ((!dia && creatureToMove.getTipo() == 1) || (dia && creatureToMove.getTipo() == 0)) {
             return false;
         }
@@ -312,23 +312,12 @@ public class GameManager {
             }
         }
 
-        // Verifica se o movimento é válido (distância)
+        // Verifica se o movimento é válido (apenas em linha reta)
         int distanciaX = Math.abs(xD - xO);
         int distanciaY = Math.abs(yD - yO);
 
-        // Movimento na diagonal
-        if (distanciaX == 1 && distanciaY == 1) {
-            // Zumbis não podem mover na diagonal
-            if (creatureToMove.getTipo() == 1) {
-                return false;
-            }
-        }
-        // Movimento em linha reta
-        else if ((distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1)) {
-            // Movimento válido para ambos
-        }
-        // Qualquer outro padrão de movimento é inválido
-        else {
+        // Permite apenas movimento em linha reta (horizontal ou vertical)
+        if (!((distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1))) {
             return false;
         }
 
@@ -359,6 +348,7 @@ public class GameManager {
 
         return true;
     }
+
 
 
     public boolean gameIsOver() {
