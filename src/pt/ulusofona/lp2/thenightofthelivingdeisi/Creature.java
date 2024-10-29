@@ -12,7 +12,6 @@ public class Creature {
     Equipamento equipamento;
     int contadorEquipamentos = 0;
 
-
     public Creature(int id, int tipoCriatura, String nome, int x, int y) {
         this.id = id;
         this.tipoCriatura = tipoCriatura;
@@ -23,11 +22,16 @@ public class Creature {
 
     public void setEquipamento(Equipamento equipamento) {
         this.equipamento = equipamento;
+        if (tipoCriatura == 1) { // Incrementa apenas para humanos
+            contadorEquipamentos++;
+        }
     }
 
     public void destruirEquipamento() {
-        this.equipamento = equipamento;
-        this.contadorEquipamentos++;
+        this.equipamento = null;  // Remove o equipamento da criatura
+        if (tipoCriatura == 0) { // Incrementa apenas para zumbis
+            contadorEquipamentos++;
+        }
     }
 
     public List<Equipamento> getEquipamentos() {
@@ -37,7 +41,6 @@ public class Creature {
         }
         return equipamentosList;
     }
-
 
     public void apanhaEquipamento() {
         if (this.equipamento != null) {
@@ -83,10 +86,13 @@ public class Creature {
 
     @Override
     public String toString() {
-        String equipamentoStr = (equipamento != null) ? equipamento.toString() : "-";
-        if (tipoCriatura == 1) {
-            return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
+        String equipamentoStr;
+        if (tipoCriatura == 1) { // Humanos
+            equipamentoStr = "+" + contadorEquipamentos;
+        } else { // Zumbis
+            equipamentoStr = "-" + contadorEquipamentos;
         }
-        return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
+
+        return id + " | " + (tipoCriatura == 1 ? "Humano" : "Zombie") + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
     }
 }

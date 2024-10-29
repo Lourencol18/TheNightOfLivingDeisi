@@ -160,10 +160,10 @@ public class GameManager {
     }
 
     public int getCurrentTeamId() {
-        // Cada equipe joga em pares de turnos consecutivos
-        int parDeTurnos = (turno / 2) % 2;
-        return (parDeTurnos == 0) ? equipaInicial : (1 - equipaInicial);
+        // Alterna entre as equipes a cada turno
+        return (turno % 2 == 0) ? equipaInicial : (1 - equipaInicial);
     }
+
 
 
     public boolean isDay() {
@@ -299,8 +299,8 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia)
-        if ((!dia && creatureToMove.getTipo() == 1) || (dia && creatureToMove.getTipo() == 0)) {
+        // Verifica se é a vez da equipe correta: turnos pares para humanos, turnos ímpares para zumbis
+        if ((turno % 2 == 0 && creatureToMove.getTipo() != 1) || (turno % 2 == 1 && creatureToMove.getTipo() != 0)) {
             return false;
         }
 
@@ -321,15 +321,10 @@ public class GameManager {
         }
 
         // Verifica equipamentos na posição de destino
+        Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == xD && equipment.getY() == yD) {
-                // Zumbis não podem pegar equipamentos
-                if (creatureToMove.getTipo() == 1) {
-                    return false;
-                }
-                // Humanos podem pegar equipamentos
-                creatureToMove.setEquipamento(equipment);
-                equipamentos.remove(equipment);
+                equipamentoParaInteragir = equipment;
                 break;
             }
         }
@@ -338,15 +333,32 @@ public class GameManager {
         creatureToMove.x = xD;
         creatureToMove.y = yD;
 
-        // Se for um movimento válido, incrementa o turno
+        // Se houver equipamento na posição de destino
+        if (equipamentoParaInteragir != null) {
+            if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
+                creatureToMove.setEquipamento(equipamentoParaInteragir); // Associa o equipamento ao humano
+                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
+                creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
+                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            }
+        }
+
+        // Incrementa o turno para alternar a equipe
         turno++;
-        // A cada 2 turnos, muda entre dia e noite
+
+        // A cada 2 turnos, alterna entre dia e noite
         if (turno % 2 == 0) {
             dia = !dia;
         }
 
         return true;
     }
+
+
+
+
+
 
 
 
