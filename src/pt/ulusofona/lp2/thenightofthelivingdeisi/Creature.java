@@ -12,6 +12,7 @@ public class Creature {
     Equipamento equipamento;
     int contadorEquipamentos = 0;
 
+
     public Creature(int id, int tipoCriatura, String nome, int x, int y) {
         this.id = id;
         this.tipoCriatura = tipoCriatura;
