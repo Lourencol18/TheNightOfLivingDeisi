@@ -244,13 +244,7 @@ public class GameManager {
 
 
     public String getEquipmentInfoAsString(int id) {
-        for (Creature creature : personagens) {
-            if (creature.getTipo() == 1) {
-                return null;
-            }
-        }
-
-        for (Equipamento equipment : equipamentos) {
+       for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";

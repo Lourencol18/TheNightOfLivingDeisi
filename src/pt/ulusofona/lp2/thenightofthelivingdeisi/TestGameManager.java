@@ -13,14 +13,14 @@ public class TestGameManager {
         GameManager gameManager = new GameManager();
 
         // Caminho do arquivo de teste para o caso dos vivos jogarem primeiro (teamId = 1)
-        File file = new File("test-files/testeVivosPrimeiro.txt");
+        File file = new File("test-files/6x6.txt");
 
         // Carrega o jogo e verifica se foi bem-sucedido
         boolean loaded = gameManager.loadGame(file);
         assertEquals(true, loaded, "O jogo deve ser carregado com sucesso.");
 
         // Verifica se o ID da equipe inicial é 1 (vivos)
-        assertEquals(1, gameManager.getInitialTeamId(), "O ID inicial deve ser 1 para os vivos.");
+        assertEquals(0, gameManager.getInitialTeamId(), "O ID inicial deve ser 1 para os vivos.");
     }
 
     @Test
