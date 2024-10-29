@@ -224,7 +224,7 @@ public class GameManager {
                 }
 
                 return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
-                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+                        equipamentoStr + " @ (" + creature.getX() + "," + creature.getY() + ")";
             }
         }
         return "Criatura não encontrada";
@@ -352,7 +352,10 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        return terminado;
+        if (turno >= 12){
+            return true;
+        }
+        return false;
     }
 
     public ArrayList<String> getSurvivors() {
