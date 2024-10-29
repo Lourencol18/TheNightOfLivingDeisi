@@ -241,21 +241,20 @@ public class GameManager {
 
 
     public String getEquipmentInfoAsString(int id) {
+        for (Creature creature : personagens) {
+            if (creature.getTipo() == 0) {
+                return null;
+            }
+        }
+
+
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                for (Creature creature : personagens) {
-                    if (creature.getX() == equipment.getX() &&
-                            creature.getY() == equipment.getY() &&
-                            creature.getTipo() == 0) { // tipo 1 é Zombie
-                        return null;
-                    }
-                }
-
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
-        return null; // Retorna null se o equipamento não for encontrado
+        return null;
     }
 
 
@@ -264,18 +263,16 @@ public class GameManager {
         public boolean hasEquipment(int creatureId, int equipmentTypeId) {
             for (Creature creature : personagens) {
                 if (creature.getId() == creatureId) {
-                    // Se for um zombie (tipo == 1), retorna sempre false
+
                     if (creature.getTipo() == 0) {
                         return false;
+                    } else {
+                        return creature.getEquipamento() != null;
                     }
-
-                    // Se for um humano (tipo == 0), retorna true se tiver equipamento
-                    return creature.getEquipamento() != null;
                 }
+                return false; // Criatura não encontrada
             }
-            return false; // Criatura não encontrada
         }
-
 
 
 
