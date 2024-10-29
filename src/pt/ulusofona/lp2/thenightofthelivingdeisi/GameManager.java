@@ -242,11 +242,10 @@ public class GameManager {
 
     public String getEquipmentInfoAsString(int id) {
         for (Creature creature : personagens) {
-            if (creature.getTipo() == 0) {
+            if (creature.getTipo() == 1) {
                 return null;
             }
         }
-
 
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
@@ -264,7 +263,7 @@ public class GameManager {
             for (Creature creature : personagens) {
                 if (creature.getId() == creatureId) {
 
-                    if (creature.getTipo() == 0) {
+                    if (creature.getTipo() == 1) {
                         return false;
                     } else {
                         return creature.getEquipamento() != null;
