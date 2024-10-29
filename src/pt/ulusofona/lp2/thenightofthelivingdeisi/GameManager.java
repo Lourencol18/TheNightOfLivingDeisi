@@ -146,8 +146,13 @@ public class GameManager {
         return equipaInicial;
     }
 
-    public int getCurrentTeamId(){
-        return 0;
+    public int getCurrentTeamId() {
+        if (turno == 0) {
+            return equipaInicial;
+        }
+        // Muda de equipe a cada 2 turnos
+        int numeroMudancas = turno / 2;
+        return (equipaInicial + numeroMudancas) % 2;
     }
 
     public boolean isDay(){
@@ -249,25 +254,22 @@ public class GameManager {
 
 
 
-    public boolean hasEquipment(int creatureId, int equipmentTypeId) {
-        for (Creature creature : personagens) {
-            if (creature.getId() == creatureId) {
 
-                if (creature.getTipo() == 1) {
-                    return false;
-                }
-
-
-                for (Equipamento equipamento : creature.getEquipamentos()) {
-                    if (equipamento.getTipo() == equipmentTypeId) {
-                        return true;
+        public boolean hasEquipment(int creatureId, int equipmentTypeId) {
+            for (Creature creature : personagens) {
+                if (creature.getId() == creatureId) {
+                    // Se for um zombie (tipo == 0), retorna sempre false
+                    if (creature.getTipo() == 0) {
+                        return false;
                     }
+
+                    // Se for um humano (tipo == 1), retorna true se tiver equipamento
+                    return creature.getEquipamento() != null;
                 }
-                return false;
             }
+            return false; // Criatura não encontrada
         }
-        return false;
-    }
+
 
 
 
