@@ -191,15 +191,13 @@ public class GameManager {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";  // 1 = Humano, 0 = Zumbi
-                String iconPath = (creature.getTipo() == 1) ? "humano.png" : "zombie.png";// Defina o ícone com base no tipo
-
                 return new String[]{
                         String.valueOf(creature.getId()),    // ID
                         tipo,                                // Tipo
                         creature.getNome(),                  // Nome
                         String.valueOf(creature.getX()),     // Posição X
                         String.valueOf(creature.getY()),     // Posição Y
-                        iconPath                              // PNG
+                        null
                 };
             }
         }
