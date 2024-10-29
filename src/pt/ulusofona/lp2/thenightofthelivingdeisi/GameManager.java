@@ -101,45 +101,50 @@ public class GameManager {
             }
 
             equipamentos.clear();
-            // Lê cada equipamento
-            for (int i = 0; i < numEquipments; i++) {
-                String linhaEquipamento;
-                do {
-                    if (!scanner.hasNextLine()) {
-                        return false;
-                    }
-                    linhaEquipamento = scanner.nextLine();
-                } while (linhaEquipamento.isEmpty());
 
-                String[] equipamentoData = linhaEquipamento.split(" : ");
-                if (equipamentoData.length != 4) {
-                    return false;
-                }
+            // Somente lê equipamentos se o número for maior que 0
+            if (numEquipments > 0) {
+                for (int i = 0; i < numEquipments; i++) {
+                    String linhaEquipamento;
+                    do {
+                        if (!scanner.hasNextLine()) {
+                            return false;
+                        }
+                        linhaEquipamento = scanner.nextLine();
+                    } while (linhaEquipamento.isEmpty());
 
-                try {
-                    int id = Integer.parseInt(equipamentoData[0]);
-                    int tipo = Integer.parseInt(equipamentoData[1]);
-                    int x = Integer.parseInt(equipamentoData[2]);
-                    int y = Integer.parseInt(equipamentoData[3]);
-
-                    if (!tabuleiro.dentroDosLimites(x, y)) {
+                    String[] equipamentoData = linhaEquipamento.split(" : ");
+                    if (equipamentoData.length != 4) {
                         return false;
                     }
 
-                    equipamentos.add(new Equipamento(id, tipo, x, y));
-                } catch (NumberFormatException e) {
-                    return false;
+                    try {
+                        int id = Integer.parseInt(equipamentoData[0]);
+                        int tipo = Integer.parseInt(equipamentoData[1]);
+                        int x = Integer.parseInt(equipamentoData[2]);
+                        int y = Integer.parseInt(equipamentoData[3]);
+
+                        if (!tabuleiro.dentroDosLimites(x, y)) {
+                            return false;
+                        }
+
+                        equipamentos.add(new Equipamento(id, tipo, x, y));
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
                 }
             }
 
             System.out.println("Nr criaturas: " + personagens.size());
             System.out.println("Nr equipamentos: " + equipamentos.size());
 
-            return true;
+            return true; // Carregamento bem-sucedido
         } catch (FileNotFoundException | NumberFormatException e) {
-            return false;
+            System.out.println("Erro ao carregar o arquivo: " + e.getMessage());
+            return false; // Erro ao carregar o ficheiro
         }
     }
+
 
 
 
@@ -245,15 +250,19 @@ public class GameManager {
 
 
 
+
     public String getEquipmentInfoAsString(int id) {
-       for (Equipamento equipment : equipamentos) {
+        for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
+                // Garante que o tipo de equipamento está descrito corretamente
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
-                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
+                // Formata a string exatamente como o teste espera
+                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + ", " + equipment.getY() + ")";
             }
         }
         return null;
     }
+
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
