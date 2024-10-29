@@ -223,7 +223,7 @@ public class GameManager {
                 }
 
                 return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
-                        equipamentoStr + " @ (" + creature.getX() + "," + creature.getY() + ")";
+                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
             }
         }
         return "Criatura não encontrada";
