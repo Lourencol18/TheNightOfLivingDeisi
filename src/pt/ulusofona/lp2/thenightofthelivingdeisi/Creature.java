@@ -88,11 +88,13 @@ public class Creature {
     public String toString() {
         String equipamentoStr;
         if (tipoCriatura == 1) { // Humanos
-            equipamentoStr = "+" + contadorEquipamentos;
+            equipamentoStr = (contadorEquipamentos > 0 ? "+" : "") + contadorEquipamentos;
         } else { // Zumbis
             equipamentoStr = "-" + contadorEquipamentos;
         }
 
         return id + " | " + (tipoCriatura == 1 ? "Humano" : "Zombie") + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
     }
+
+
 }

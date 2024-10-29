@@ -335,9 +335,8 @@ public class GameManager {
 
         // Se houver equipamento na posição de destino
         if (equipamentoParaInteragir != null) {
-            if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
-                creatureToMove.setEquipamento(equipamentoParaInteragir); // Associa o equipamento ao humano
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            if (creatureToMove.getTipo() == 1) { // Humanos incrementam o contador
+                creatureToMove.contadorEquipamentos++; // Apenas incrementa o contador, sem associar o equipamento
             } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
                 creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
                 equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
@@ -354,6 +353,9 @@ public class GameManager {
 
         return true;
     }
+
+
+
 
 
 
