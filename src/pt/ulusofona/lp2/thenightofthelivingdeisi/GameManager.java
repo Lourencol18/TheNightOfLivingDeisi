@@ -229,17 +229,21 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
+                // Define o tipo de equipamento: 0 = Escudo de madeira, 1 = Espada Samurai
+                String tipo = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada Samurai";
+
                 return new String[]{
                         String.valueOf(equipment.getId()),    // ID
-                        String.valueOf(equipment.getTipo()),  // Tipo
+                        tipo,                                // Tipo como string
                         String.valueOf(equipment.getX()),     // Posição X
                         String.valueOf(equipment.getY()),     // Posição Y
-                        "null"                                // PNG
+                        null                                 // PNG ou caminho do ícone, se aplicável
                 };
             }
         }
         return null; // Se o equipamento com o ID fornecido não for encontrado
     }
+
 
 
     public String getEquipmentInfoAsString(int id) {
