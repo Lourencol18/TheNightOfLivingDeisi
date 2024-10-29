@@ -160,12 +160,11 @@ public class GameManager {
     }
 
     public int getCurrentTeamId() {
-        if (turno == 0) {
-            return equipaInicial;
-        }
-        int numeroMudancas = turno / 2;
-        return (equipaInicial + numeroMudancas) % 2;
+        // Cada equipe joga em pares de turnos consecutivos
+        int parDeTurnos = (turno / 2) % 2;
+        return (parDeTurnos == 0) ? equipaInicial : (1 - equipaInicial);
     }
+
 
     public boolean isDay() {
         return dia;
