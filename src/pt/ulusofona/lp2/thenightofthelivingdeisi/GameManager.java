@@ -21,6 +21,10 @@ public class GameManager {
     public GameManager() {
     }
 
+    public boolean foraDosLimites(int x, int y) {
+        return x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height;
+    }
+
     public boolean loadGame(File file) {
         try (Scanner scanner = new Scanner(file)) {
             // Lê as dimensões do tabuleiro
@@ -54,40 +58,32 @@ public class GameManager {
             }
 
             personagens.clear();
+
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
-                String linhaCriatura;
-                //String linhaCriatura = scanner.nextLine();
-                //linhaCriatura.trim();
+                if (scanner.hasNextLine()) {
+                    String[] linhaCriatura = scanner.nextLine().split(" : ");
 
-
-                // Lê até encontrar uma linha não vazia
-                do {
-                    if (!scanner.hasNextLine()) {
-                        return false;
-                    }
-                    linhaCriatura = scanner.nextLine().trim();
-                } while (linhaCriatura.isEmpty());
-
-
-                String[] criaturaData = linhaCriatura.split(" : ");
-                if (criaturaData.length != 5) {
-                    return false;
-                }
-
-                try {
-                    int id = Integer.parseInt(criaturaData[0].trim());
-                    int tipoCriatura = Integer.parseInt(criaturaData[1].trim());
-                    String nome = criaturaData[2].trim();
-                    int x = Integer.parseInt(criaturaData[3].trim());
-                    int y = Integer.parseInt(criaturaData[4].trim());
-
-                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
+                    if (linhaCriatura.length != 5) {
                         return false;
                     }
 
-                    personagens.add(new Creature(id, tipoCriatura, nome, x, y));
-                } catch (NumberFormatException e) {
+                    try {
+                        int id = Integer.parseInt(linhaCriatura[0]);
+                        int tipoCriatura = Integer.parseInt(linhaCriatura[1]);
+                        String nome = linhaCriatura[2];
+                        int x = Integer.parseInt(linhaCriatura[3]);
+                        int y = Integer.parseInt(linhaCriatura[4]);
+
+                        if (foraDosLimites(x, y)) {
+                            return false;
+                        }
+
+                        personagens.add(new Creature(id, tipoCriatura, nome, x, y));
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             }
@@ -102,36 +98,31 @@ public class GameManager {
             }
 
             equipamentos.clear();
+
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
-                String linhaEquipamento;
-                //String linhaEquipamento = scanner.nextLine();
-                //linhaEquipamento.trim();
-                // Lê até encontrar uma linha não vazia
-                do {
-                    if (!scanner.hasNextLine()) {
-                        return false;
-                    }
-                    linhaEquipamento = scanner.nextLine().trim();
-                } while (linhaEquipamento.isEmpty());
+                if (scanner.hasNextLine()) {
+                    String[] linhaEquipamento = scanner.nextLine().split(" : ");
 
-                String[] equipamentoData = linhaEquipamento.split(" : ");
-                if (equipamentoData.length != 4) {
-                    return false;
-                }
-
-                try {
-                    int id = Integer.parseInt(equipamentoData[0].trim());
-                    int tipo = Integer.parseInt(equipamentoData[1].trim());
-                    int x = Integer.parseInt(equipamentoData[2].trim());
-                    int y = Integer.parseInt(equipamentoData[3].trim());
-
-                    if (x < 0 || x >= tabuleiro.width || y < 0 || y >= tabuleiro.height) {
+                    if (linhaEquipamento.length != 4) {
                         return false;
                     }
 
-                    equipamentos.add(new Equipamento(id, tipo, x, y));
-                } catch (NumberFormatException e) {
+                    try {
+                        int id = Integer.parseInt(linhaEquipamento[0]);
+                        int tipo = Integer.parseInt(linhaEquipamento[1]);
+                        int x = Integer.parseInt(linhaEquipamento[2]);
+                        int y = Integer.parseInt(linhaEquipamento[3]);
+
+                        if (foraDosLimites(x, y)) {
+                            return false;
+                        }
+
+                        equipamentos.add(new Equipamento(id, tipo, x, y));
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             }
@@ -143,9 +134,8 @@ public class GameManager {
         } catch (FileNotFoundException | NumberFormatException e) {
             return false;
         }
-
-
     }
+
 
 
     public int[] getWorldSize() {
