@@ -150,7 +150,6 @@ public class GameManager {
         if (turno == 0) {
             return equipaInicial;
         }
-        // Muda de equipe a cada 2 turnos
         int numeroMudancas = turno / 2;
         return (equipaInicial + numeroMudancas) % 2;
     }
@@ -244,6 +243,14 @@ public class GameManager {
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
+                // Verifica se há algum zumbi na mesma posição do equipamento
+                for (Creature creature : personagens) {
+                    if (creature.getX() == equipment.getX() &&
+                            creature.getY() == equipment.getY() &&
+                            creature.getTipo() == 1) { // tipo 1 é Zombie
+                        return null;
+                    }
+                }
 
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
@@ -258,12 +265,12 @@ public class GameManager {
         public boolean hasEquipment(int creatureId, int equipmentTypeId) {
             for (Creature creature : personagens) {
                 if (creature.getId() == creatureId) {
-                    // Se for um zombie (tipo == 0), retorna sempre false
-                    if (creature.getTipo() == 0) {
+                    // Se for um zombie (tipo == 1), retorna sempre false
+                    if (creature.getTipo() == 1) {
                         return false;
                     }
 
-                    // Se for um humano (tipo == 1), retorna true se tiver equipamento
+                    // Se for um humano (tipo == 0), retorna true se tiver equipamento
                     return creature.getEquipamento() != null;
                 }
             }
