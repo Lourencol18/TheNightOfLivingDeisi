@@ -275,7 +275,7 @@ public class GameManager {
                     return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
                 }
             }
-        }
+        } //
         return true;
     }
 
