@@ -2,7 +2,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class Equipamento {
     int id;
-    int tipo;
+     int tipo;
     int x;
     int y;
 
@@ -27,7 +27,7 @@ public class Equipamento {
         return id;
     }
 
-    public int getTipo() {
+    public  int getTipo() {
         return tipo;
     }
 

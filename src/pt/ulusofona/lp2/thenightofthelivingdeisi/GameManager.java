@@ -288,8 +288,8 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia)
-        if ((dia && creatureToMove.getTipo() == 1) || (!dia && creatureToMove.getTipo() == 0)) {
+        // Verifica se é a vez da equipe correta (zumbi à noite, humano durante o dia tivemos de inverter a ordem porque so assim funciona)
+        if ((!dia && creatureToMove.getTipo() == 1) || (dia && creatureToMove.getTipo() == 0)) {
             return false;
         }
 
