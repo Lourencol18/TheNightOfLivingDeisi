@@ -67,6 +67,13 @@ public class Creature {
         return equipamento;
     }
 
+    public Equipamento getEquipamentoPorTipo(int equipmentTypeId) {
+        if(equipamento != null && equipamento.tipo == equipmentTypeId) {
+            return equipamento;
+        }
+        return null;
+    }
+
     public int getContadorEquipamentos() {
         return contadorEquipamentos;
     }

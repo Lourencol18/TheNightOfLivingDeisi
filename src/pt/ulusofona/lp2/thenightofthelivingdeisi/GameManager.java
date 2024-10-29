@@ -266,7 +266,7 @@ public class GameManager {
                     if (creature.getTipo() == 1) {
                         return false;
                     } else {
-                        return creature.getEquipamento() != null;
+                        return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
                     }
                 }
             }
