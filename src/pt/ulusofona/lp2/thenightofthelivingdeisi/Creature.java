@@ -74,7 +74,7 @@ public class Creature {
     @Override
     public String toString() {
         String equipamentoStr = (equipamento != null) ? equipamento.toString() : "-";
-        if (tipoCriatura == 0) {
+        if (tipoCriatura == 1) {
             return id + " | " + "Humano" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
         }
         return id + " | " + "Zombie" + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";

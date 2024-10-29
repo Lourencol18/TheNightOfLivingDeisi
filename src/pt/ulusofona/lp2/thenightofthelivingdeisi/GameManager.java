@@ -163,7 +163,7 @@ public class GameManager {
         // Verifica se há uma criatura na posição
         for (Creature creature : personagens) {
             if (creature.getX() == x && creature.getY() == y) {
-                String tipo = (creature.getTipo() == 1) ? "H" : "Z";  // 0 = Humano, 1 = Zumbi
+                String tipo = (creature.getTipo() == 1) ? "H" : "Z";  // 1 = Humano, 0 = Zumbi
                 return tipo + ":" + creature.getId();
             }
         }
@@ -243,11 +243,10 @@ public class GameManager {
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Verifica se há algum zumbi na mesma posição do equipamento
                 for (Creature creature : personagens) {
                     if (creature.getX() == equipment.getX() &&
                             creature.getY() == equipment.getY() &&
-                            creature.getTipo() == 1) { // tipo 1 é Zombie
+                            creature.getTipo() == 0) { // tipo 1 é Zombie
                         return null;
                     }
                 }
@@ -266,7 +265,7 @@ public class GameManager {
             for (Creature creature : personagens) {
                 if (creature.getId() == creatureId) {
                     // Se for um zombie (tipo == 1), retorna sempre false
-                    if (creature.getTipo() == 1) {
+                    if (creature.getTipo() == 0) {
                         return false;
                     }
 
