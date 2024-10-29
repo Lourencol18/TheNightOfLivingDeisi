@@ -256,7 +256,7 @@ public class GameManager {
                 // Garante que o tipo de equipamento está descrito corretamente
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
                 // Formata a string exatamente como o teste espera
-                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + ", " + equipment.getY() + ")";
+                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
         return null;
