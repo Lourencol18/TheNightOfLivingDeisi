@@ -270,8 +270,8 @@ public class GameManager {
                         return creature.getEquipamento() != null;
                     }
                 }
-                return false; // Criatura não encontrada
             }
+            return false;
         }
 
 
