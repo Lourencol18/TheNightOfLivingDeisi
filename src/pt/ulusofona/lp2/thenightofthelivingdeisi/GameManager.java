@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class GameManager {
-     Tabuleiro tabuleiro ;
+    Tabuleiro tabuleiro;
     int equipaInicial;
     int equipaAtual;
     ArrayList<Equipamento> equipamentos = new ArrayList<>();
@@ -17,6 +17,9 @@ public class GameManager {
     int turno = 0;
     boolean dia = true;
     boolean terminado = false;
+
+    public GameManager() {
+    }
 
     public boolean loadGame(File file) {
         try (Scanner scanner = new Scanner(file)) {
@@ -53,9 +56,11 @@ public class GameManager {
             personagens.clear();
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
-                String linhaCriatura = scanner.nextLine();
+                String linhaCriatura;
+                //String linhaCriatura = scanner.nextLine();
+                //linhaCriatura.trim();
 
-                /*
+
                 // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
@@ -63,7 +68,7 @@ public class GameManager {
                     }
                     linhaCriatura = scanner.nextLine().trim();
                 } while (linhaCriatura.isEmpty());
-*/
+
 
                 String[] criaturaData = linhaCriatura.split(" : ");
                 if (criaturaData.length != 5) {
@@ -99,10 +104,9 @@ public class GameManager {
             equipamentos.clear();
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
-                String linhaEquipamento = scanner.nextLine();
-                linhaEquipamento.trim();
-
-                /*
+                String linhaEquipamento;
+                //String linhaEquipamento = scanner.nextLine();
+                //linhaEquipamento.trim();
                 // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
@@ -110,7 +114,6 @@ public class GameManager {
                     }
                     linhaEquipamento = scanner.nextLine().trim();
                 } while (linhaEquipamento.isEmpty());
-*/
 
                 String[] equipamentoData = linhaEquipamento.split(" : ");
                 if (equipamentoData.length != 4) {
@@ -133,10 +136,15 @@ public class GameManager {
                 }
             }
 
+            System.out.println("Nr criaturas: " + personagens.size());
+            System.out.println("Nr equip: " + equipamentos.size());
+
             return true;
         } catch (FileNotFoundException | NumberFormatException e) {
             return false;
         }
+
+
     }
 
 
@@ -145,9 +153,7 @@ public class GameManager {
     }
 
 
-
-
-    public int getInitialTeamId(){
+    public int getInitialTeamId() {
         return equipaInicial;
     }
 
@@ -159,7 +165,7 @@ public class GameManager {
         return (equipaInicial + numeroMudancas) % 2;
     }
 
-    public boolean isDay(){
+    public boolean isDay() {
         return dia;
 
     }
@@ -184,11 +190,6 @@ public class GameManager {
     }
 
 
-
-
-
-
-
     public String[] getCreatureInfo(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
@@ -205,7 +206,6 @@ public class GameManager {
         }
         return null; // Se a criatura com o ID fornecido não for encontrada
     }
-
 
 
     public String getCreatureInfoAsString(int id) {
@@ -262,70 +262,59 @@ public class GameManager {
     }
 
 
+    public boolean hasEquipment(int creatureId, int equipmentTypeId) {
+        for (Creature creature : personagens) {
+            if (creature.getId() == creatureId) {
 
-
-        public boolean hasEquipment(int creatureId, int equipmentTypeId) {
-            for (Creature creature : personagens) {
-                if (creature.getId() == creatureId) {
-
-                    if (creature.getTipo() == 1) {
-                        return false;
-                    } else {
-                        return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
-                    }
+                if (creature.getTipo() == 1) {
+                    return false;
+                } else {
+                    return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
                 }
             }
-            return false;
         }
+        return false;
+    }
 
 
-
-
-
-
-
-
-
-
-
-    public boolean move(int xO, int yO, int xD, int yD){
+    public boolean move(int xO, int yO, int xD, int yD) {
         return true;
     }
 
-    public boolean gameIsOver(){
+    public boolean gameIsOver() {
         return terminado;
     }
 
-    public ArrayList<String> getSurvivors(){
+    public ArrayList<String> getSurvivors() {
         return new ArrayList<>();
     }
 
 
     public JPanel getCreditsPanel() {
 
-            JPanel creditsPanel = new JPanel();
-            creditsPanel.setLayout(new BorderLayout());
+        JPanel creditsPanel = new JPanel();
+        creditsPanel.setLayout(new BorderLayout());
 
 
-            String creditsText = "<html><center><h1>Créditos</h1>"
-                    + "<p>Desenvolvido por: Ruben Graça e Lourenço Luís</p>"
-                    + "<p>Apoio moral: Meu gato, que dormiu o projeto todo.</p>"
-                    + "<p>Café fornecido por: Minha cafeteira incansável.</p>"
-                    + "<p>Testadores: Meu teclado e meu monitor, que aguentaram firme.</p>"
-                    + "<p><i>Agradecimentos especiais à procrastinação, sem ela, este projeto teria sido entregue a tempo.</i></p>"
-                    + "</center></html>";
+        String creditsText = "<html><center><h1>Créditos</h1>"
+                + "<p>Desenvolvido por: Ruben Graça e Lourenço Luís</p>"
+                + "<p>Apoio moral: Meu gato, que dormiu o projeto todo.</p>"
+                + "<p>Café fornecido por: Minha cafeteira incansável.</p>"
+                + "<p>Testadores: Meu teclado e meu monitor, que aguentaram firme.</p>"
+                + "<p><i>Agradecimentos especiais à procrastinação, sem ela, este projeto teria sido entregue a tempo.</i></p>"
+                + "</center></html>";
 
 
-            JLabel creditsLabel = new JLabel(creditsText, SwingConstants.CENTER);
+        JLabel creditsLabel = new JLabel(creditsText, SwingConstants.CENTER);
 
 
-            creditsPanel.add(creditsLabel, BorderLayout.CENTER);
+        creditsPanel.add(creditsLabel, BorderLayout.CENTER);
 
-            return creditsPanel;
+        return creditsPanel;
     }
 
 
-    public HashMap<String,String> customizeBoard(){
+    public HashMap<String, String> customizeBoard() {
         return new HashMap<>();
     }
 

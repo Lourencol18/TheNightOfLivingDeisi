@@ -28,6 +28,7 @@ public class Creature {
         this.equipamento = equipamento;
         this.contadorEquipamentos++;
     }
+
     public List<Equipamento> getEquipamentos() {
         List<Equipamento> equipamentosList = new ArrayList<>();
         if (equipamento != null) {
@@ -51,6 +52,7 @@ public class Creature {
     public int getY() {
         return y;
     }
+
     public int getId() {
         return id;
     }
@@ -68,7 +70,7 @@ public class Creature {
     }
 
     public Equipamento getEquipamentoPorTipo(int equipmentTypeId) {
-        if(equipamento != null && equipamento.tipo == equipmentTypeId) {
+        if (equipamento != null && equipamento.tipo == equipmentTypeId) {
             return equipamento;
         }
         return null;

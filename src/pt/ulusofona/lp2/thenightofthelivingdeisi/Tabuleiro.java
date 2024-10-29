@@ -3,7 +3,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 import java.util.ArrayList;
 
 public class Tabuleiro {
-     int width;
+    int width;
     int height;
     int equipaInicial;
     boolean dia;
@@ -36,7 +36,6 @@ public class Tabuleiro {
     public int getTurno() {
         return equipaInicial;
     }
-
 
 
     public boolean isVazio() {
