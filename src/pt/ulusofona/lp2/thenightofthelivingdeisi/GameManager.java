@@ -372,8 +372,33 @@ public class GameManager {
     }
 
     public ArrayList<String> getSurvivors() {
-        return new ArrayList<>();
+        ArrayList<String> resultados = new ArrayList<>();
+
+        // Número de turnos terminados
+        resultados.add("Nr. de turnos terminados: " + turno);
+        resultados.add("");
+
+        // Separador para os vivos
+        resultados.add("OS VIVOS");
+        for (Creature creature : personagens) {
+            if (creature.getTipo() == 1) { // Tipo 1 representa humano
+                resultados.add(creature.getId() + " " + creature.getNome());
+            }
+        }
+        resultados.add(""); // Linha em branco entre os vivos e os outros
+
+        // Separador para os outros (zumbis)
+        resultados.add("OS OUTROS");
+        for (Creature creature : personagens) {
+            if (creature.getTipo() == 0) { // Tipo 0 representa zumbi
+                resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
+            }
+        }
+        resultados.add("-----"); // Separador final
+
+        return resultados;
     }
+
 
 
     public JPanel getCreditsPanel() {
