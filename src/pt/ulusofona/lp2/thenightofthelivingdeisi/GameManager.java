@@ -253,27 +253,13 @@ public class GameManager {
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Verifica se o equipamento foi capturado por um humano
-                boolean isCaptured = false;
-                for (Creature creature : personagens) {
-                    if (creature.getEquipamento() != null && creature.getEquipamento().getId() == id) {
-                        isCaptured = true;
-                        break;
-                    }
-                }
-
-                // Se o equipamento foi capturado, retorna null
-                if (isCaptured) {
-                    return null;
-                }
-
-                // Formata o tipo de equipamento
+                // Garante que o tipo de equipamento está descrito corretamente
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
-                // Retorna a descrição do equipamento
+                // Formata a string exatamente como o teste espera
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
-        return null; // Retorna null se o equipamento não for encontrado
+        return null;
     }
 
 
@@ -290,7 +276,7 @@ public class GameManager {
                 }
             }
         }
-        return false;
+        return true;
     }
 
 
@@ -352,6 +338,7 @@ public class GameManager {
         if (equipamentoParaInteragir != null) {
             if (creatureToMove.getTipo() == 1) { // Humanos incrementam o contador
                 creatureToMove.contadorEquipamentos++; // Apenas incrementa o contador, sem associar o equipamento
+                equipamentos.remove(equipamentoParaInteragir);
             } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
                 creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
                 equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
