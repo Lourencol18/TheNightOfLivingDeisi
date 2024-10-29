@@ -283,7 +283,7 @@ public class GameManager {
         for (Creature creature : personagens) {
             if (creature.getId() == creatureId) {
 
-                if (creature.getTipo() == 1) {
+                if (creature.getTipo() == 0) {
                     return false;
                 } else {
                     return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
