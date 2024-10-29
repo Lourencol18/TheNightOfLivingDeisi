@@ -53,8 +53,9 @@ public class GameManager {
             personagens.clear();
             // Lê cada criatura
             for (int i = 0; i < numCreatures; i++) {
-                String linhaCriatura;
+                String linhaCriatura = scanner.nextLine();
 
+                /*
                 // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
@@ -62,6 +63,7 @@ public class GameManager {
                     }
                     linhaCriatura = scanner.nextLine().trim();
                 } while (linhaCriatura.isEmpty());
+*/
 
                 String[] criaturaData = linhaCriatura.split(" : ");
                 if (criaturaData.length != 5) {
@@ -97,8 +99,10 @@ public class GameManager {
             equipamentos.clear();
             // Lê cada equipamento
             for (int i = 0; i < numEquipments; i++) {
-                String linhaEquipamento;
+                String linhaEquipamento = scanner.nextLine();
+                linhaEquipamento.trim();
 
+                /*
                 // Lê até encontrar uma linha não vazia
                 do {
                     if (!scanner.hasNextLine()) {
@@ -106,6 +110,7 @@ public class GameManager {
                     }
                     linhaEquipamento = scanner.nextLine().trim();
                 } while (linhaEquipamento.isEmpty());
+*/
 
                 String[] equipamentoData = linhaEquipamento.split(" : ");
                 if (equipamentoData.length != 4) {
