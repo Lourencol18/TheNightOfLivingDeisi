@@ -1,8 +1,5 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Creature {
     int id;
     int tipoCriatura;
@@ -20,7 +17,7 @@ public class Creature {
         this.y = y;
     }
 
-    public void setEquipamento(Equipamento equipamento) {
+    public void apanhaequipamento(Equipamento equipamento) {
         this.equipamento = equipamento;
         if (tipoCriatura == 1) { // Incrementa apenas para humanos
             contadorEquipamentos++;

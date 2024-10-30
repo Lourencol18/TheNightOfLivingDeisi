@@ -342,7 +342,7 @@ public class GameManager {
         if (equipamentoParaInteragir != null) {
             if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
                 if (creatureToMove.getEquipamento() == null) { // Apenas incrementa se ainda não possui equipamento
-                    creatureToMove.setEquipamento(equipamentoParaInteragir);
+                    creatureToMove.apanhaequipamento(equipamentoParaInteragir);
                     creatureToMove.contadorEquipamentos = 1; // Garante que o contador seja apenas 1
                     equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
                 }
