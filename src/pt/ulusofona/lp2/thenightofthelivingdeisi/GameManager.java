@@ -219,15 +219,19 @@ public class GameManager {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
                 String equipamentoStr;
 
-                if (creature.getEquipamento() != null) {
-                    equipamentoStr = creature.getEquipamento().toString();
-                } else {
-                    String sinal = (creature.getTipo() == 1) ? "+" : "-";
-                    equipamentoStr = sinal + creature.getContadorEquipamentos();
+                if (creature.getTipo() == 1) { // Humanos
+                    // Exibe apenas o contador positivo
+                    equipamentoStr = (creature.getContadorEquipamentos() > 0 ? "+" : "") + creature.getContadorEquipamentos();
+                } else { // Zumbis
+                    // Exibe o nome do equipamento destruído
+                    if (creature.getEquipamento() != null) {
+                        equipamentoStr = creature.getEquipamento().toString();
+                    } else {
+                        equipamentoStr = "-" + creature.getContadorEquipamentos();
+                    }
                 }
 
-                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
-                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " + equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
             }
         }
         return "Criatura não encontrada";
@@ -304,7 +308,7 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se é a vez da equipe correta: turnos pares para humanos, turnos ímpares para zumbis
+        // Verifica se é a vez da equipe correta
         if ((turno % 2 == 0 && creatureToMove.getTipo() != 1) || (turno % 2 == 1 && creatureToMove.getTipo() != 0)) {
             return false;
         }
@@ -340,12 +344,14 @@ public class GameManager {
 
         // Se houver equipamento na posição de destino
         if (equipamentoParaInteragir != null) {
-            if (creatureToMove.getTipo() == 1) { // Humanos pegam o equipamento
-                creatureToMove.contadorEquipamentos++; // Incrementa o contador de equipamentos do humano
-                creatureToMove.setEquipamento(equipamentoParaInteragir); // Associa o equipamento ao humano
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento da lista visível no tabuleiro
-            } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem o equipamento
-                creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições do zumbi
+            if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
+                if (creatureToMove.getEquipamento() == null) { // Apenas incrementa se ainda não possui equipamento
+                    creatureToMove.setEquipamento(equipamentoParaInteragir);
+                    creatureToMove.contadorEquipamentos = 1; // Garante que o contador seja apenas 1
+                    equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+                }
+            } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
+                creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
                 equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
             }
         }
@@ -360,6 +366,9 @@ public class GameManager {
 
         return true;
     }
+
+
+
 
 
 
