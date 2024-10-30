@@ -42,9 +42,9 @@ public class GameManager {
             if (tamanho.length != 2) {
                 return false;
             }
-            int width = Integer.parseInt(tamanho[0]);
-            int height = Integer.parseInt(tamanho[1]);
-            tabuleiro = new Tabuleiro(width, height);
+            int height = Integer.parseInt(tamanho[0]);
+            int width = Integer.parseInt(tamanho[1]);
+            tabuleiro = new Tabuleiro(height, width);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
