@@ -33,22 +33,6 @@ public class Creature {
             contadorEquipamentos++;
         }
     }
-
-    public List<Equipamento> getEquipamentos() {
-        List<Equipamento> equipamentosList = new ArrayList<>();
-        if (equipamento != null) {
-            equipamentosList.add(equipamento);
-        }
-        return equipamentosList;
-    }
-
-    public void apanhaEquipamento() {
-        if (this.equipamento != null) {
-            this.equipamento = null;
-            this.contadorEquipamentos--;  // Decrementa quando perde equipamento
-        }
-    }
-
     public int getX() {
         return x;
     }
