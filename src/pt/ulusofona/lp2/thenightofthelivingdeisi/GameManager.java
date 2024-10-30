@@ -219,23 +219,19 @@ public class GameManager {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
                 String equipamentoStr;
 
-                if (creature.getTipo() == 1) { // Humanos
-                    // Exibe apenas o contador positivo
-                    equipamentoStr = (creature.getContadorEquipamentos() > 0 ? "+" : "") + creature.getContadorEquipamentos();
-                } else { // Zumbis
-                    // Exibe o nome do equipamento destruído
-                    if (creature.getEquipamento() != null) {
-                        equipamentoStr = creature.getEquipamento().toString();
-                    } else {
-                        equipamentoStr = "-" + creature.getContadorEquipamentos();
-                    }
+                if (creature.getTipo() == 1) { // Para humanos, exibe "+contador"
+                    equipamentoStr = "+" + creature.getContadorEquipamentos();
+                } else { // Para zumbis, exibe o contador sem o "+"
+                    equipamentoStr = "-" + creature.getContadorEquipamentos();
                 }
 
-                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " + equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
+                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
             }
         }
         return "Criatura não encontrada";
     }
+
 
 
     public String[] getEquipmentInfo(int id) {
