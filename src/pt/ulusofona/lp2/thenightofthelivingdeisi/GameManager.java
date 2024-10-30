@@ -95,7 +95,11 @@ public class GameManager {
             if (!scanner.hasNext()) {
                 return false;
             }
+
             int numEquipments = Integer.parseInt(scanner.next());
+            if (numEquipments == 0) {
+                return true; // Carrega com sucesso, sem equipamentos
+            }
             if (numEquipments < 0) {
                 return false;
             }
