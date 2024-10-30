@@ -18,15 +18,8 @@ public class GameManager {
     boolean dia = true;
     boolean terminado = false;
 
-
-
-    public GameManager() {
-    }
-
-
-
     public boolean loadGame(File file) {
-
+        // Inicializa variáveis e limpa listas
         tabuleiro = null;
         equipaInicial = -1;
         equipaAtual = -1;
@@ -34,7 +27,7 @@ public class GameManager {
         equipamentos.clear();
 
         try (Scanner scanner = new Scanner(file)) {
-            // Lê as dimensões do tabuleiro
+            // Lê as dimensões do tabuleiro (primeiro linhas, depois colunas)
             if (!scanner.hasNextLine()) {
                 return false;
             }
@@ -42,9 +35,9 @@ public class GameManager {
             if (tamanho.length != 2) {
                 return false;
             }
-            int height = Integer.parseInt(tamanho[0]);
-            int width = Integer.parseInt(tamanho[1]);
-            tabuleiro = new Tabuleiro(height, width);
+            int height = Integer.parseInt(tamanho[0]); // Lê o número de linhas primeiro (altura)
+            int width = Integer.parseInt(tamanho[1]); // Depois o número de colunas (largura)
+            tabuleiro = new Tabuleiro(width, height);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
@@ -102,7 +95,6 @@ public class GameManager {
             if (!scanner.hasNext()) {
                 return false;
             }
-
             int numEquipments = Integer.parseInt(scanner.next());
             if (numEquipments == 0) {
                 return true; // Carrega com sucesso, sem equipamentos
@@ -155,6 +147,7 @@ public class GameManager {
             return false; // Erro ao carregar o ficheiro
         }
     }
+
 
 
 
