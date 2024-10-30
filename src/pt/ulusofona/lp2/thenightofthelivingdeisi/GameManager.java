@@ -26,6 +26,13 @@ public class GameManager {
 
 
     public boolean loadGame(File file) {
+
+        tabuleiro = null;
+        equipaInicial = -1;
+        equipaAtual = -1;
+        personagens.clear();
+        equipamentos.clear();
+
         try (Scanner scanner = new Scanner(file)) {
             // Lê as dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
@@ -279,8 +286,8 @@ public class GameManager {
                     return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
                 }
             }
-        } //
-        return true;
+        }
+        return false;
     }
 
 
