@@ -150,10 +150,6 @@ public class GameManager {
 
 
 
-
-
-
-
     public int[] getWorldSize() {
         return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
     }
@@ -362,20 +358,6 @@ public class GameManager {
 
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public boolean gameIsOver() {
