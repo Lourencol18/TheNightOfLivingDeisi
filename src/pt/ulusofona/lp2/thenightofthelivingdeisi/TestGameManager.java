@@ -9,7 +9,7 @@ public class TestGameManager {
     @Test
     public void testLoadGameWithValidFile() {
         GameManager gameManager = new GameManager();
-        File validFile = new File("test-files/validGameFile.txt"); // Caminho relativo para o arquivo de teste
+        File validFile = new File("test-files/6x6.txt"); // Caminho relativo para o arquivo de teste
 
         boolean result = gameManager.loadGame(validFile);
         assertTrue(result, "O método loadGame deve retornar true para um arquivo de jogo válido.");
