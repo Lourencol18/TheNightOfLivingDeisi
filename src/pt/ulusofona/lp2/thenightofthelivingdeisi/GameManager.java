@@ -304,8 +304,12 @@ public class GameManager {
             return false;
         }
 
+        // Determina a equipe correta com base no turno e na equipe inicial
+        boolean turnoParaHumanos = (turno % 2 == 0 && equipaInicial == 1) || (turno % 2 == 1 && equipaInicial == 0);
+        boolean equipeCorreta = (turnoParaHumanos && creatureToMove.getTipo() == 1) || (!turnoParaHumanos && creatureToMove.getTipo() == 0);
+
         // Verifica se é a vez da equipe correta
-        if ((turno % 2 == 0 && creatureToMove.getTipo() != 1) || (turno % 2 == 1 && creatureToMove.getTipo() != 0)) {
+        if (!equipeCorreta) {
             return false;
         }
 
@@ -343,7 +347,7 @@ public class GameManager {
             if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
                 if (creatureToMove.getEquipamento() == null) { // Apenas incrementa se ainda não possui equipamento
                     creatureToMove.apanhaequipamento(equipamentoParaInteragir);
-                    creatureToMove.contadorEquipamentos = 1; // Garante que o contador seja apenas 1
+                    creatureToMove.contadorEquipamentos++; // Incrementa o contador de equipamentos do humano
                     equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
                 }
             } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
@@ -362,6 +366,7 @@ public class GameManager {
 
         return true;
     }
+
 
 
 
