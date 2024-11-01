@@ -1,12 +1,15 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Creature {
     int id;
     int tipoCriatura;
     String nome;
     int x;
     int y;
-    Equipamento equipamento;
+    List<Equipamento> equipamentos = new ArrayList<>(); // Lista para múltiplos equipamentos
     int contadorEquipamentos = 0;
 
     public Creature(int id, int tipoCriatura, String nome, int x, int y) {
@@ -18,18 +21,19 @@ public class Creature {
     }
 
     public void apanhaequipamento(Equipamento equipamento) {
-        this.equipamento = equipamento;
-        if (tipoCriatura == 1) { // Incrementa apenas para humanos
+        if (tipoCriatura == 1) { // Apenas humanos pegam equipamentos
+            equipamentos.add(equipamento); // Adiciona à lista de equipamentos
             contadorEquipamentos++;
         }
     }
 
     public void destruirEquipamento() {
-        this.equipamento = null;  // Remove o equipamento da criatura
-        if (tipoCriatura == 0) { // Incrementa apenas para zumbis
+        if (tipoCriatura == 0 && !equipamentos.isEmpty()) { // Apenas zumbis destroem
+            equipamentos.remove(0); // Remove o primeiro equipamento da lista
             contadorEquipamentos++;
         }
     }
+
     public int getX() {
         return x;
     }
@@ -50,13 +54,15 @@ public class Creature {
         return nome;
     }
 
-    public Equipamento getEquipamento() {
-        return equipamento;
+    public List<Equipamento> getEquipamentos() {
+        return equipamentos;
     }
 
     public Equipamento getEquipamentoPorTipo(int equipmentTypeId) {
-        if (equipamento != null && equipamento.tipo == equipmentTypeId) {
-            return equipamento;
+        for (Equipamento equipamento : equipamentos) {
+            if (equipamento.tipo == equipmentTypeId) {
+                return equipamento;
+            }
         }
         return null;
     }
@@ -67,15 +73,7 @@ public class Creature {
 
     @Override
     public String toString() {
-        String equipamentoStr;
-        if (tipoCriatura == 1) { // Humanos
-            equipamentoStr = (contadorEquipamentos > 0 ? "+" : "") + contadorEquipamentos;
-        } else { // Zumbis
-            equipamentoStr = "-" + contadorEquipamentos;
-        }
-
+        String equipamentoStr = (tipoCriatura == 1) ? "+" + contadorEquipamentos : "-" + contadorEquipamentos;
         return id + " | " + (tipoCriatura == 1 ? "Humano" : "Zombie") + " | " + nome + " | " + equipamentoStr + " @ (" + x + ", " + y + ")";
     }
-
-
 }
