@@ -26,13 +26,13 @@ public class Creature {
             contadorEquipamentos++;
         }
     }
-
     public void destruirEquipamento() {
-        if (tipoCriatura == 0 && !equipamentos.isEmpty()) { // Apenas zumbis destroem
-            equipamentos.remove(0); // Remove o primeiro equipamento da lista
+        if (tipoCriatura == 0) { // Incrementa apenas para zumbis
             contadorEquipamentos++;
         }
+        this.equipamentos = null;  // Remove o equipamento atual, se houver
     }
+
 
     public int getX() {
         return x;
@@ -54,9 +54,7 @@ public class Creature {
         return nome;
     }
 
-    public List<Equipamento> getEquipamentos() {
-        return equipamentos;
-    }
+
 
     public Equipamento getEquipamentoPorTipo(int equipmentTypeId) {
         for (Equipamento equipamento : equipamentos) {
