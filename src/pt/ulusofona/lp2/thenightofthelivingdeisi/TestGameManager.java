@@ -7,12 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestGameManager {
 
     @Test
-    public void testLoadGameWithValidFile() {
-        GameManager gameManager = new GameManager();
-        File validFile = new File("test-files/teste1.txt"); // Caminho relativo para o arquivo de teste
+    public void testApanhaEquipamento() {
+        // Criar uma criatura humana (tipo 1) e um equipamento
+        Creature humano = new Creature(1, 1, "Humano", 0, 0);
+        Equipamento espada = new Equipamento(101, 1, 0, 0);
 
-        boolean result = gameManager.loadGame(validFile);
-        assertTrue(result, "O método loadGame deve retornar true para um arquivo de jogo válido.");
+        // Verificar se o humano pode pegar o equipamento
+        humano.apanhaequipamento(espada);
+        assertEquals(1, humano.equipamentos.size(), "O humano deve ter 1 equipamento.");
+        assertEquals(espada, humano.equipamentos.get(0), "O equipamento deve ser a espada samurai.");
     }
 
     @Test
@@ -25,16 +28,15 @@ public class TestGameManager {
     }
 
     @Test
-    public void testMoveValid() {
-        GameManager gameManager = new GameManager();
-        gameManager.tabuleiro = new Tabuleiro(10, 10); // Cria um tabuleiro 10x10
-        Creature creature = new Creature(1, 1, "Humano", 0, 0);
-        gameManager.personagens.add(creature);
+    public void testDestruirEquipamento() {
+        // Criar uma criatura zumbi (tipo 0)
+        Creature zombie = new Creature(2, 0, "Zombie", 1, 1);
+        zombie.contadorEquipamentos = 0;  // Inicializar o contador
 
-        boolean moveResult = gameManager.move(0, 0, 1, 0); // Movimento válido
-        assertTrue(moveResult, "O movimento deve ser válido.");
-        assertEquals(1, creature.getX(), "A posição X da criatura deve ser atualizada para 1.");
-        assertEquals(0, creature.getY(), "A posição Y da criatura deve permanecer 0.");
+        // Destruir equipamento
+        zombie.destruirEquipamento();
+        assertEquals(1, zombie.contadorEquipamentos, "O contador de destruições deve ser 1.");
+        assertNull(zombie.equipamentos, "A lista de equipamentos deve ser nula após a destruição.");
     }
 
     @Test
