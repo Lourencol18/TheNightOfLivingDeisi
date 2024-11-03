@@ -19,7 +19,7 @@ public class GameManager {
     boolean terminado = false;
 
     public boolean loadGame(File file) {
-        // Inicializa variáveis e limpa listas
+        //  limpa listas
         tabuleiro = null;
         equipaInicial = -1;
         equipaAtual = -1;
@@ -27,7 +27,7 @@ public class GameManager {
         equipamentos.clear();
 
         try (Scanner scanner = new Scanner(file)) {
-            // Lê as dimensões do tabuleiro (primeiro linhas, depois colunas)
+            // le dimensões do tabuleiro (primeiro linhas depois colunas)
             if (!scanner.hasNextLine()) {
                 return false;
             }
@@ -39,7 +39,7 @@ public class GameManager {
             int width = Integer.parseInt(tamanho[1]); // Depois o número de colunas (largura)
             tabuleiro = new Tabuleiro(width, height);
 
-            // Lê a equipe inicial
+            //le equipe inicial
             if (!scanner.hasNext()) {
                 return false;
             }
@@ -49,7 +49,7 @@ public class GameManager {
             }
             equipaAtual = equipaInicial;
 
-            // Lê o número de criaturas
+            // le o numero de criaturas
             if (!scanner.hasNext()) {
                 return false;
             }
@@ -59,7 +59,7 @@ public class GameManager {
             }
 
             personagens.clear();
-            // Lê cada criatura
+            // le cada criatura
             for (int i = 0; i < numCreatures; i++) {
                 String linhaCriatura;
                 do {
@@ -91,13 +91,13 @@ public class GameManager {
                 }
             }
 
-            // Lê o número de equipamentos
+            // le o número de equipamentos
             if (!scanner.hasNext()) {
                 return false;
             }
             int numEquipments = Integer.parseInt(scanner.next());
             if (numEquipments == 0) {
-                return true; // Carrega com sucesso, sem equipamentos
+                return true; //le ficheiros  sem equipamentos
             }
             if (numEquipments < 0) {
                 return false;
@@ -105,7 +105,7 @@ public class GameManager {
 
             equipamentos.clear();
 
-            // Somente lê equipamentos se o número for maior que 0
+            // le equipamentos se o número for maior que 0
             if (numEquipments > 0) {
                 for (int i = 0; i < numEquipments; i++) {
                     String linhaEquipamento;
@@ -164,7 +164,7 @@ public class GameManager {
     }
 
     public int getCurrentTeamId() {
-        // Alterna entre as equipes a cada turno
+        // alterna entre as equipas a cada turno
         return (turno % 2 == 0) ? equipaInicial : (1 - equipaInicial);
     }
 
@@ -176,7 +176,7 @@ public class GameManager {
     }
 
     public String getSquareInfo(int x, int y) {
-        // Verifica se há uma criatura na posição
+        // verifica se ha criatura na posicao
         for (Creature creature : personagens) {
             if (creature.getX() == x && creature.getY() == y) {
                 String tipo = (creature.getTipo() == 1) ? "H" : "Z";  // 1 = Humano, 0 = Zumbi
@@ -184,14 +184,14 @@ public class GameManager {
             }
         }
 
-        // Verifica se há um equipamento na posição
+        // verifica se ha equipamento na posicao
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == x && equipment.getY() == y) {
                 return "E:" + equipment.getId();
             }
         }
 
-        return ""; // Caso não haja nada na posição
+        return ""; //  não ha nada na posicao
     }
 
 
@@ -205,11 +205,11 @@ public class GameManager {
                         creature.getNome(),                  // Nome
                         String.valueOf(creature.getX()),     // Posição X
                         String.valueOf(creature.getY()),     // Posição Y
-                        null
+                        null                                   //PNG
                 };
             }
         }
-        return null; // Se a criatura com o ID fornecido não for encontrada
+        return null; //  criatura com o ID  não for encontrada
     }
 
 
@@ -219,9 +219,9 @@ public class GameManager {
                 String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
                 String equipamentoStr;
 
-                if (creature.getTipo() == 1) { // Para humanos, exibe "+contador"
+                if (creature.getTipo() == 1) { // para humanos
                     equipamentoStr = "+" + creature.getContadorEquipamentos();
-                } else { // Para zumbis, exibe o contador sem o "+"
+                } else { // para zombis
                     equipamentoStr = "-" + creature.getContadorEquipamentos();
                 }
 
@@ -237,17 +237,17 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Retorne o tipo como número (0 ou 1) em vez de texto
+                // retorna o tipo como número em vez de texto
                 return new String[]{
                         String.valueOf(equipment.getId()),    // ID
                         String.valueOf(equipment.getTipo()),  // Tipo como número (0 ou 1)
                         String.valueOf(equipment.getX()),     // Posição X
                         String.valueOf(equipment.getY()),     // Posição Y
-                        null                                 // PNG ou caminho do ícone, se aplicável
+                        null                                 // PNG
                 };
             }
         }
-        return null; // Se o equipamento com o ID fornecido não for encontrado
+        return null; // se o equipamento com o ID nao for encontrado
     }
 
 
@@ -257,9 +257,9 @@ public class GameManager {
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Garante que o tipo de equipamento está descrito corretamente
+                // faz com que o tipo de equipamento está  correto
                 String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
-                // Formata a string exatamente como o teste espera
+                // formata a string
                 return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
             }
         }
@@ -285,12 +285,12 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
-        // Verifica se as coordenadas estão dentro do tabuleiro
+        // verifica se as coordenadas estao dentro do tabuleiro
         if (xD < 0 || xD >= tabuleiro.getWidth() || yD < 0 || yD >= tabuleiro.getHeight()) {
             return false;
         }
 
-        // Encontra a criatura na posição de origem
+        // encontra a criatura na posição de origem
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
@@ -299,37 +299,37 @@ public class GameManager {
             }
         }
 
-        // Se não houver criatura na origem, retorna falso
+        // se nao houver criatura na origem
         if (creatureToMove == null) {
             return false;
         }
 
-        // Determina a equipe correta com base no turno e na equipe inicial
+        // determina a equipa correta com base no turno e na equipe inicial
         boolean turnoParaHumanos = (turno % 2 == 0 && equipaInicial == 1) || (turno % 2 == 1 && equipaInicial == 0);
         boolean equipeCorreta = (turnoParaHumanos && creatureToMove.getTipo() == 1) || (!turnoParaHumanos && creatureToMove.getTipo() == 0);
 
-        // Verifica se é a vez da equipe correta
+        // verifica se e a vez da equipa correta
         if (!equipeCorreta) {
             return false;
         }
 
-        // Verifica se há outra criatura no destino
+        // verifica se ha outra criatura na casa
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
                 return false;
             }
         }
 
-        // Verifica se o movimento é válido (apenas em linha reta)
+        // verifica se o movimento e valido
         int distanciaX = Math.abs(xD - xO);
         int distanciaY = Math.abs(yD - yO);
 
-        // Permite apenas movimento em linha reta (horizontal ou vertical)
+        // permite apenas movimento em linha reta
         if (!((distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1))) {
             return false;
         }
 
-        // Verifica equipamentos na posição de destino
+        // verifica equipamentos na posicao final
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == xD && equipment.getY() == yD) {
@@ -338,47 +338,31 @@ public class GameManager {
             }
         }
 
-        // Executa o movimento
+        // executa o movimento
         creatureToMove.x = xD;
         creatureToMove.y = yD;
 
-        // Se houver equipamento na posição de destino
+        // se houver equipamento na posição final
         if (equipamentoParaInteragir != null) {
-            if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
-                creatureToMove.apanhaequipamento(equipamentoParaInteragir); // Adiciona o equipamento ao humano
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
-            } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
-                creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            if (creatureToMove.getTipo() == 1) { // humanos tem equipamentos
+                creatureToMove.apanhaequipamento(equipamentoParaInteragir); // adiciona o equipamento ao humano
+                equipamentos.remove(equipamentoParaInteragir); // remove o equipamento do tabuleiro
+            } else if (creatureToMove.getTipo() == 0) { // zombis destroem equipamentos
+                creatureToMove.destruirEquipamento(); // incrementa o contador de destruicoes
+                equipamentos.remove(equipamentoParaInteragir); // remove o equipamento do tabuleiro
             }
         }
 
-        // Incrementa o turno para alternar a equipe
+        // incrementa o turno para alternar a equipa
         turno++;
 
-        // A cada 2 turnos, alterna entre dia e noite
+        // a cada 2 turnos alterna entre dia e noite
         if (turno % 2 == 0) {
             dia = !dia;
         }
 
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public boolean gameIsOver() {
@@ -391,27 +375,27 @@ public class GameManager {
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
 
-        // Número de turnos terminados
+        // numero de turnos terminados
         resultados.add("Nr. de turnos terminados: " + turno);
         resultados.add("");
 
-        // Separador para os vivos
+        // separador para os vivos
         resultados.add("OS VIVOS");
         for (Creature creature : personagens) {
-            if (creature.getTipo() == 1) { // Tipo 1 representa humano
+            if (creature.getTipo() == 1) {
                 resultados.add(creature.getId() + " " + creature.getNome());
             }
         }
-        resultados.add(""); // Linha em branco entre os vivos e os outros
+        resultados.add(""); // linha em branco entre os vivos e os outros
 
-        // Separador para os outros (zumbis)
+        // separador para os outros
         resultados.add("OS OUTROS");
         for (Creature creature : personagens) {
-            if (creature.getTipo() == 0) { // Tipo 0 representa zumbi
+            if (creature.getTipo() == 0) {
                 resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
             }
         }
-        resultados.add("-----"); // Separador final
+        resultados.add("-----"); // separador final
 
         return resultados;
     }
