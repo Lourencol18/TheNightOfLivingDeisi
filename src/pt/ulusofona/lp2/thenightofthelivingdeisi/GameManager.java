@@ -4,8 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class GameManager {
@@ -18,7 +20,7 @@ public class GameManager {
     boolean dia = true;
     boolean terminado = false;
 
-    public boolean loadGame(File file) {
+    public boolean loadGame(File file) throws InvalidFileException, FileNotFoundException {
         // Inicializa variáveis e limpa listas
         tabuleiro = null;
         equipaInicial = -1;
@@ -29,49 +31,61 @@ public class GameManager {
         try (Scanner scanner = new Scanner(file)) {
             // Lê as dimensões do tabuleiro (primeiro linhas, depois colunas)
             if (!scanner.hasNextLine()) {
-                return false;
+                throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro ausentes.");
             }
-            String[] tamanho = scanner.nextLine().split(" ");
+            String[] tamanho = scanner.nextLine().trim().split(" ");
             if (tamanho.length != 2) {
-                return false;
+                throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro mal formatadas.");
             }
-            int height = Integer.parseInt(tamanho[0]); // Lê o número de linhas primeiro (altura)
-            int width = Integer.parseInt(tamanho[1]); // Depois o número de colunas (largura)
+            int height, width;
+            try {
+                height = Integer.parseInt(tamanho[0]); // Lê o número de linhas primeiro (altura)
+                width = Integer.parseInt(tamanho[1]); // Depois o número de colunas (largura)
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Dimensões do tabuleiro não são números válidos.");
+            }
             tabuleiro = new Tabuleiro(width, height);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
-                return false;
+                throw new InvalidFileException("Arquivo inválido: equipe inicial ausente.");
             }
-            equipaInicial = Integer.parseInt(scanner.next());
+            try {
+                equipaInicial = Integer.parseInt(scanner.next());
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Equipe inicial não é um número válido.");
+            }
             if (equipaInicial != 0 && equipaInicial != 1) {
-                return false;
+                throw new InvalidFileException("Equipe inicial deve ser 0 ou 1.");
             }
             equipaAtual = equipaInicial;
 
             // Lê o número de criaturas
             if (!scanner.hasNext()) {
-                return false;
+                throw new InvalidFileException("Arquivo inválido: número de criaturas ausente.");
             }
-            int numCreatures = Integer.parseInt(scanner.next());
+            int numCreatures;
+            try {
+                numCreatures = Integer.parseInt(scanner.next());
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Número de criaturas não é um número válido.");
+            }
             if (numCreatures < 0) {
-                return false;
+                throw new InvalidFileException("Número de criaturas não pode ser negativo.");
             }
 
-            personagens.clear();
             // Lê cada criatura
+            personagens.clear();
             for (int i = 0; i < numCreatures; i++) {
-                String linhaCriatura;
-                do {
-                    if (!scanner.hasNextLine()) {
-                        return false;
-                    }
-                    linhaCriatura = scanner.nextLine();
-                } while (linhaCriatura.isEmpty());
+                String linhaCriatura = scanner.nextLine().trim();
+                if (linhaCriatura.isEmpty()) {
+                    i--;
+                    continue;
+                }
 
                 String[] criaturaData = linhaCriatura.split(" : ");
                 if (criaturaData.length != 5) {
-                    return false;
+                    throw new InvalidFileException("Dados da criatura mal formatados.");
                 }
 
                 try {
@@ -82,59 +96,57 @@ public class GameManager {
                     int y = Integer.parseInt(criaturaData[4]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
-                        return false;
+                        throw new InvalidFileException("Coordenadas da criatura fora dos limites.");
                     }
 
                     personagens.add(new Creature(id, tipoCriatura, nome, x, y));
                 } catch (NumberFormatException e) {
-                    return false;
+                    throw new InvalidFileException("Dados da criatura contêm valores inválidos.");
                 }
             }
 
             // Lê o número de equipamentos
             if (!scanner.hasNext()) {
-                return false;
+                throw new InvalidFileException("Arquivo inválido: número de equipamentos ausente.");
             }
-            int numEquipments = Integer.parseInt(scanner.next());
-            if (numEquipments == 0) {
-                return true; // Carrega com sucesso, sem equipamentos
+            int numEquipments;
+            try {
+                numEquipments = Integer.parseInt(scanner.next());
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Número de equipamentos não é um número válido.");
             }
             if (numEquipments < 0) {
-                return false;
+                throw new InvalidFileException("Número de equipamentos não pode ser negativo.");
             }
 
             equipamentos.clear();
 
-            // Somente lê equipamentos se o número for maior que 0
-            if (numEquipments > 0) {
-                for (int i = 0; i < numEquipments; i++) {
-                    String linhaEquipamento;
-                    do {
-                        if (!scanner.hasNextLine()) {
-                            return false;
-                        }
-                        linhaEquipamento = scanner.nextLine();
-                    } while (linhaEquipamento.isEmpty());
+            // Lê cada equipamento
+            for (int i = 0; i < numEquipments; i++) {
+                String linhaEquipamento = scanner.nextLine().trim();
+                if (linhaEquipamento.isEmpty()) {
+                    i--;
+                    continue;
+                }
 
-                    String[] equipamentoData = linhaEquipamento.split(" : ");
-                    if (equipamentoData.length != 4) {
-                        return false;
+                String[] equipamentoData = linhaEquipamento.split(" : ");
+                if (equipamentoData.length != 4) {
+                    throw new InvalidFileException("Dados do equipamento mal formatados.");
+                }
+
+                try {
+                    int id = Integer.parseInt(equipamentoData[0]);
+                    int tipo = Integer.parseInt(equipamentoData[1]);
+                    int x = Integer.parseInt(equipamentoData[2]);
+                    int y = Integer.parseInt(equipamentoData[3]);
+
+                    if (!tabuleiro.dentroDosLimites(x, y)) {
+                        throw new InvalidFileException("Coordenadas do equipamento fora dos limites.");
                     }
 
-                    try {
-                        int id = Integer.parseInt(equipamentoData[0]);
-                        int tipo = Integer.parseInt(equipamentoData[1]);
-                        int x = Integer.parseInt(equipamentoData[2]);
-                        int y = Integer.parseInt(equipamentoData[3]);
-
-                        if (!tabuleiro.dentroDosLimites(x, y)) {
-                            return false;
-                        }
-
-                        equipamentos.add(new Equipamento(id, tipo, x, y));
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
+                    equipamentos.add(new Equipamento(id, tipo, x, y));
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Dados do equipamento contêm valores inválidos.");
                 }
             }
 
@@ -142,11 +154,11 @@ public class GameManager {
             System.out.println("Nr equipamentos: " + equipamentos.size());
 
             return true; // Carregamento bem-sucedido
-        } catch (FileNotFoundException | NumberFormatException e) {
-            System.out.println("Erro ao carregar o arquivo: " + e.getMessage());
-            return false; // Erro ao carregar o ficheiro
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Arquivo não encontrado: " + file.getAbsolutePath());
         }
     }
+
 
 
 
@@ -416,6 +428,13 @@ public class GameManager {
         return resultados;
     }
 
+    public void saveGame() throws IOException {
+        saveGame();
+    }
+
+    public List<Integer> getIdsInSafeHaven(){
+        return new ArrayList<>();
+    }
 
 
     public JPanel getCreditsPanel() {
