@@ -375,24 +375,6 @@ public class GameManager {
 
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public boolean gameIsOver() {
         if (turno >= 12){
             return true;
@@ -448,7 +430,7 @@ public class GameManager {
                 + "<p>Apoio moral: Meu gato, que dormiu o projeto todo.</p>"
                 + "<p>Café fornecido por: Minha cafeteira incansável.</p>"
                 + "<p>Testadores: Meu teclado e meu monitor, que aguentaram firme.</p>"
-                + "<p><i>Agradecimentos especiais à procrastinação, sem ela, este projeto teria sido entregue a tempo.</i></p>"
+                + "<p><i>Agradecimentos especiais à procrastinação.</i></p>"
                 + "</center></html>";
 
 
