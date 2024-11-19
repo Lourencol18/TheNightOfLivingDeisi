@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -410,9 +411,18 @@ public class GameManager {
         return resultados;
     }
 
-    public void saveGame() throws IOException {
-        saveGame();
+    public void saveGame(File file) throws IOException {
+        // Implemente a lógica de salvar o estado do jogo no arquivo
+        try (FileWriter writer = new FileWriter(file)) {
+            // Escreva os dados necessários no arquivo
+            writer.write("Dimensões: " + tabuleiro.getHeight() + "x" + tabuleiro.getWidth() + "\n");
+            writer.write("Equipe inicial: " + equipaInicial + "\n");
+            writer.write("Turno atual: " + turno + "\n");
+
+            // Adicione outros dados relevantes (criaturas, equipamentos, etc.)
+        }
     }
+
 
     public List<Integer> getIdsInSafeHaven(){
         return new ArrayList<>();
