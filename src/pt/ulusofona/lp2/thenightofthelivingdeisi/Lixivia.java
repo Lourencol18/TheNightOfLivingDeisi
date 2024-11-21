@@ -1,14 +1,31 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class Lixivia extends EquipamentoDefensivo {
+public class Lixivia extends Equipamento {
+    private double litros = 1.0;
 
     public Lixivia(int id, int x, int y) {
         super(id, "Lixívia", x, y);
     }
 
     @Override
-    protected void defender(Creature usuario) {
-        System.out.println("Lixívia foi usada para afastar zumbis de " + usuario.getNome() + "!");
-        // Lógica adicional específica da lixívia
+    public boolean executarAcao(Creature atacante, Creature alvo) {
+        if (litros > 0.3) {
+            litros -= 0.3;
+        } else {
+            litros = 0.0;
+             // Se litros acabarem, humano vira zumbi
+        }
+        litros = Math.round(litros * 10.0) / 10.0; // Arredonda para 1 casa decimal
+        return false;
     }
+
+    public boolean temLitros() {
+        return litros > 0.0;
+    }
+
+    @Override
+    public String toString() {
+        return nome + " (" + litros + " L restantes)";
+    }
+
 }

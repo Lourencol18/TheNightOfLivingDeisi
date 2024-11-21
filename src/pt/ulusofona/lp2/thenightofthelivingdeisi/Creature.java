@@ -1,16 +1,23 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Creature {
     protected int id;
     protected String nome;
     protected int x;
     protected int y;
+    protected int equipa; // 10 para zumbis, 20 para humanos
+    protected List<Equipamento> equipamentos = new ArrayList<>(); // Histórico de equipamentos
+    protected Equipamento equipamentoAtual = null; // Equipamento em uso
 
-    public Creature(int id, String nome, int x, int y) {
+    public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
         this.nome = nome;
         this.x = x;
         this.y = y;
+        this.equipa = equipa;
     }
 
     public int getId() {
@@ -29,12 +36,55 @@ public abstract class Creature {
         return y;
     }
 
-    // Método abstrato para retornar o tipo de criatura
+    public int getEquipa() {
+        return equipa;
+    }
+
+    public boolean isZombie() {
+        return equipa == 10;
+    }
+
+    public boolean isHuman() {
+        return equipa == 20;
+    }
+
+    public Equipamento getEquipamentoAtual() {
+        return equipamentoAtual;
+    }
+
+    public List<Equipamento> getHistoricoEquipamentos() {
+        return equipamentos;
+    }
+
+    // Método para pegar um novo equipamento
+    public void pegarEquipamento(Equipamento equipamento) {
+        if (equipamentoAtual != null) {
+            // Adiciona o equipamento atual ao histórico antes de trocá-lo
+            equipamentos.add(equipamentoAtual);
+        }
+        // Define o novo equipamento como atual
+        equipamentoAtual = equipamento;
+    }
+
+    // Método para soltar o equipamento atual
+    public void soltarEquipamento() {
+        if (equipamentoAtual != null) {
+            // Adiciona o equipamento ao histórico antes de soltar
+            equipamentos.add(equipamentoAtual);
+            equipamentoAtual = null;
+        }
+    }
+
     public abstract String getTipoCriatura();
 
-    // Método abstrato para retornar se é humano ou zumbi
     public abstract String getTipo();
 
+    // Método abstrato para movimentação
+    public abstract boolean podeMover(int xO, int yO, int xD, int yD);
 
-
+    @Override
+    public String toString() {
+        String equipamentoInfo = (equipamentoAtual != null) ? equipamentoAtual.toString() : "Sem equipamento";
+        return id + " | " + nome + " | " + equipamentoInfo + " @ (" + x + ", " + y + ")";
+    }
 }

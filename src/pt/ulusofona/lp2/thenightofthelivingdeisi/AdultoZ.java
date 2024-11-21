@@ -1,23 +1,18 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class Vampiro extends Creature {
+public class AdultoZ extends Creature{
 
-
-    public Vampiro(int id, String nome, int x, int y, int equipa) {
+    public AdultoZ(int id, String nome, int x, int y, int equipa) {
         super(id, nome, x, y, equipa);
     }
 
     @Override
     public String getTipoCriatura() {
-        return "Vampiro";
+        return "";
     }
 
     @Override
     public String getTipo() {
-        return "Zombie"; // Vampiro sempre será um tipo de zumbi
+        return "";
     }
-
-
-
-
 }

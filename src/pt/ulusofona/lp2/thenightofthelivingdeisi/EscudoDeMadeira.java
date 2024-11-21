@@ -1,14 +1,18 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class EscudoDeMadeira extends EquipamentoDefensivo {
+public class EscudoDeMadeira extends Equipamento {
 
     public EscudoDeMadeira(int id, int x, int y) {
         super(id, "Escudo de Madeira", x, y);
     }
 
     @Override
-    protected void defender(Creature usuario) {
-        System.out.println("Escudo de Madeira bloqueou um ataque em " + usuario.getNome() + "!");
-        // Lógica adicional específica do escudo
+    public boolean executarAcao(Creature atacante, Creature alvo) {
+        return false; // Ataque é inválido
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }

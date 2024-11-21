@@ -29,6 +29,10 @@ public abstract class Equipamento {
         return y;
     }
 
+
+
     // Métodos abstratos para ações específicas
-    public abstract void executarAcao(Creature alvo);
+    public abstract boolean executarAcao(Creature atacante, Creature alvo);
+
+
 }

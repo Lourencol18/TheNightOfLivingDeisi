@@ -1,10 +1,10 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class Idoso extends Creature {
+public class AdultoH extends Creature {
     private boolean isZombie;
 
-    public Idoso(int id, String nome, int x, int y, boolean isZombie) {
-        super(id, nome, x, y);
+    public AdultoH(int id, String nome, int x, int y, int equipa, boolean isZombie) {
+        super(id, nome, x, y, equipa);
         this.isZombie = isZombie;
     }
 
@@ -18,7 +18,7 @@ public class Idoso extends Creature {
 
     @Override
     public String getTipoCriatura() {
-        return "Idoso";
+        return "Adulto";
     }
 
     @Override
