@@ -27,6 +27,15 @@ public class PistolaWaltherPPK extends Equipamento {
         }
     }
 
+    public int getBalas() {
+        return balas;
+    }
+
+    @Override
+    public String getInfo() {
+        return balas + " balas";
+    }
+
     @Override
     public String toString() {
         return nome + " (" + balas + " balas restantes)";

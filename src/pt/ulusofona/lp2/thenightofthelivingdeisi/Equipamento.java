@@ -34,5 +34,6 @@ public abstract class Equipamento {
     // Métodos abstratos para ações específicas
     public abstract boolean executarAcao(Creature atacante, Creature alvo);
 
+    public abstract String getInfo();
 
 }

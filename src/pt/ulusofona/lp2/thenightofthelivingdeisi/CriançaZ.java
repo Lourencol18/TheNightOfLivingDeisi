@@ -17,6 +17,11 @@ public class CriançaZ extends Creature {
     }
 
     @Override
+    public void destruirEquipamento() {
+
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         // Verifica se é horizontal ou vertical e se é apenas 1 casa
         int distanciaX = Math.abs(xD - xO);
@@ -24,10 +29,11 @@ public class CriançaZ extends Creature {
         return (distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1);
     }
 
-    // Método para destruir equipamentos ao encontrá-los
-    public void destruirEquipamento(Equipamento equipamento) {
-        System.out.println(nome + " destruiu o equipamento: " + equipamento.getNome());
+    @Override
+    public boolean podeTerEquipamento(int equipmentTypeId) {
+        return false;
     }
+
 
     @Override
     public String toString() {

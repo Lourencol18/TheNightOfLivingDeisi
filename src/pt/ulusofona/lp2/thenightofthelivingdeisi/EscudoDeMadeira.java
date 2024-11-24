@@ -12,6 +12,11 @@ public class EscudoDeMadeira extends Equipamento {
     }
 
     @Override
+    public String getInfo() {
+        return ""; // Sem informações adicionais
+    }
+
+    @Override
     public String toString() {
         return nome;
     }

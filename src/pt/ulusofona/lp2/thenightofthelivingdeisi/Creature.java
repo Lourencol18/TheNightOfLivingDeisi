@@ -11,6 +11,7 @@ public abstract class Creature {
     protected int equipa; // 10 para zumbis, 20 para humanos
     protected List<Equipamento> equipamentos = new ArrayList<>(); // Histórico de equipamentos
     protected Equipamento equipamentoAtual = null; // Equipamento em uso
+    protected int contadorEquipamentos = 0;
 
     public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
@@ -56,6 +57,10 @@ public abstract class Creature {
         return equipamentos;
     }
 
+    public int getContadorEquipamentos(){
+        return contadorEquipamentos;
+    }
+
     // Método para pegar um novo equipamento
     public void pegarEquipamento(Equipamento equipamento) {
         if (equipamentoAtual != null) {
@@ -79,8 +84,19 @@ public abstract class Creature {
 
     public abstract String getTipo();
 
+    // IdosoZ destrói equipamentos ao encontrá-los
+    public abstract void destruirEquipamento();
+
     // Método abstrato para movimentação
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);
+
+    public abstract boolean podeTerEquipamento(int equipmentTypeId);
+
+    public String getInfoAsString() {
+        String tipoEquipe = isHuman() ? "Humano" : "Zombie";
+        String modificador = isHuman() ? "+0" : "-0";
+        return id + " | " + getTipoCriatura() + " | " + tipoEquipe + " | " + nome + " | " + modificador + " @ (" + x + ", " + y + ")";
+    }
 
     @Override
     public String toString() {

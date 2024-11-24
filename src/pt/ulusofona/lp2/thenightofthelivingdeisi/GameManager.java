@@ -17,9 +17,10 @@ public class GameManager {
     int equipaAtual;
     ArrayList<Equipamento> equipamentos = new ArrayList<>();
     ArrayList<Creature> personagens = new ArrayList<>();
-    int turno = 0;
-    boolean dia = true;
+    int turnoAtual = 0;
+    static boolean dia = true;
     boolean terminado = false;
+    int turnoSemEventos = 0;
 
     public boolean loadGame(File file) throws InvalidFileException, FileNotFoundException {
         // Inicializa variáveis e limpa listas
@@ -165,6 +166,9 @@ public class GameManager {
 
 
 
+    public void alternarTurno() {
+         turnoAtual = turnoAtual == 20 ? 10 : 20;
+    }
 
 
     public int[] getWorldSize() {
@@ -177,15 +181,13 @@ public class GameManager {
     }
 
     public int getCurrentTeamId() {
-        // Alterna entre as equipes a cada turno
-        return (turno % 2 == 0) ? equipaInicial : (1 - equipaInicial);
+        return turnoAtual;
     }
 
 
 
-    public boolean isDay() {
+    public static boolean isDay() {
         return dia;
-
     }
 
     public String getSquareInfo(int x, int y) {
@@ -227,23 +229,14 @@ public class GameManager {
 
 
     public String getCreatureInfoAsString(int id) {
-        for (Creature creature : personagens) {
-            if (creature.getId() == id) {
-                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";
-                String equipamentoStr;
-
-                if (creature.getTipo() == 1) { // Para humanos, exibe "+contador"
-                    equipamentoStr = "+" + creature.getContadorEquipamentos();
-                } else { // Para zumbis, exibe o contador sem o "+"
-                    equipamentoStr = "-" + creature.getContadorEquipamentos();
-                }
-
-                return creature.getId() + " | " + tipo + " | " + creature.getNome() + " | " +
-                        equipamentoStr + " @ (" + creature.getX() + ", " + creature.getY() + ")";
+        for (Creature criatura :personagens) {
+            if (criatura.getId() == id) {
+                return criatura.getInfoAsString();
             }
         }
-        return "Criatura não encontrada";
+        return "Criatura não encontrada.";
     }
+
 
 
 
@@ -268,14 +261,25 @@ public class GameManager {
 
 
     public String getEquipmentInfoAsString(int id) {
-        for (Equipamento equipment : equipamentos) {
-            if (equipment.getId() == id) {
-                // Garante que o tipo de equipamento está descrito corretamente
-                String tipoEquipamento = (equipment.getTipo() == 0) ? "Escudo de madeira" : "Espada samurai";
-                // Formata a string exatamente como o teste espera
-                return id + " | " + tipoEquipamento + " @ (" + equipment.getX() + "," + equipment.getY() + ")";
+        for (Equipamento equipamento : equipamentos) {
+            if (equipamento.getId() == id) {
+                StringBuilder info = new StringBuilder();
+                info.append("-").append(equipamento.getId()).append(" | ")
+                        .append(equipamento.getNome()).append(" @ (")
+                        .append(equipamento.getX()).append(", ")
+                        .append(equipamento.getY()).append(")");
+
+                // Adiciona as informações específicas do equipamento
+                String additionalInfo = equipamento.getInfo();
+                if (!additionalInfo.isEmpty()) {
+                    info.append(" | ").append(additionalInfo);
+                }
+
+                return info.toString();
             }
         }
+
+        // Caso o equipamento não seja encontrado
         return null;
     }
 
@@ -283,17 +287,17 @@ public class GameManager {
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
-        for (Creature creature : personagens) {
-            if (creature.getId() == creatureId) {
+        for (Creature criatura : personagens) {
+            if (criatura.getId() == creatureId) {
+                Equipamento equipamentoAtual = criatura.getEquipamentoAtual();
 
-                if (creature.getTipo() == 0) {
-                    return false;
-                } else {
-                    return creature.getEquipamentoPorTipo(equipmentTypeId) != null;
-                }
+                // Verifica se a criatura tem um equipamento atual e se ela pode tê-lo
+                return equipamentoAtual != null
+                        && equipamentoAtual.getId() == equipmentTypeId
+                        && criatura.podeTerEquipamento(equipmentTypeId);
             }
         }
-        return false;
+        return false; // Criatura não encontrada ou regras não permitidas
     }
 
 
@@ -367,33 +371,49 @@ public class GameManager {
         }
 
         // Incrementa o turno para alternar a equipe
-        turno++;
+        turnoAtual++;
 
         // A cada 2 turnos, alterna entre dia e noite
-        if (turno % 2 == 0) {
+        if (turnoAtual % 2 == 0) {
             dia = !dia;
         }
 
         return true;
     }
+
     public boolean gameIsOver() {
-        if (turno >= 12){
+        // 1. Verifica se passaram 8 turnos sem transformações ou mortes
+        if (turnoSemEventos >= 8) {
             return true;
         }
-        return false;
+
+        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
+        boolean existemHumanos = personagens.stream().anyMatch(Creature::isHuman);
+        boolean existemZumbis = personagens.stream().anyMatch(Creature::isZombie);
+
+        // O jogo termina se apenas humanos ou apenas zumbis existirem
+        return !existemHumanos || !existemZumbis;
+    }
+
+    public void atualizarTurnosSemEventos(boolean houveEvento) {
+        if (houveEvento) {
+            turnoSemEventos = 0; // Reseta o contador se houve evento
+        } else {
+            turnoSemEventos++; // Incrementa o contador caso contrário
+        }
     }
 
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
 
         // Número de turnos terminados
-        resultados.add("Nr. de turnos terminados: " + turno);
+        resultados.add("Nr. de turnos terminados: " + turnoAtual);
         resultados.add("");
 
         // Separador para os vivos
         resultados.add("OS VIVOS");
         for (Creature creature : personagens) {
-            if (creature.getTipo() == 1) { // Tipo 1 representa humano
+            if (creature.isHuman()) { // Tipo 1 representa humano
                 resultados.add(creature.getId() + " " + creature.getNome());
             }
         }
@@ -402,7 +422,7 @@ public class GameManager {
         // Separador para os outros (zumbis)
         resultados.add("OS OUTROS");
         for (Creature creature : personagens) {
-            if (creature.getTipo() == 0) { // Tipo 0 representa zumbi
+            if (creature.isZombie()) { // Tipo 0 representa zumbi
                 resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
             }
         }
@@ -417,7 +437,7 @@ public class GameManager {
             // Escreva os dados necessários no arquivo
             writer.write("Dimensões: " + tabuleiro.getHeight() + "x" + tabuleiro.getWidth() + "\n");
             writer.write("Equipe inicial: " + equipaInicial + "\n");
-            writer.write("Turno atual: " + turno + "\n");
+            writer.write("Turno atual: " + turnoAtual + "\n");
 
             // Adicione outros dados relevantes (criaturas, equipamentos, etc.)
         }

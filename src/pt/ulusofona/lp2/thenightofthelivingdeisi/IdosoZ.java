@@ -31,6 +31,11 @@ public class IdosoZ extends Creature {
     }
 
     @Override
+    public boolean podeTerEquipamento(int equipmentTypeId) {
+        return false;
+    }
+
+    @Override
     public String toString() {
         String contadorDestruicoes = "-" + contadorEquipamentos;
         return id + " | " + getTipoCriatura() + " | " + getTipo() + " | " + nome + " | "

@@ -17,6 +17,11 @@ public class CriançaH extends Creature {
     }
 
     @Override
+    public void destruirEquipamento() {
+
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         // Verifica se é horizontal ou vertical e se é apenas 1 casa
         int distanciaX = Math.abs(xD - xO);
@@ -32,6 +37,11 @@ public class CriançaH extends Creature {
         } else {
             System.out.println("Crianças só podem pegar equipamentos defensivos!");
         }
+    }
+
+    @Override
+    public boolean podeTerEquipamento(int equipmentTypeId) {
+        return equipmentTypeId == 1 || equipmentTypeId == 3; // Apenas Lixívia ou Escudo
     }
 
     @Override

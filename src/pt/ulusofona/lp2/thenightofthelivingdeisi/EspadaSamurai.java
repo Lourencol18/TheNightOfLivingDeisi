@@ -15,6 +15,11 @@ public class EspadaSamurai extends Equipamento {
     }
 
     @Override
+    public String getInfo() {
+        return "";
+    }
+
+    @Override
     public String toString() {
         return nome;
     }

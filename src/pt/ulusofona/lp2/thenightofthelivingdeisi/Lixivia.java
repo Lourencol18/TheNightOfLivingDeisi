@@ -28,4 +28,13 @@ public class Lixivia extends Equipamento {
         return nome + " (" + litros + " L restantes)";
     }
 
+    public double getLitros() {
+        return litros;
+    }
+
+    @Override
+    public String getInfo() {
+        return litros + " litros";
+    }
+
 }
