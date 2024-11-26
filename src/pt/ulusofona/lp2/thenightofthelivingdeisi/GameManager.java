@@ -101,9 +101,43 @@ public class GameManager {
                         throw new InvalidFileException("Coordenadas da criatura fora dos limites.");
                     }
 
-                    personagens.add(new Creature(id, tipoCriatura, nome, x, y));
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Dados da criatura contêm valores inválidos.");
+                    try {
+                        Creature criatura;
+                        switch (tipoCriatura) {
+                            case "CriançaH":
+                                criatura = new CriançaH(id, nome, x, y, 20); // 20 para humanos
+                                break;
+                            case "AdultoH":
+                                criatura = new AdultoH(id, nome, x, y, 20);
+                                break;
+                            case "IdosoH":
+                                criatura = new IdosoH(id, nome, x, y, 20);
+                                break;
+                            case "CriançaZ":
+                                criatura = new CriançaZ(id, nome, x, y, 10); // 10 para zumbis
+                                break;
+                            case "AdultoZ":
+                                criatura = new AdultoZ(id, nome, x, y, 10);
+                                break;
+                            case "IdosoZ":
+                                criatura = new IdosoZ(id, nome, x, y, 10);
+                                break;
+                            case "Vampiro":
+                                criatura = new Vampiro(id, nome, x, y);
+                                break;
+                            case "Cão":
+                                criatura = new Cao(id, nome, x, y);
+                                break;
+                            default:
+                                throw new InvalidFileException("Tipo de criatura inválido: " + tipoCriatura);
+                        }
+
+                        personagens.add(criatura);
+
+                    } catch (NumberFormatException e) {
+                        throw new InvalidFileException("Dados da criatura contêm valores inválidos.");
+                    }
+
                 }
             }
 
@@ -146,7 +180,7 @@ public class GameManager {
                         throw new InvalidFileException("Coordenadas do equipamento fora dos limites.");
                     }
 
-                    equipamentos.add(new Equipamento(id, tipo, x, y));
+                    equipamentos.add(new Equipamento(id, nome, x, y));
                 } catch (NumberFormatException e) {
                     throw new InvalidFileException("Dados do equipamento contêm valores inválidos.");
                 }
@@ -194,8 +228,7 @@ public class GameManager {
         // Verifica se há uma criatura na posição
         for (Creature creature : personagens) {
             if (creature.getX() == x && creature.getY() == y) {
-                String tipo = (creature.getTipo() == 1) ? "H" : "Z";  // 1 = Humano, 0 = Zumbi
-                return tipo + ":" + creature.getId();
+                return creature.getTipoCriatura() + ":" + creature.getId();
             }
         }
 
@@ -213,10 +246,10 @@ public class GameManager {
     public String[] getCreatureInfo(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
-                String tipo = (creature.getTipo() == 1) ? "Humano" : "Zombie";  // 1 = Humano, 0 = Zumbi
                 return new String[]{
                         String.valueOf(creature.getId()),    // ID
-                        tipo,                                // Tipo
+                        creature.getTipo(),                  // Tipo
+                        creature.getTipoCriatura(),         //equipa
                         creature.getNome(),                  // Nome
                         String.valueOf(creature.getX()),     // Posição X
                         String.valueOf(creature.getY()),     // Posição Y
@@ -246,7 +279,7 @@ public class GameManager {
                 // Retorne o tipo como número (0 ou 1) em vez de texto
                 return new String[]{
                         String.valueOf(equipment.getId()),    // ID
-                        String.valueOf(equipment.getTipo()),  // Tipo como número (0 ou 1)
+                        equipment.getNome(),                    // Tipo como número (0 ou 1)
                         String.valueOf(equipment.getX()),     // Posição X
                         String.valueOf(equipment.getY()),     // Posição Y
                         null                                 // PNG ou caminho do ícone, se aplicável
@@ -322,8 +355,8 @@ public class GameManager {
         }
 
         // Determina a equipe correta com base no turno e na equipe inicial
-        boolean turnoParaHumanos = (turno % 2 == 0 && equipaInicial == 1) || (turno % 2 == 1 && equipaInicial == 0);
-        boolean equipeCorreta = (turnoParaHumanos && creatureToMove.getTipo() == 1) || (!turnoParaHumanos && creatureToMove.getTipo() == 0);
+        boolean turnoParaHumanos = (turnoAtual % 2 == 0 && equipaInicial == 1) || (turnoAtual % 2 == 1 && equipaInicial == 0);
+        boolean equipeCorreta = (turnoParaHumanos && creatureToMove.isHuman()) || (!turnoParaHumanos && creatureToMove.isZombie());
 
         // Verifica se é a vez da equipe correta
         if (!equipeCorreta) {
@@ -361,10 +394,10 @@ public class GameManager {
 
         // Se houver equipamento na posição de destino
         if (equipamentoParaInteragir != null) {
-            if (creatureToMove.getTipo() == 1) { // Humanos pegam equipamentos
-                creatureToMove.apanhaequipamento(equipamentoParaInteragir); // Adiciona o equipamento ao humano
+            if (creatureToMove.isHuman()) { // Humanos pegam equipamentos
+                creatureToMove.pegarEquipamento(equipamentoParaInteragir); // Adiciona o equipamento ao humano
                 equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
-            } else if (creatureToMove.getTipo() == 0) { // Zumbis destroem equipamentos
+            } else if (creatureToMove.isZombie()) { // Zumbis destroem equipamentos
                 creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
                 equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
             }
