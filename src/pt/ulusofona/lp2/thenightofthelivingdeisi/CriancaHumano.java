@@ -1,8 +1,8 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class CriançaHumano extends Creature {
+public class CriancaHumano extends Creature {
 
-    public CriançaHumano(int id, String nome, int x, int y, int equipa) {
+    public CriancaHumano(int id, String nome, int x, int y, int equipa) {
         super(0, nome, x, y, equipa); // ID fixo como 0
     }
 
