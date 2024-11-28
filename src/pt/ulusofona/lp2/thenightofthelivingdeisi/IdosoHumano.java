@@ -1,8 +1,8 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class IdosoZ extends Creature {
+public class IdosoHumano extends Creature {
 
-    public IdosoZ(int id, String nome, int x, int y, int equipa) {
+    public IdosoHumano(int id, String nome, int x, int y, int equipa) {
         super(2, nome, x, y, equipa);
     }
 
@@ -13,17 +13,24 @@ public class IdosoZ extends Creature {
 
     @Override
     public String getTipo() {
-        return "Zombie"; // Sempre zumbi
+        return "Humano"; // Sempre humano
     }
 
-    // IdosoZ destrói equipamentos ao encontrá-los
     @Override
     public void destruirEquipamento() {
-        contadorEquipamentos++; // Incrementa o contador de destruições
+
     }
 
-    // Método para verificar se pode se mover (de dia ou à noite, 1 célula)
-    public boolean podeMover(int xO, int yO, int xD, int yD) {
+
+    // Idosos Humanos não podem pegar equipamentos
+    @Override
+    public void pegarEquipamento(Equipamento equipamento) {
+        // Não faz nada, pois IdosoH não coleta equipamentos
+    }
+
+    // Método para verificar se pode se mover (só de dia e 1 célula)
+    public boolean podeMover( int xO, int yO, int xD, int yD) {
+
         // Verifica movimento limitado a 1 célula em qualquer direção
         int distanciaX = Math.abs(xD - xO);
         int distanciaY = Math.abs(yD - yO);
@@ -32,13 +39,13 @@ public class IdosoZ extends Creature {
 
     @Override
     public boolean podeTerEquipamento(int equipmentTypeId) {
-        return false;
+        return false; // Idosos não podem ter equipamentos
     }
 
     @Override
     public String toString() {
-        String contadorDestruicoes = "-" + contadorEquipamentos;
+        String contadorEquipamentos = "+" + getContadorEquipamentos();
         return id + " | " + getTipoCriatura() + " | " + getTipo() + " | " + nome + " | "
-                + contadorDestruicoes + " @ (" + x + ", " + y + ")";
+                + contadorEquipamentos + " @ (" + x + ", " + y + ")";
     }
 }

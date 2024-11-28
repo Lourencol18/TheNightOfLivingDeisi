@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GameManager {
-    Tabuleiro tabuleiro;
-    int equipaInicial;
-    int equipaAtual;
-    ArrayList<Equipamento> equipamentos = new ArrayList<>();
-    ArrayList<Creature> personagens = new ArrayList<>();
-    int turnoAtual = 0;
-    static boolean dia = true;
-    boolean terminado = false;
-    int turnoSemEventos = 0;
+   private Tabuleiro tabuleiro;
+   private int equipaInicial;
+   private int equipaAtual;
+   private ArrayList<Equipamento> equipamentos = new ArrayList<>();
+   private ArrayList<Creature> personagens = new ArrayList<>();
+   private int turnoAtual = 0;
+   private static boolean dia = true;
+   private boolean terminado = false;
+   private int turnoSemEventos = 0;
 
     public boolean loadGame(File file) throws InvalidFileException, FileNotFoundException {
         // Inicializa variáveis e limpa listas
@@ -115,13 +115,13 @@ public class GameManager {
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
                             case 0: // Criança
-                                criatura = new CriançaH(id, nome, x, y, equipa);
+                                criatura = new CriançaHumano(id, nome, x, y, equipa);
                                 break;
                             case 1: // Adulto
-                                criatura = new AdultoH(id, nome, x, y, equipa);
+                                criatura = new AdultoHumano(id, nome, x, y, equipa);
                                 break;
                             case 2: // Idoso
-                                criatura = new IdosoH(id, nome, x, y, equipa);
+                                criatura = new IdosoHumano(id, nome, x, y, equipa);
                                 break;
                             case 3: // Cão
                                 criatura = new Cao(id, nome, x, y, equipa); // Humanos podem ter cães
@@ -132,13 +132,13 @@ public class GameManager {
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
                             case 0: // Criança
-                                criatura = new CriançaZ(id, nome, x, y, equipa);
+                                criatura = new CriançaZombie(id, nome, x, y, equipa);
                                 break;
                             case 1: // Adulto
-                                criatura = new AdultoZ(id, nome, x, y, equipa);
+                                criatura = new AdultoZombie(id, nome, x, y, equipa);
                                 break;
                             case 2: // Idoso
-                                criatura = new IdosoZ(id, nome, x, y, equipa);
+                                criatura = new IdosoZombie(id, nome, x, y, equipa);
                                 break;
                             case 4: // Vampiro
                                 criatura = new Vampiro(id, nome, x, y, equipa); // Vampiro só é zumbi
@@ -258,7 +258,7 @@ public class GameManager {
 
 
 
-    public static boolean isDay() {
+    public  boolean isDay() {
         return dia;
     }
 

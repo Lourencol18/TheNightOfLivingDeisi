@@ -1,14 +1,14 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-public class CriançaZ extends Creature {
+public class AdultoZombie extends Creature {
 
-    public CriançaZ( int id, String nome, int x, int y, int equipa) {
-        super(0, nome, x, y, equipa); // ID fixo como 0
+    public AdultoZombie(int id, String nome, int x, int y, int equipa) {
+        super(1, nome, x, y, equipa); // ID fixo como 1
     }
 
     @Override
     public String getTipoCriatura() {
-        return "Criança";
+        return "Adulto";
     }
 
     @Override
@@ -18,15 +18,15 @@ public class CriançaZ extends Creature {
 
     @Override
     public void destruirEquipamento() {
-
+        contadorEquipamentos++;
     }
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        // Verifica se é horizontal ou vertical e se é apenas 1 casa
+        // Permite movimento em linha reta ou diagonal até 2 casas
         int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(xD - yD);
-        return (distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1);
+        int distanciaY = Math.abs(yD - yO);
+        return (distanciaX <= 2 && distanciaY <= 2);
     }
 
     @Override

@@ -2,6 +2,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class Vampiro extends Creature {
 
+    private boolean isDay;
 
     public Vampiro(int id, String nome, int x, int y, int equipa) {
         super(id, nome, x, y, equipa);
@@ -24,8 +25,9 @@ public class Vampiro extends Creature {
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        if (!GameManager.isDay()) {
-            return true; // Não pode se mover durante o dia
+        // Vampiros só podem se mover à noite
+        if (isDay) {
+            return false; // Não pode se mover durante o dia
         }
 
         int distanciaX = Math.abs(xD - xO);
