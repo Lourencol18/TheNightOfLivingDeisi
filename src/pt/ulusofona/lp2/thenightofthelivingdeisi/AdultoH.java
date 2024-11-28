@@ -2,7 +2,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class AdultoH extends Creature {
 
-    public AdultoH(String nome, int x, int y, int equipa) {
+    public AdultoH(int id,String nome, int x, int y, int equipa) {
         super(1, nome, x, y, equipa); // ID fixo como 1
     }
 

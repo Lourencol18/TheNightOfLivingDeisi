@@ -1,14 +1,19 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tabuleiro {
-     int width;
-    int height;
-     Object[][] grid; // Array bidimensional para armazenar criaturas e equipamentos
+    private int width;
+    private int height;
+    private Object[][] grid; // Array bidimensional para armazenar criaturas e equipamentos
+    private List<SafeHaven> safeHavens; // Lista de Safe Havens
 
     public Tabuleiro(int width, int height) {
         this.width = width;
         this.height = height;
         this.grid = new Object[width][height]; // Inicializa o array bidimensional
+        this.safeHavens = new ArrayList<>();
     }
 
     public int getWidth() {
@@ -24,55 +29,41 @@ public class Tabuleiro {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    // Adiciona uma criatura ou equipamento ao tabuleiro
-    public boolean adicionar(Object objeto, int x, int y) {
+    // Adiciona um Safe Haven ao tabuleiro
+    public boolean adicionarSafeHaven(int x, int y) {
         if (!dentroDosLimites(x, y)) {
-            return false; // Fora dos limites
+            throw new IllegalArgumentException("Coordenadas fora dos limites do tabuleiro.");
         }
 
-        if (grid[x][y] == null) {
-            grid[x][y] = objeto; // Adiciona o objeto
-            return true;
-        }
-        return false; // Posição já ocupada
-    }
-
-    // Remove uma criatura ou equipamento de uma posição
-    public boolean remover(int x, int y) {
-        if (!dentroDosLimites(x, y)) {
-            return false; // Fora dos limites
-        }
-
-        if (grid[x][y] != null) {
-            grid[x][y] = null; // Remove o objeto
-            return true;
-        }
-        return false; // Posição já está vazia
-    }
-
-    // Obtém o conteúdo de uma posição
-    public Object obter(int x, int y) {
-        if (!dentroDosLimites(x, y)) {
-            return null; // Fora dos limites
-        }
-        return grid[x][y];
-    }
-
-    // Imprime o tabuleiro (apenas para debugging)
-    public void imprimirTabuleiro() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (grid[x][y] == null) {
-                    System.out.print(". "); // Célula vazia
-                } else if (grid[x][y] instanceof Creature) {
-                    System.out.print("C "); // Representa criatura
-                } else if (grid[x][y] instanceof Equipamento) {
-                    System.out.print("E "); // Representa equipamento
-                }
+        // Verifica se já existe um Safe Haven nessa posição
+        for (SafeHaven safeHaven : safeHavens) {
+            if (safeHaven.getX() == x && safeHaven.getY() == y) {
+                return false; // Já existe um Safe Haven nessa posição
             }
-            System.out.println();
         }
+
+        // Adiciona um novo Safe Haven
+        safeHavens.add(new SafeHaven(x, y));
+        return true;
     }
 
+    // Remove um Safe Haven do tabuleiro
+    public boolean removerSafeHaven(int x, int y) {
+        return safeHavens.removeIf(safeHaven -> safeHaven.getX() == x && safeHaven.getY() == y);
+    }
 
+    // Verifica se uma posição é um Safe Haven
+    public boolean isSafeHaven(int x, int y) {
+        for (SafeHaven safeHaven : safeHavens) {
+            if (safeHaven.getX() == x && safeHaven.getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Retorna a lista de Safe Havens
+    public List<SafeHaven> getSafeHavens() {
+        return safeHavens;
+    }
 }

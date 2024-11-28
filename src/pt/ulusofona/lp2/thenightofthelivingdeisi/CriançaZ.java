@@ -2,7 +2,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class CriançaZ extends Creature {
 
-    public CriançaZ(String nome, int x, int y, int equipa) {
+    public CriançaZ( int id, String nome, int x, int y, int equipa) {
         super(0, nome, x, y, equipa); // ID fixo como 0
     }
 

@@ -57,8 +57,8 @@ public class GameManager {
             } catch (NumberFormatException e) {
                 throw new InvalidFileException("Equipe inicial não é um número válido.");
             }
-            if (equipaInicial != 0 && equipaInicial != 1) {
-                throw new InvalidFileException("Equipe inicial deve ser 0 ou 1.");
+            if (equipaInicial != 10 && equipaInicial != 20) {
+                throw new InvalidFileException("Equipe inicial deve ser 10 ou 20.");
             }
             equipaAtual = equipaInicial;
 
@@ -86,59 +86,79 @@ public class GameManager {
                 }
 
                 String[] criaturaData = linhaCriatura.split(" : ");
-                if (criaturaData.length != 5) {
+                if (criaturaData.length != 6) {
                     throw new InvalidFileException("Dados da criatura mal formatados.");
                 }
 
                 try {
                     int id = Integer.parseInt(criaturaData[0]);
-                    int tipoCriatura = Integer.parseInt(criaturaData[1]);
-                    String nome = criaturaData[2];
-                    int x = Integer.parseInt(criaturaData[3]);
-                    int y = Integer.parseInt(criaturaData[4]);
+                    int equipa = Integer.parseInt(criaturaData[1]); // 10 = Zumbi, 20 = Humano
+                    int tipoCriatura = Integer.parseInt(criaturaData[2]); // Tipo da criatura (0 a 4)
+                    String nome = criaturaData[3];
+                    int x = Integer.parseInt(criaturaData[4]);
+                    int y = Integer.parseInt(criaturaData[5]);
 
+                    // Verifica se as coordenadas estão dentro dos limites
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         throw new InvalidFileException("Coordenadas da criatura fora dos limites.");
                     }
 
-                    try {
-                        Creature criatura;
-                        switch (tipoCriatura) {
-                            case "CriançaH":
-                                criatura = new CriançaH(id, nome, x, y, 20); // 20 para humanos
-                                break;
-                            case "AdultoH":
-                                criatura = new AdultoH(id, nome, x, y, 20);
-                                break;
-                            case "IdosoH":
-                                criatura = new IdosoH(id, nome, x, y, 20);
-                                break;
-                            case "CriançaZ":
-                                criatura = new CriançaZ(id, nome, x, y, 10); // 10 para zumbis
-                                break;
-                            case "AdultoZ":
-                                criatura = new AdultoZ(id, nome, x, y, 10);
-                                break;
-                            case "IdosoZ":
-                                criatura = new IdosoZ(id, nome, x, y, 10);
-                                break;
-                            case "Vampiro":
-                                criatura = new Vampiro(id, nome, x, y);
-                                break;
-                            case "Cão":
-                                criatura = new Cao(id, nome, x, y);
-                                break;
-                            default:
-                                throw new InvalidFileException("Tipo de criatura inválido: " + tipoCriatura);
-                        }
-
-                        personagens.add(criatura);
-
-                    } catch (NumberFormatException e) {
-                        throw new InvalidFileException("Dados da criatura contêm valores inválidos.");
+                    // Verifica Safe Haven
+                    if (tabuleiro.isSafeHaven(x, y)) {
+                        throw new InvalidFileException("A criatura não pode ser posicionada em um Safe Haven.");
                     }
 
+                    // Inicializa a variável criatura
+                    Creature criatura;
+
+                    // Verifica a equipe
+                    if (equipa == 20) { // Humanos
+                        switch (tipoCriatura) {
+                            case 0: // Criança
+                                criatura = new CriançaH(id, nome, x, y, equipa);
+                                break;
+                            case 1: // Adulto
+                                criatura = new AdultoH(id, nome, x, y, equipa);
+                                break;
+                            case 2: // Idoso
+                                criatura = new IdosoH(id, nome, x, y, equipa);
+                                break;
+                            case 3: // Cão
+                                criatura = new Cao(id, nome, x, y, equipa); // Humanos podem ter cães
+                                break;
+                            default:
+                                throw new InvalidFileException("Tipo de criatura inválido para humanos: " + tipoCriatura);
+                        }
+                    } else if (equipa == 10) { // Zumbis
+                        switch (tipoCriatura) {
+                            case 0: // Criança
+                                criatura = new CriançaZ(id, nome, x, y, equipa);
+                                break;
+                            case 1: // Adulto
+                                criatura = new AdultoZ(id, nome, x, y, equipa);
+                                break;
+                            case 2: // Idoso
+                                criatura = new IdosoZ(id, nome, x, y, equipa);
+                                break;
+                            case 4: // Vampiro
+                                criatura = new Vampiro(id, nome, x, y, equipa); // Vampiro só é zumbi
+                                break;
+                            default:
+                                throw new InvalidFileException("Tipo de criatura inválido para zumbis: " + tipoCriatura);
+                        }
+                    } else {
+                        throw new InvalidFileException("Equipe inválida: " + equipa);
+                    }
+
+                    // Adiciona a criatura à lista de personagens
+                    personagens.add(criatura);
+
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Dados da criatura contêm valores inválidos.");
                 }
+
+
+
             }
 
             // Lê o número de equipamentos
@@ -180,14 +200,32 @@ public class GameManager {
                         throw new InvalidFileException("Coordenadas do equipamento fora dos limites.");
                     }
 
-                    equipamentos.add(new Equipamento(id, nome, x, y));
+                    // Cria instância do equipamento com base no tipo
+                    Equipamento equipamento;
+                    switch (tipo) {
+                        case 0: // Escudo de Madeira
+                            equipamento = new EscudoDeMadeira(id, x, y);
+                            break;
+                        case 1: // Espada Samurai
+                            equipamento = new EspadaSamurai(id, x, y);
+                            break;
+                        case 2: // Pistola
+                            equipamento = new PistolaWaltherPPK(id, x, y);
+                            break;
+                        case 3: // Lixívia
+                            equipamento = new Lixivia(id, x, y);
+                            break;
+                        default:
+                            throw new InvalidFileException("Tipo de equipamento inválido: " + tipo);
+                    }
+
+                    // Adiciona o equipamento à lista
+                    equipamentos.add(equipamento);
                 } catch (NumberFormatException e) {
                     throw new InvalidFileException("Dados do equipamento contêm valores inválidos.");
                 }
             }
 
-            System.out.println("Nr criaturas: " + personagens.size());
-            System.out.println("Nr equipamentos: " + equipamentos.size());
 
             return true; // Carregamento bem-sucedido
         } catch (FileNotFoundException e) {
@@ -238,6 +276,8 @@ public class GameManager {
                 return "E:" + equipment.getId();
             }
         }
+
+
 
         return ""; // Caso não haja nada na posição
     }
