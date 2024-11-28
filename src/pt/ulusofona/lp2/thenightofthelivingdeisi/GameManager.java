@@ -337,7 +337,7 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getId() == id) {
                 StringBuilder info = new StringBuilder();
-                info.append("-").append(equipamento.getId()).append(" | ")
+                info.append(equipamento.getId()).append(" | ") // Remove o "-"
                         .append(equipamento.getNome()).append(" @ (")
                         .append(equipamento.getX()).append(", ")
                         .append(equipamento.getY()).append(")");
@@ -351,9 +351,7 @@ public class GameManager {
                 return info.toString();
             }
         }
-
-        // Caso o equipamento não seja encontrado
-        return null;
+        return ""; // Retorno padrão caso o equipamento não seja encontrado
     }
 
 
