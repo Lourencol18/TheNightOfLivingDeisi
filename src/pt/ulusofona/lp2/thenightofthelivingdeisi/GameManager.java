@@ -191,19 +191,20 @@ public class GameManager {
 
             // Lê o número de Safe Havens
             if (!scanner.hasNext()) {
-                throw new InvalidFileException("Arquivo inválido: número de Safe Havens ausente.", currentLine);
-            }
-            currentLine++;
-            try {
-                numSafeHavens = Integer.parseInt(scanner.next()); // Armazena no membro da classe
-            } catch (NumberFormatException e) {
-                throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
-            }
-            if (numSafeHavens < 0) {
-                throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
+                numSafeHavens = 0;  // Se não houver número, definimos como 0
+            } else {
+                currentLine++;
+                try {
+                    numSafeHavens = Integer.parseInt(scanner.next());
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
+                }
+                if (numSafeHavens < 0) {
+                    throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
+                }
             }
 
-// Processa cada Safe Haven
+                // Processa cada Safe Haven
             for (int i = 0; i < numSafeHavens; i++) {
                 currentLine++;
                 String linhaSafeHaven = scanner.nextLine().trim();
@@ -231,6 +232,7 @@ public class GameManager {
                     throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
                 }
             }
+
 
         }
     }
@@ -280,46 +282,44 @@ public class GameManager {
         return ""; // Caso a posição esteja vazia
     }
 
-
     public String[] getCreatureInfo(int id) {
-        for (Creature creature : personagens) {
-            if (creature.getId() == id) {
-                // Obtém a equipa da criatura para determinar se é Humano ou Zombie
-                int equipa = creature.getEquipa(); // 10 para Zumbi, 20 para Humano
+        String[] Jogador = new String[7];  // Array para armazenar as informações
+        String team = "";  // Variável para armazenar o time (Humano ou Zombie)
 
-                // Obtém o tipo específico de criatura (ex.: "Criança", "Adulto", etc.)
-                String tipoCriatura = creature.getTipoCriatura();
-
-                // Determina o tipo (ex.: "Humano", "Zombie", "Zombie (Transformado)")
-                String tipo;
-                if (equipa == 20) {
-                    tipo = "Humano"; // Se a equipa for 20, é um Humano
-                } else if (equipa == 10) {
-                    if (creature.isTransformed()) {
-                        tipo = "Zombie (Transformado)"; // Se for zumbi transformado
-                    } else {
-                        tipo = "Zombie"; // Se for zumbi normal
-                    }
-                } else {
-                    tipo = "Desconhecido"; // Caso não seja nem humano nem zumbi
+        // Percorre a lista de personagens (criaturas)
+        for (Creature creature : personagens) {  // Usando a lista 'personagens' em vez de 'getCreatures'
+            if (creature.getId() == id) {  // Se encontrar a criatura com o ID correspondente
+                // Verifica a equipe da criatura (Humano ou Zombie)
+                if (creature.getEquipa() == 20) {
+                    team = "Humano";  // Se a equipe for 20, é Humano
+                } else if (creature.getEquipa() == 10) {
+                    team = "Zombie";  // Se a equipe for 10, é Zombie
                 }
 
-                // Retorna as informações no formato esperado
-                return new String[]{
-                        String.valueOf(creature.getId()),    // ID da criatura
-                        tipoCriatura,                        // Tipo de criatura (ex.: "Criança", "Adulto", etc.)
-                        tipo,                                // Tipo ("Humano", "Zombie", "Zombie (Transformado)", etc.)
-                        creature.getNome(),                  // Nome da criatura
-                        String.valueOf(creature.getX()),     // Coordenada X
-                        String.valueOf(creature.getY()),     // Coordenada Y
-                        null                                 // PNG (pode ser adicionado se necessário)
-                };
+                // Preenche o array com as informações da criatura
+                Jogador[0] = String.valueOf(creature.getId());    // ID da criatura
+                Jogador[1] = creature.getTipoCriatura();           // Tipo de criatura (ex.: "Criança", "Adulto", etc.)
+                Jogador[2] = team;                                 // Time (Humano ou Zombie)
+                Jogador[3] = creature.getNome();                   // Nome da criatura
+                Jogador[4] = String.valueOf(creature.getX());      // Coordenada X
+                Jogador[5] = String.valueOf(creature.getY());      // Coordenada Y
+                Jogador[6] = null;                                 // PNG (pode ser adicionado se necessário)
+
+                return Jogador;  // Retorna o array com as informações da criatura
             }
         }
 
-        // Se não encontrar a criatura com o ID informado
-        throw new IllegalArgumentException("Criatura não encontrada para o ID: " + id);
+        // Caso não encontre a criatura, retorna um array com 7 elementos e uma mensagem de erro
+        Jogador[0] = "Criatura não encontrada";  // Preenche o índice 0 com a mensagem de erro
+        return Jogador;  // Retorna o array com 7 elementos
     }
+
+
+
+
+
+
+
 
 
 

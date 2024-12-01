@@ -29,6 +29,21 @@ public class Tabuleiro {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
+    // Adiciona uma criatura na posição do tabuleiro
+    public void adicionarCriatura(Creature criatura) {
+        if (!dentroDosLimites(criatura.getX(), criatura.getY())) {
+            throw new IllegalArgumentException("Coordenadas fora dos limites do tabuleiro.");
+        }
+        grid[criatura.getX()][criatura.getY()] = criatura; // Adiciona a criatura no grid
+    }
+
+    // Remove uma criatura da posição do tabuleiro
+    public void removerCriatura(Creature criatura) {
+        if (dentroDosLimites(criatura.getX(), criatura.getY())) {
+            grid[criatura.getX()][criatura.getY()] = null; // Remove a criatura do grid
+        }
+    }
+
     // Adiciona um Safe Haven ao tabuleiro
     public boolean adicionarSafeHaven(int x, int y) {
         if (!dentroDosLimites(x, y)) {
@@ -65,5 +80,13 @@ public class Tabuleiro {
     // Retorna a lista de Safe Havens
     public List<SafeHaven> getSafeHavens() {
         return safeHavens;
+    }
+
+    // Verifica se existe uma criatura na posição específica
+    public Creature getCriaturaAtPosition(int x, int y) {
+        if (dentroDosLimites(x, y)) {
+            return (Creature) grid[x][y]; // Retorna a criatura na posição, se houver
+        }
+        return null; // Caso não haja criatura nessa posição
     }
 }
