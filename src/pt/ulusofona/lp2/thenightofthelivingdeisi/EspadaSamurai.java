@@ -4,7 +4,7 @@ public class EspadaSamurai extends Equipamento {
 
     public EspadaSamurai(int id, int x, int y) {
         super(id, "Espada samurai", x, y);
-        System.out.println("Espada Samurai criada com ID=" + id + ", Coordenadas=(" + x + ", " + y + ")");
+
     }
 
     @Override

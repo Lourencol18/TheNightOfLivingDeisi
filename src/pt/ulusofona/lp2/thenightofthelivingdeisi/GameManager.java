@@ -30,9 +30,9 @@ public class GameManager {
         equipamentos.clear();
 
         try (Scanner scanner = new Scanner(file)) {
-            int currentLine = 0; // Contador de linhas para rastrear a linha atual do arquivo
+            int currentLine = 0; // Para rastrear erros de linha
 
-            // Lê as dimensões do tabuleiro
+            // Lê dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro ausentes.", currentLine);
             }
@@ -41,10 +41,10 @@ public class GameManager {
             if (tamanho.length != 2) {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro mal formatadas.", currentLine);
             }
-            int height, width;
+            int width, height;
             try {
-                height = Integer.parseInt(tamanho[0]);
-                width = Integer.parseInt(tamanho[1]);
+                width = Integer.parseInt(tamanho[0]);
+                height = Integer.parseInt(tamanho[1]);
             } catch (NumberFormatException e) {
                 throw new InvalidFileException("Dimensões do tabuleiro não são números válidos.", currentLine);
             }
@@ -80,8 +80,7 @@ public class GameManager {
                 throw new InvalidFileException("Número de criaturas não pode ser negativo.", currentLine);
             }
 
-            // Lê cada criatura
-            personagens.clear();
+            // Processa cada criatura
             for (int i = 0; i < numCreatures; i++) {
                 currentLine++;
                 String linhaCriatura = scanner.nextLine().trim();
@@ -110,41 +109,24 @@ public class GameManager {
                     Creature criatura;
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
-                            case 0:
-                                criatura = new CriancaHumano(id, nome, x, y, equipa);
-                                break;
-                            case 1:
-                                criatura = new AdultoHumano(id, nome, x, y, equipa);
-                                break;
-                            case 2:
-                                criatura = new IdosoHumano(id, nome, x, y, equipa);
-                                break;
-                            case 3:
-                                criatura = new Cao(id, nome, x, y, equipa);
-                                break;
-                            default:
-                                throw new InvalidFileException("Tipo de criatura inválido para humanos: " + tipoCriatura, currentLine);
+                            case 0 -> criatura = new CriancaHumano(id, nome, x, y, equipa);
+                            case 1 -> criatura = new AdultoHumano(id, nome, x, y, equipa);
+                            case 2 -> criatura = new IdosoHumano(id, nome, x, y, equipa);
+                            case 3 -> criatura = new Cao(id, nome, x, y, equipa);
+                            default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
-                            case 0:
-                                criatura = new CriancaZombie(id, nome, x, y, equipa);
-                                break;
-                            case 1:
-                                criatura = new AdultoZombie(id, nome, x, y, equipa);
-                                break;
-                            case 2:
-                                criatura = new IdosoZombie(id, nome, x, y, equipa);
-                                break;
-                            case 4:
-                                criatura = new Vampiro(id, nome, x, y, equipa);
-                                break;
-                            default:
-                                throw new InvalidFileException("Tipo de criatura inválido para zumbis: " + tipoCriatura, currentLine);
+                            case 0 -> criatura = new CriancaZombie(id, nome, x, y, equipa);
+                            case 1 -> criatura = new AdultoZombie(id, nome, x, y, equipa);
+                            case 2 -> criatura = new IdosoZombie(id, nome, x, y, equipa);
+                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
+                            default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
                         }
                     } else {
-                        throw new InvalidFileException("Equipe inválida: " + equipa, currentLine);
+                        throw new InvalidFileException("Equipe inválida.", currentLine);
                     }
+
                     personagens.add(criatura);
 
                 } catch (NumberFormatException e) {
@@ -167,9 +149,7 @@ public class GameManager {
                 throw new InvalidFileException("Número de equipamentos não pode ser negativo.", currentLine);
             }
 
-            equipamentos.clear();
-
-            // Lê cada equipamento
+            // Processa cada equipamento
             for (int i = 0; i < numEquipments; i++) {
                 currentLine++;
                 String linhaEquipamento = scanner.nextLine().trim();
@@ -193,29 +173,13 @@ public class GameManager {
                         throw new InvalidFileException("Coordenadas do equipamento fora dos limites.", currentLine);
                     }
 
-                    System.out.println("Iniciando criação do equipamento...");
-                    System.out.println("ID: " + id + ", Tipo: " + tipo + ", Coordenadas: (" + x + ", " + y + ")");
-
                     Equipamento equipamento;
                     switch (tipo) {
-                        case 0:
-                            System.out.println("Criando Escudo de Madeira");
-                            equipamento = new EscudoDeMadeira(id, x, y);
-                            break;
-                        case 1:
-                            System.out.println("Criando Espada Samurai");
-                            equipamento = new EspadaSamurai(id, x, y);
-                            break;
-                        case 2:
-                            System.out.println("Criando Pistola");
-                            equipamento = new PistolaWaltherPPK(id, x, y);
-                            break;
-                        case 3:
-                            System.out.println("Criando Lixívia");
-                            equipamento = new Lixivia(id, x, y);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Invalid equipment: " + tipo);
+                        case 0 -> equipamento = new EscudoDeMadeira(id, x, y);
+                        case 1 -> equipamento = new EspadaSamurai(id, x, y);
+                        case 2 -> equipamento = new PistolaWaltherPPK(id, x, y);
+                        case 3 -> equipamento = new Lixivia(id, x, y);
+                        default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
                     }
 
                     equipamentos.add(equipamento);
@@ -224,11 +188,9 @@ public class GameManager {
                     throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
                 }
             }
-
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Arquivo não encontrado: " + file.getAbsolutePath());
         }
     }
+
 
 
 
@@ -311,18 +273,33 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Retorne o tipo como número (0 ou 1) em vez de texto
+                String tipo;
+                // Mapeia o tipo do equipamento para o nome correto
+                if (equipment instanceof EscudoDeMadeira) {
+                    tipo = "Escudo de madeira";
+                } else if (equipment instanceof EspadaSamurai) {
+                    tipo = "Espada samurai";
+                } else if (equipment instanceof PistolaWaltherPPK) {
+                    tipo = "Pistola Walther PPK ";
+                } else if (equipment instanceof Lixivia) {
+                    tipo = "Lixivia";
+                } else {
+                    tipo = "Tipo desconhecido";
+                }
+
+                // Retorna as informações do equipamento
                 return new String[]{
                         String.valueOf(equipment.getId()),    // ID
-                        equipment.getNome(),                    // Tipo como número (0 ou 1)
-                        String.valueOf(equipment.getX()),     // Posição X
-                        String.valueOf(equipment.getY()),     // Posição Y
+                        tipo,                                // Tipo como nome mapeado
+                        String.valueOf(equipment.getX()),    // Posição X
+                        String.valueOf(equipment.getY()),    // Posição Y
                         null                                 // PNG ou caminho do ícone, se aplicável
                 };
             }
         }
-        return null; // Se o equipamento com o ID fornecido não for encontrado
+        throw new IllegalArgumentException("Equipamento não encontrado para o ID: " + id); // Evita erros silenciosos
     }
+
 
 
 
@@ -332,12 +309,29 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getId() == id) {
                 StringBuilder info = new StringBuilder();
-                info.append(equipamento.getId()).append(" | ") // Remove o "-"
-                        .append(equipamento.getNome()).append(" @ (")
-                        .append(equipamento.getX()).append(", ")
-                        .append(equipamento.getY()).append(")");
 
-                // Adiciona as informações específicas do equipamento
+                // Determina o tipo do equipamento
+                String tipo;
+                if (equipamento instanceof EscudoDeMadeira) {
+                    tipo = "0 Escudo";
+                } else if (equipamento instanceof EspadaSamurai) {
+                    tipo = "1 Espada";
+                } else if (equipamento instanceof PistolaWaltherPPK) {
+                    tipo = "2 Pistola";
+                } else if (equipamento instanceof Lixivia) {
+                    tipo = "3 Lixivia";
+                } else {
+                    tipo = "Tipo desconhecido";
+                }
+
+                // Constrói a string de informação do equipamento
+                info.append(equipamento.getId()).append(" | ") // ID
+                        .append(tipo).append(" | ")              // Tipo
+                        .append(equipamento.getNome()).append(" @ (") // Nome
+                        .append(equipamento.getX()).append(", ")  // Posição X
+                        .append(equipamento.getY()).append(")");  // Posição Y
+
+                // Adiciona informações específicas do equipamento, se aplicável
                 String additionalInfo = equipamento.getInfo();
                 if (!additionalInfo.isEmpty()) {
                     info.append(" | ").append(additionalInfo);
@@ -348,6 +342,7 @@ public class GameManager {
         }
         return ""; // Retorno padrão caso o equipamento não seja encontrado
     }
+
 
 
 
