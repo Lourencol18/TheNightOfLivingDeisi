@@ -151,62 +151,7 @@ public class GameManager {
                 throw new InvalidFileException("Número de equipamentos não pode ser negativo.", currentLine);
             }
 
-            // Processa cada equipamento
-            for (int i = 0; i < numEquipments; i++) {
-                currentLine++;
-                String linhaEquipamento = scanner.nextLine().trim();
-                if (linhaEquipamento.isEmpty()) {
-                    i--;
-                    continue;
-                }
-
-                String[] equipamentoData = linhaEquipamento.split(" : ");
-                if (equipamentoData.length != 4) {
-                    throw new InvalidFileException("Dados do equipamento mal formatados.", currentLine);
-                }
-
-                try {
-                    int id = Integer.parseInt(equipamentoData[0]);
-                    int tipo = Integer.parseInt(equipamentoData[1]);
-                    int x = Integer.parseInt(equipamentoData[2]);
-                    int y = Integer.parseInt(equipamentoData[3]);
-
-                    if (!tabuleiro.dentroDosLimites(x, y)) {
-                        throw new InvalidFileException("Coordenadas do equipamento fora dos limites.", currentLine);
-                    }
-
-                    Equipamento equipamento;
-                    switch (tipo) {
-                        case 0 -> equipamento = new EscudoDeMadeira(id, x, y);
-                        case 1 -> equipamento = new EspadaSamurai(id, x, y);
-                        case 2 -> equipamento = new PistolaWaltherPPK(id, x, y);
-                        case 3 -> equipamento = new Lixivia(id, x, y);
-                        default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
-                    }
-
-                    equipamentos.add(equipamento);
-
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
-                }
-            }
-
-            // Lê o número de Safe Havens
-            if (!scanner.hasNext()) {
-                numSafeHavens = 0;  // Se não houver número, definimos como 0
-            } else {
-                currentLine++;
-                try {
-                    numSafeHavens = Integer.parseInt(scanner.next());
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
-                }
-                if (numSafeHavens < 0) {
-                    throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
-                }
-            }
-
-                // Processa cada Safe Haven
+            // Processa cada Safe Haven
             for (int i = 0; i < numSafeHavens; i++) {
                 currentLine++;
                 String linhaSafeHaven = scanner.nextLine().trim();
@@ -224,16 +169,21 @@ public class GameManager {
                     int x = Integer.parseInt(coordenadas[0]);
                     int y = Integer.parseInt(coordenadas[1]);
 
+                    // Verifica se as coordenadas estão dentro dos limites do tabuleiro
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         throw new InvalidFileException("Coordenadas do Safe Haven fora dos limites.", currentLine);
                     }
 
+                    // Cria o objeto SafeHaven e adiciona ao tabuleiro
+                    SafeHaven safeHaven = new SafeHaven(x, y);
+                    SafeHaven.add(safeHaven);  // Adiciona ao conjunto de SafeHavens
                     tabuleiro.adicionarSafeHaven(x, y);
 
                 } catch (NumberFormatException e) {
                     throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
                 }
             }
+
 
 
         }
@@ -326,7 +276,14 @@ public class GameManager {
                         .append(creature.getTipoCriatura()).append(" | ") // Tipo de criatura (ex.: "Criança", "Adulto")
                         .append(creature.getTipo()).append(" | ")        // Tipo (ex.: "Humano", "Zombie")
                         .append(creature.getNome()).append(" | ")        // Nome
-                        .append("@ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Coordenadas
+                        .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Coordenadas
+
+                // Verifica se a criatura é Humano ou Zombie e adiciona +0 ou -0
+                if (creature.getTipo().equals("Humano")) {
+                    info.append(" | +0");
+                } else if (creature.getTipo().equals("Zombie")) {
+                    info.append(" | -0");
+                }
 
                 // Verifica se a criatura possui um equipamento
                 Equipamento equipamentoAtual = creature.getEquipamentoAtual();
@@ -340,6 +297,7 @@ public class GameManager {
 
         return "Criatura não encontrada."; // Retorna mensagem padrão para ID inválido
     }
+
 
 
 
