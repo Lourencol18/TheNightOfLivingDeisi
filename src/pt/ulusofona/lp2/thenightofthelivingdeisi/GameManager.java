@@ -22,6 +22,7 @@ public class GameManager {
    private boolean terminado = false;
    private int turnoSemEventos = 0;
     private int numSafeHavens = 0;
+
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
         equipaInicial = -1;
@@ -37,10 +38,13 @@ public class GameManager {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro ausentes.", currentLine);
             }
             currentLine++;
-            String[] tamanho = scanner.nextLine().trim().split(" ");
+            String linhaDimensao = scanner.nextLine().trim();
+            System.out.println("Lendo dimensões: " + linhaDimensao);  // Adicione esta linha para depuração
+            String[] tamanho = linhaDimensao.split(" ");
             if (tamanho.length != 2) {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro mal formatadas.", currentLine);
             }
+
             int width, height;
             try {
                 width = Integer.parseInt(tamanho[0]);
@@ -109,18 +113,16 @@ public class GameManager {
                     Creature criatura;
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new CriancaHumano(id, nome, x, y, equipa);
-                            case 1 -> criatura = new AdultoHumano(id, nome, x, y, equipa);
-                            case 2 -> criatura = new IdosoHumano(id, nome, x, y, equipa);
-                            case 3 -> criatura = new Cao(id, nome, x, y, equipa);
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano
                             default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new CriancaZombie(id, nome, x, y, equipa);
-                            case 1 -> criatura = new AdultoZombie(id, nome, x, y, equipa);
-                            case 2 -> criatura = new IdosoZombie(id, nome, x, y, equipa);
-                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false); // Zumbi
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false); // Zumbi
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false); // Zumbi
                             default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
                         }
                     } else {
@@ -313,19 +315,6 @@ public class GameManager {
         Jogador[0] = "Criatura não encontrada";  // Preenche o índice 0 com a mensagem de erro
         return Jogador;  // Retorna o array com 7 elementos
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public String getCreatureInfoAsString(int id) {
         for (Creature creature : personagens) {
