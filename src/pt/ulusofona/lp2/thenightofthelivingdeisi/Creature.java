@@ -12,6 +12,7 @@ public abstract class Creature {
     protected List<Equipamento> equipamentos = new ArrayList<>(); // Histórico de equipamentos
     protected Equipamento equipamentoAtual = null; // Equipamento em uso
     protected int contadorEquipamentos = 0;
+    protected boolean transformado = false;
 
     public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
@@ -19,6 +20,13 @@ public abstract class Creature {
         this.x = x;
         this.y = y;
         this.equipa = equipa;
+    }
+    public boolean isTransformed() {
+        return transformado;
+    }
+
+    public void transformar() {
+        transformado = true;
     }
 
     public int getId() {

@@ -205,6 +205,32 @@ public class GameManager {
     }
 
 
+    public String getSquareInfo(int x, int y) {
+        // Verifica se há uma criatura na posição
+        for (Creature creature : personagens) {
+            if (creature.getX() == x && creature.getY() == y) {
+                // Identifica se a criatura é humano ou zumbi
+                String tipo = creature.isHuman() ? "H" : "Z";
+                return tipo + ":" + creature.getId();
+            }
+        }
+
+        // Verifica se há um equipamento na posição
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getX() == x && equipment.getY() == y) {
+                return "E:" + equipment.getId();
+            }
+        }
+
+        // Verifica se há um Safe Haven na posição
+        if (tabuleiro.isSafeHaven(x, y)) {
+            return "SH";
+        }
+
+        return ""; // Caso a posição esteja vazia
+    }
+
+
     public int getInitialTeamId() {
         return equipaInicial;
     }
@@ -219,48 +245,41 @@ public class GameManager {
         return dia;
     }
 
-    public String getSquareInfo(int x, int y) {
-        // Verifica se há uma criatura na posição
-        for (Creature creature : personagens) {
-            if (creature.getX() == x && creature.getY() == y) {
-                // Retorna H para humanos e Z para zumbis
-                return (creature.isHuman() ? "H" : "Z") + ":" + creature.getId();
-            }
-        }
-
-        // Verifica se há um equipamento na posição
-        for (Equipamento equipment : equipamentos) {
-            if (equipment.getX() == x && equipment.getY() == y) {
-                return "E:" + equipment.getId();
-            }
-        }
-
-        // Verifica se é um Safe Haven
-        if (tabuleiro.isSafeHaven(x, y)) {
-            return "SH";
-        }
-
-        return ""; // Retorno padrão caso não haja nada na posição
-    }
-
 
 
     public String[] getCreatureInfo(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
+                // Obtém as informações da criatura diretamente
+                String tipoCriatura = creature.getTipoCriatura(); // Ex.: "Criança", "Adulto", etc.
+                String tipo; // Determina se é "Zombie", "Humano", ou "Zombie (Transformado)"
+
+                if (creature.isHuman()) {
+                    tipo = "Humano";
+                } else if (creature.isZombie() && creature.isTransformed()) {
+                    tipo = "Zombie (Transformado)";
+                } else {
+                    tipo = "Zombie";
+                }
+
+                // Retorna as informações no formato esperado
                 return new String[]{
                         String.valueOf(creature.getId()),    // ID
-                        creature.getTipo(),                  // Tipo
-                        creature.getTipoCriatura(),         //equipa
-                        creature.getNome(),                  // Nome
-                        String.valueOf(creature.getX()),     // Posição X
-                        String.valueOf(creature.getY()),     // Posição Y
-                        null
+                        tipoCriatura,                       // Tipo de criatura (ex.: "Criança")
+                        tipo,                               // Tipo (ex.: "Zombie", "Humano", etc.)
+                        creature.getNome(),                 // Nome
+                        String.valueOf(creature.getX()),    // Coordenada X
+                        String.valueOf(creature.getY()),    // Coordenada Y
+                        null                                // PNG (pode ser adicionado se necessário)
                 };
             }
         }
-        return null; // Se a criatura com o ID fornecido não for encontrada
+        throw new IllegalArgumentException("Criatura não encontrada para o ID: " + id);
     }
+
+
+
+
 
 
     public String getCreatureInfoAsString(int id) {
