@@ -223,7 +223,8 @@ public class GameManager {
         // Verifica se há uma criatura na posição
         for (Creature creature : personagens) {
             if (creature.getX() == x && creature.getY() == y) {
-                return creature.getTipoCriatura() + ":" + creature.getId();
+                // Retorna H para humanos e Z para zumbis
+                return (creature.isHuman() ? "H" : "Z") + ":" + creature.getId();
             }
         }
 
@@ -234,10 +235,14 @@ public class GameManager {
             }
         }
 
+        // Verifica se é um Safe Haven
+        if (tabuleiro.isSafeHaven(x, y)) {
+            return "SH";
+        }
 
-
-        return ""; // Caso não haja nada na posição
+        return ""; // Retorno padrão caso não haja nada na posição
     }
+
 
 
     public String[] getCreatureInfo(int id) {
@@ -273,32 +278,33 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                String nome;
-                // Mapeia o tipo do equipamento para o nome correto
+                // Identifica o tipo numérico com base na classe do equipamento
+                String tipoNumerico;
                 if (equipment instanceof EscudoDeMadeira) {
-                    nome = "Escudo de madeira";
+                    tipoNumerico = "0"; // Tipo numérico para Escudo de Madeira
                 } else if (equipment instanceof EspadaSamurai) {
-                    nome = "Espada samurai";
+                    tipoNumerico = "1"; // Tipo numérico para Espada Samurai
                 } else if (equipment instanceof PistolaWaltherPPK) {
-                    nome = "Pistola Walther PPK ";
+                    tipoNumerico = "2"; // Tipo numérico para Pistola
                 } else if (equipment instanceof Lixivia) {
-                    nome = "Lixivia";
+                    tipoNumerico = "3"; // Tipo numérico para Lixívia
                 } else {
-                    nome = "Tipo desconhecido";
+                    throw new IllegalArgumentException("Tipo desconhecido para equipamento com ID: " + id);
                 }
 
-                // Retorna as informações do equipamento
+                // Retorna as informações no formato esperado
                 return new String[]{
-                        String.valueOf(equipment.getId()),    // ID
-                        nome,                                // Tipo como nome mapeado
-                        String.valueOf(equipment.getX()),    // Posição X
-                        String.valueOf(equipment.getY()),    // Posição Y
-                        null                                 // PNG ou caminho do ícone, se aplicável
+                        String.valueOf(equipment.getId()), // ID
+                        tipoNumerico,                     // Tipo numérico (0, 1, 2, 3)
+                        String.valueOf(equipment.getX()), // Posição X
+                        String.valueOf(equipment.getY()), // Posição Y
+                        null                              // Placeholder para ícones ou imagens
                 };
             }
         }
-        throw new IllegalArgumentException("Equipamento não encontrado para o ID: " + id); // Evita erros silenciosos
+        throw new IllegalArgumentException("Equipamento não encontrado para o ID: " + id);
     }
+
 
 
 
