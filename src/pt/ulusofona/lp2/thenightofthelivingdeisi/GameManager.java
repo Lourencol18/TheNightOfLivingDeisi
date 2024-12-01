@@ -38,13 +38,10 @@ public class GameManager {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro ausentes.", currentLine);
             }
             currentLine++;
-            String linhaDimensao = scanner.nextLine().trim();
-            System.out.println("Lendo dimensões: " + linhaDimensao);  // Adicione esta linha para depuração
-            String[] tamanho = linhaDimensao.split(" ");
+            String[] tamanho = scanner.nextLine().trim().split(" ");
             if (tamanho.length != 2) {
                 throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro mal formatadas.", currentLine);
             }
-
             int width, height;
             try {
                 width = Integer.parseInt(tamanho[0]);
@@ -113,16 +110,19 @@ public class GameManager {
                     Creature criatura;
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano (Criança)
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano (Adulto)
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano (Idoso)
+                            case 3 -> criatura = new Cao(id, nome, x, y, 20); // Humano (Cão) - Sempre humano
+                            case 4 -> throw new InvalidFileException("Tipo de criatura inválido para humanos (não pode ser Vampiro).", currentLine);
                             default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false); // Zumbi
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false); // Zumbi
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false); // Zumbi
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false); // Zumbi (Criança)
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false); // Zumbi (Adulto)
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false); // Zumbi (Idoso)
+                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa); // Zumbi (Vampiro) - Sempre zumbi
                             default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
                         }
                     } else {
@@ -151,6 +151,60 @@ public class GameManager {
                 throw new InvalidFileException("Número de equipamentos não pode ser negativo.", currentLine);
             }
 
+            // Processa cada equipamento
+            for (int i = 0; i < numEquipments; i++) {
+                currentLine++;
+                String linhaEquipamento = scanner.nextLine().trim();
+                if (linhaEquipamento.isEmpty()) {
+                    i--;
+                    continue;
+                }
+
+                String[] equipamentoData = linhaEquipamento.split(" : ");
+                if (equipamentoData.length != 4) {
+                    throw new InvalidFileException("Dados do equipamento mal formatados.", currentLine);
+                }
+
+                try {
+                    int id = Integer.parseInt(equipamentoData[0]);
+                    int tipo = Integer.parseInt(equipamentoData[1]);
+                    int x = Integer.parseInt(equipamentoData[2]);
+                    int y = Integer.parseInt(equipamentoData[3]);
+
+                    if (!tabuleiro.dentroDosLimites(x, y)) {
+                        throw new InvalidFileException("Coordenadas do equipamento fora dos limites.", currentLine);
+                    }
+
+                    Equipamento equipamento;
+                    switch (tipo) {
+                        case 0 -> equipamento = new EscudoDeMadeira(id, x, y);
+                        case 1 -> equipamento = new EspadaSamurai(id, x, y);
+                        case 2 -> equipamento = new PistolaWaltherPPK(id, x, y);
+                        case 3 -> equipamento = new Lixivia(id, x, y);
+                        default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
+                    }
+
+                    equipamentos.add(equipamento);
+
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
+                }
+            }
+
+            // Lê o número de Safe Havens
+            int numSafeHavens = 0;  // Se não houver número, definimos como 0
+            if (scanner.hasNext()) {
+                currentLine++;
+                try {
+                    numSafeHavens = Integer.parseInt(scanner.next());
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
+                }
+                if (numSafeHavens < 0) {
+                    throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
+                }
+            }
+
             // Processa cada Safe Haven
             for (int i = 0; i < numSafeHavens; i++) {
                 currentLine++;
@@ -169,12 +223,11 @@ public class GameManager {
                     int x = Integer.parseInt(coordenadas[0]);
                     int y = Integer.parseInt(coordenadas[1]);
 
-                    // Verifica se as coordenadas estão dentro dos limites do tabuleiro
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         throw new InvalidFileException("Coordenadas do Safe Haven fora dos limites.", currentLine);
                     }
 
-                    // Cria o objeto SafeHaven e adiciona ao tabuleiro
+                    // Criação do Safe Haven e adição ao tabuleiro
                     SafeHaven safeHaven = new SafeHaven(x, y);
                     SafeHaven.add(safeHaven);  // Adiciona ao conjunto de SafeHavens
                     tabuleiro.adicionarSafeHaven(x, y);
@@ -184,10 +237,11 @@ public class GameManager {
                 }
             }
 
-
-
         }
     }
+
+
+
 
 
     public int[] getWorldSize() {
@@ -275,15 +329,17 @@ public class GameManager {
                 info.append(creature.getId()).append(" | ")          // ID
                         .append(creature.getTipoCriatura()).append(" | ") // Tipo de criatura (ex.: "Criança", "Adulto")
                         .append(creature.getTipo()).append(" | ")        // Tipo (ex.: "Humano", "Zombie")
-                        .append(creature.getNome()).append(" | ")        // Nome
-                        .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Coordenadas
+                        .append(creature.getNome()).append(" | ");       // Nome
 
                 // Verifica se a criatura é Humano ou Zombie e adiciona +0 ou -0
                 if (creature.getTipo().equals("Humano")) {
-                    info.append(" | +0");
+                    info.append("+0");
                 } else if (creature.getTipo().equals("Zombie")) {
-                    info.append(" | -0");
+                    info.append("-0");
                 }
+
+                // Adiciona as coordenadas da criatura
+                info.append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")");
 
                 // Verifica se a criatura possui um equipamento
                 Equipamento equipamentoAtual = creature.getEquipamentoAtual();
@@ -297,6 +353,7 @@ public class GameManager {
 
         return "Criatura não encontrada."; // Retorna mensagem padrão para ID inválido
     }
+
 
 
 
