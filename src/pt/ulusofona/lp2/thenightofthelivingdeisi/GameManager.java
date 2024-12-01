@@ -188,22 +188,69 @@ public class GameManager {
                     throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
                 }
             }
+
+            // Lê o número de Safe Havens
+            if (!scanner.hasNext()) {
+                throw new InvalidFileException("Arquivo inválido: número de Safe Havens ausente.", currentLine);
+            }
+            currentLine++;
+            int numSafeHavens;
+            try {
+                numSafeHavens = Integer.parseInt(scanner.next());
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
+            }
+            if (numSafeHavens < 0) {
+                throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
+            }
+
+            // Processa cada Safe Haven
+            for (int i = 0; i < numSafeHavens; i++) {
+                currentLine++;
+                String linhaSafeHaven = scanner.nextLine().trim();
+                if (linhaSafeHaven.isEmpty()) {
+                    i--;
+                    continue;
+                }
+
+                String[] coordenadas = linhaSafeHaven.split(" : ");
+                if (coordenadas.length != 2) {
+                    throw new InvalidFileException("Dados do Safe Haven mal formatados.", currentLine);
+                }
+
+                try {
+                    int x = Integer.parseInt(coordenadas[0]);
+                    int y = Integer.parseInt(coordenadas[1]);
+
+                    if (!tabuleiro.dentroDosLimites(x, y)) {
+                        throw new InvalidFileException("Coordenadas do Safe Haven fora dos limites.", currentLine);
+                    }
+
+                    tabuleiro.adicionarSafeHaven(x, y);
+
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
+                }
+            }
         }
     }
-
-
-
-
-
-
-
-
 
 
     public int[] getWorldSize() {
         return new int[]{tabuleiro.getHeight(), tabuleiro.getWidth()};
     }
 
+    public int getInitialTeamId() {
+        return equipaInicial;
+    }
+
+    public int getCurrentTeamId() {
+        return turnoAtual;
+    }
+
+    public  boolean isDay() {
+        return dia;
+    }
 
     public String getSquareInfo(int x, int y) {
         // Verifica se há uma criatura na posição
@@ -228,21 +275,6 @@ public class GameManager {
         }
 
         return ""; // Caso a posição esteja vazia
-    }
-
-
-    public int getInitialTeamId() {
-        return equipaInicial;
-    }
-
-    public int getCurrentTeamId() {
-        return turnoAtual;
-    }
-
-
-
-    public  boolean isDay() {
-        return dia;
     }
 
 
@@ -278,10 +310,6 @@ public class GameManager {
     }
 
 
-
-
-
-
     public String getCreatureInfoAsString(int id) {
         for (Creature criatura :personagens) {
             if (criatura.getId() == id) {
@@ -290,8 +318,6 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
-
-
 
 
     public String[] getEquipmentInfo(int id) {
@@ -324,12 +350,6 @@ public class GameManager {
         throw new IllegalArgumentException("Equipamento não encontrado para o ID: " + id);
     }
 
-
-
-
-
-
-
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getId() == id) {
@@ -354,10 +374,6 @@ public class GameManager {
     }
 
 
-
-
-
-
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
         for (Creature criatura : personagens) {
             if (criatura.getId() == creatureId) {
@@ -371,7 +387,6 @@ public class GameManager {
         }
         return false; // Criatura não encontrada ou regras não permitidas
     }
-
 
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se as coordenadas estão dentro do tabuleiro
@@ -467,13 +482,7 @@ public class GameManager {
         return !existemHumanos || !existemZumbis;
     }
 
-    public void atualizarTurnosSemEventos(boolean houveEvento) {
-        if (houveEvento) {
-            turnoSemEventos = 0; // Reseta o contador se houve evento
-        } else {
-            turnoSemEventos++; // Incrementa o contador caso contrário
-        }
-    }
+
 
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
