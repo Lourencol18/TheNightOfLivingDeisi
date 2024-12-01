@@ -273,24 +273,24 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                String tipo;
+                String nome;
                 // Mapeia o tipo do equipamento para o nome correto
                 if (equipment instanceof EscudoDeMadeira) {
-                    tipo = "Escudo de madeira";
+                    nome = "Escudo de madeira";
                 } else if (equipment instanceof EspadaSamurai) {
-                    tipo = "Espada samurai";
+                    nome = "Espada samurai";
                 } else if (equipment instanceof PistolaWaltherPPK) {
-                    tipo = "Pistola Walther PPK ";
+                    nome = "Pistola Walther PPK ";
                 } else if (equipment instanceof Lixivia) {
-                    tipo = "Lixivia";
+                    nome = "Lixivia";
                 } else {
-                    tipo = "Tipo desconhecido";
+                    nome = "Tipo desconhecido";
                 }
 
                 // Retorna as informações do equipamento
                 return new String[]{
                         String.valueOf(equipment.getId()),    // ID
-                        tipo,                                // Tipo como nome mapeado
+                        nome,                                // Tipo como nome mapeado
                         String.valueOf(equipment.getX()),    // Posição X
                         String.valueOf(equipment.getY()),    // Posição Y
                         null                                 // PNG ou caminho do ícone, se aplicável
@@ -310,26 +310,11 @@ public class GameManager {
             if (equipamento.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
-                // Determina o tipo do equipamento
-                String tipo;
-                if (equipamento instanceof EscudoDeMadeira) {
-                    tipo = "0 Escudo";
-                } else if (equipamento instanceof EspadaSamurai) {
-                    tipo = "1 Espada";
-                } else if (equipamento instanceof PistolaWaltherPPK) {
-                    tipo = "2 Pistola";
-                } else if (equipamento instanceof Lixivia) {
-                    tipo = "3 Lixivia";
-                } else {
-                    tipo = "Tipo desconhecido";
-                }
-
-                // Constrói a string de informação do equipamento
+                // Constrói a string no formato esperado
                 info.append(equipamento.getId()).append(" | ") // ID
-                        .append(tipo).append(" | ")              // Tipo
-                        .append(equipamento.getNome()).append(" @ (") // Nome
-                        .append(equipamento.getX()).append(", ")  // Posição X
-                        .append(equipamento.getY()).append(")");  // Posição Y
+                        .append(equipamento.getNome()).append(" @ (") // Nome do equipamento
+                        .append(equipamento.getX()).append(", ") // Posição X
+                        .append(equipamento.getY()).append(")"); // Posição Y
 
                 // Adiciona informações específicas do equipamento, se aplicável
                 String additionalInfo = equipamento.getInfo();
@@ -342,6 +327,7 @@ public class GameManager {
         }
         return ""; // Retorno padrão caso o equipamento não seja encontrado
     }
+
 
 
 
