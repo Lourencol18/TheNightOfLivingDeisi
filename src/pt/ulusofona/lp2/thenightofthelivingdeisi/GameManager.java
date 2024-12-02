@@ -491,8 +491,6 @@ public class GameManager {
     }
 
 
-
-
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
@@ -513,22 +511,70 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se a criatura pertence à equipe atual
+        // Verifica se é a vez da equipe correta
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             return false;
         }
 
         // Verifica se há outra criatura na posição de destino
+        Creature targetCreature = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
-                return false;
+                targetCreature = creature;
+                break;
             }
         }
 
-        // Verifica se o movimento é válido
-        if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
-            return false;
+        // Interação entre Humanos e Zumbis
+        if (targetCreature != null) {
+            if (creatureToMove.isHuman() && targetCreature.isZombie()) {
+                // Humano ataca Zombie
+                personagens.remove(targetCreature); // Remove o zombie do jogo
+                creatureToMove.setX(xD);
+                creatureToMove.setY(yD);
+                turnoAtual++;
+                equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                return true;
+            } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
+                // Zombie tenta atacar Humano
+                Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
+                if (equipamentoAtual != null) {
+                    if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                        // Defesa com pistola
+                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                        if (pistola.temBalas()) {
+                            pistola.gastarBala();
+                            turnoAtual++;
+                            equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                            return true;
+                        }
+                    } else if (equipamentoAtual instanceof Lixivia) {
+                        // Defesa com lixívia
+                        Lixivia lixivia = (Lixivia) equipamentoAtual;
+                        if (lixivia.temLitros()) {
+                            lixivia.executarAcao(null, null);
+                            turnoAtual++;
+                            equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                            return true;
+                        }
+                    } else if (equipamentoAtual instanceof EscudoDeMadeira) {
+                        // Defesa com escudo
+                        turnoAtual++;
+                        equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                        return true;
+                    }
+                }
+
+                // Transformação do humano em zumbi
+                targetCreature.transformar();
+                turnoAtual++;
+                equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                return true;
+            } else {
+                // Não pode ocupar a mesma posição de outra criatura
+                return false;
+            }
         }
 
         // Verifica se há um equipamento na posição de destino
@@ -540,23 +586,30 @@ public class GameManager {
             }
         }
 
-        // Executa o movimento
+        // Movimento normal
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
-        // Lida com interações no destino
-        if (equipamentoParaInteragir != null) {
-            if (creatureToMove.isHuman()) {
-                // Humanos pegam equipamentos
-                if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
-                    creatureToMove.pegarEquipamento(equipamentoParaInteragir);
-                    equipamentos.remove(equipamentoParaInteragir);
-                }
-            } else if (creatureToMove.isZombie()) {
-                // Zumbis destroem equipamentos
-                creatureToMove.destruirEquipamento();
+        // Humanos podem pegar equipamentos
+        if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
+            if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
+                creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
             }
+        }
+
+        // Zumbis destroem equipamentos
+        if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
+            creatureToMove.destruirEquipamento();
+            equipamentos.remove(equipamentoParaInteragir);
+        }
+
+        // Humanos entram no Safe Haven
+        if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
+            personagens.remove(creatureToMove); // Remove o humano do jogo
+            turnoAtual++;
+            equipaAtual = (equipaAtual == 10) ? 20 : 10;
+            return true;
         }
 
         // Atualiza o turno e alterna a equipe
@@ -570,6 +623,8 @@ public class GameManager {
 
         return true; // Movimento realizado com sucesso
     }
+
+
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem transformações ou mortes
