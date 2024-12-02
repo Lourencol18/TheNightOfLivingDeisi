@@ -326,34 +326,34 @@ public class GameManager {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
-                // Adiciona informações básicas da criatura
-                info.append(creature.getId()).append(" | ")          // ID
-                        .append(creature.getTipoCriatura()).append(" | ") // Tipo de criatura (ex.: "Criança", "Adulto")
-                        .append(creature.getTipo()).append(" | ")        // Tipo (ex.: "Humano", "Zombie")
-                        .append(creature.getNome()).append(" | ");       // Nome
+                // Determina o prefixo baseado no tipo da criatura
+                String vidaPrefix = creature.isHuman() ? "+" : "-";
 
-                // Verifica se a criatura é Humano ou Zombie e adiciona +0 ou -0
-                if (creature.getTipo().equals("Humano")) {
-                    info.append("+0");
-                } else if (creature.getTipo().equals("Zombie")) {
-                    info.append("-0");
+                // Construção da string
+                info.append(creature.getId()).append(" | ")             // ID
+                        .append(creature.getTipo()).append(" | ")           // Tipo (Criança, Adulto, etc.)
+                        .append(creature.isHuman() ? "Humano" : "Zombie").append(" | ") // Equipe
+                        .append(creature.getNome()).append(" | ")           // Nome
+                        .append(vidaPrefix).append("0").append(" @ (")      // Exibe +0 ou -0
+                        .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+
+                // Adiciona informações de equipamento, se aplicável
+                if (creature.getEquipamentoAtual() != null) {
+                    Equipamento equipamento = creature.getEquipamentoAtual();
+                    info.append(" | ").append(equipamento.getNome()).append(" @ (")
+                            .append(equipamento.getX()).append(", ").append(equipamento.getY()).append(")");
+                    String additionalInfo = equipamento.getInfo();
+                    if (!additionalInfo.isEmpty()) {
+                        info.append(" | ").append(additionalInfo);
+                    }
                 }
 
-                // Adiciona as coordenadas da criatura
-                info.append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")");
-
-                // Verifica se a criatura possui um equipamento
-                Equipamento equipamentoAtual = creature.getEquipamentoAtual();
-                if (equipamentoAtual != null) {
-                    info.append(" | Equipamento: ").append(equipamentoAtual.getNome()); // Nome do equipamento
-                }
-
-                return info.toString(); // Retorna a string construída
+                return info.toString();
             }
         }
-
-        return "Criatura não encontrada."; // Retorna mensagem padrão para ID inválido
+        return "Criatura não encontrada.";
     }
+
 
 
 
