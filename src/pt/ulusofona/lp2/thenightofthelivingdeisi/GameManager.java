@@ -449,19 +449,41 @@ public class GameManager {
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
-        for (Creature criatura : personagens) {
-            if (criatura.getId() == creatureId) {
-                Equipamento equipamentoAtual = criatura.getEquipamentoAtual();
+        for (Creature creature : personagens) {
+            if (creature.getId() == creatureId) {
+                // Apenas humanos podem ter equipamentos
+                if (!creature.isHuman()) {
+                    return false;
+                }
 
-                // Verifica se a criatura tem um equipamento atual e se o tipo corresponde
-                if (equipamentoAtual != null && equipamentoAtual.getId() == equipmentTypeId) {
-                    // Verifica se a criatura é capaz de pegar este tipo de equipamento
-                    return criatura.podePegarEquipamento(equipamentoAtual);
+                // Verifica se a criatura tem um equipamento atual
+                Equipamento equipamentoAtual = creature.getEquipamentoAtual();
+                if (equipamentoAtual == null) {
+                    return false; // Nenhum equipamento
+                }
+
+                // Verifica o tipo de criatura e suas restrições de equipamentos
+                switch (creature.getTipoCriatura()) {
+                    case "Idoso": // Idosos não podem ter equipamentos
+                        return false;
+
+                    case "Criança": // Crianças só podem ter equipamentos defensivos (0 e 3)
+                        return equipmentTypeId == 0 || equipmentTypeId == 3;
+
+                    case "Cão": // Cães não podem ter equipamentos
+                        return false;
+
+                    case "Adulto": // Adultos podem ter todos os tipos de equipamentos
+                        return equipamentoAtual.getId() == equipmentTypeId;
+
+                    default:
+                        return false; // Caso o tipo não seja reconhecido
                 }
             }
         }
-        return false; // Se a criatura não foi encontrada ou não possui o equipamento
+        return false; // Criatura não encontrada
     }
+
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
