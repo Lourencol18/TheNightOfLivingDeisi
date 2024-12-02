@@ -326,15 +326,33 @@ public class GameManager {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
-                // Determina o prefixo baseado no tipo da criatura
+                // Caso específico: Cão
+                if (creature instanceof Cao) {
+                    info.append(creature.getId()).append(" | ")         // ID
+                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Cão)
+                            .append(creature.getNome()).append(" @ (")      // Nome
+                            .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    return info.toString();
+                }
+
+                // Caso específico: Vampiro
+                if (creature instanceof Vampiro) {
+                    info.append(creature.getId()).append(" | ")         // ID
+                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
+                            .append(creature.getNome()).append(" @ (")      // Nome
+                            .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    return info.toString();
+                }
+
+                // Determina o prefixo baseado no tipo da criatura (humano ou zumbi)
                 String vidaPrefix = creature.isHuman() ? "+" : "-";
 
-                // Construção da string
+                // Construção da string padrão para outras criaturas
                 info.append(creature.getId()).append(" | ")             // ID
-                        .append(creature.getTipoCriatura()).append(" | ")           // Tipo (Criança, Adulto, etc.)
+                        .append(creature.getTipoCriatura()).append(" | ")   // Tipo (Criança, Adulto, etc.)
                         .append(creature.isHuman() ? "Humano" : "Zombie").append(" | ") // Equipe
                         .append(creature.getNome()).append(" | ")           // Nome
-                        .append(vidaPrefix).append("0").append(" @ (")      // Exibe +0 ou -0
+                        .append(vidaPrefix).append(creature.getContadorEquipamentos()).append(" @ (") // Contador de equipamentos
                         .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
 
                 // Adiciona informações de equipamento, se aplicável
@@ -354,6 +372,9 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
+
+
 
 
 

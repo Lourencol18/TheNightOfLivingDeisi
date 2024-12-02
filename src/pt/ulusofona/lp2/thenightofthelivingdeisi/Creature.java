@@ -88,7 +88,9 @@ public abstract class Creature {
         }
         // Define o novo equipamento como atual
         equipamentoAtual = equipamento;
+        contadorEquipamentos++; // Incrementa o contador de equipamentos
     }
+
 
     // Método para soltar o equipamento atual
     public void soltarEquipamento() {
