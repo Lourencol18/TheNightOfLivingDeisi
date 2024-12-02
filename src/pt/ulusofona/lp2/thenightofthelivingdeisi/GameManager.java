@@ -642,15 +642,17 @@ public class GameManager {
 
 
 
-
-
-
-    // Método para avançar o turno
     private void advanceTurn() {
         turnoAtual++;
+
+        // Alterna entre 2 turnos de dia e 2 turnos de noite
+        dia = ((turnoAtual + 1) / 2) % 2 == 0;
+
+        // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
-        dia = turnoAtual % 2 == 0; // Alterna entre dia e noite
     }
+
+
 
 
 
