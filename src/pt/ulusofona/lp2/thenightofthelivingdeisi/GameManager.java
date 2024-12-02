@@ -337,6 +337,16 @@ public class GameManager {
                     return info.toString();
                 }
 
+                // Caso específico: Vampiro
+                if (creature instanceof Vampiro) {
+                    info.append(creature.getId()).append(" | ")         // ID
+                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
+                            .append(creature.getNome()).append(" | ")      // Nome
+                            .append("-").append(creature.getContadorEquipamentos()) // Contador de equipamentos destruídos
+                            .append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    return info.toString();
+                }
+
                 // Determina o prefixo baseado no tipo da criatura (humano ou zumbi)
                 String vidaPrefix = creature.isHuman() ? "+" : "-";
 
@@ -348,7 +358,7 @@ public class GameManager {
                     info.append("Zombie (Transformado)"); // Exibe Transformado para zumbis
                 } else if (creature.isHuman()) {
                     info.append("Humano");
-                } else {
+                } else if (!(creature instanceof Vampiro)) {
                     info.append("Zombie");
                 }
 
@@ -382,6 +392,7 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
 
 
 
@@ -528,12 +539,12 @@ public class GameManager {
         // Interação entre Humanos e Zumbis
         if (targetCreature != null) {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                // Humano ataca Zombie
+                // Humano ataca Zumbi
                 personagens.remove(targetCreature); // Remove o zumbi do jogo
                 creatureToMove.setX(xD);
                 creatureToMove.setY(yD);
             } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
-                // Zombie tenta atacar Humano
+                // Zumbi tenta atacar Humano
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
                 if (equipamentoAtual != null) {
                     if (equipamentoAtual instanceof PistolaWaltherPPK) {
@@ -599,9 +610,14 @@ public class GameManager {
 
         // Humanos entram no Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
-            personagens.remove(creatureToMove); // Remove o humano do jogo
-            advanceTurn();
-            return true;
+            for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+                if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
+                    safeHaven.entrar(creatureToMove); // Adiciona a criatura ao Safe Haven
+                    personagens.remove(creatureToMove); // Remove a criatura da lista de personagens
+                    advanceTurn();
+                    return true;
+                }
+            }
         }
 
         // Atualiza o turno e alterna a equipe
@@ -609,14 +625,14 @@ public class GameManager {
         return true; // Movimento realizado com sucesso
     }
 
-    // Método auxiliar para avançar o turno e alternar a equipe
+
+    // Método para avançar o turno
     private void advanceTurn() {
         turnoAtual++;
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
-        if (turnoAtual % 2 == 0) {
-            dia = !dia;
-        }
+        dia = turnoAtual % 2 == 0; // Alterna entre dia e noite
     }
+
 
 
 
@@ -679,9 +695,21 @@ public class GameManager {
     }
 
 
-    public List<Integer> getIdsInSafeHaven(){
-        return new ArrayList<>();
+    public List<Integer> getIdsInSafeHaven() {
+        List<Integer> idsInSafeHaven = new ArrayList<>();
+
+        // Itera sobre todos os Safe Havens e coleta os IDs das criaturas dentro
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature criatura : safeHaven.getCriaturasDentro()) {
+                idsInSafeHaven.add(criatura.getId());
+            }
+        }
+
+        return idsInSafeHaven;
     }
+
+
+
 
 
     public JPanel getCreditsPanel() {
