@@ -30,6 +30,11 @@ public class Adulto extends Creature {
     }
 
     @Override
+    public boolean podePegarEquipamento(Equipamento equipamento) {
+        return true;
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         // Permite movimento em linha reta ou diagonal até 2 casas
         int distanciaX = Math.abs(xD - xO);

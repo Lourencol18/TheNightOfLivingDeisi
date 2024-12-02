@@ -22,6 +22,11 @@ public class Cao extends Creature {
     }
 
     @Override
+    public boolean podePegarEquipamento(Equipamento equipamento) {
+        return false;
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         int distanciaX = Math.abs(xD - xO);
         int distanciaY = Math.abs(yD - yO);

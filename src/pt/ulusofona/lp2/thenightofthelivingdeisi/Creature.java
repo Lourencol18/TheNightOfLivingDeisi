@@ -45,6 +45,17 @@ public abstract class Creature {
         return y;
     }
 
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+
     public int getEquipa() {
         return equipa;
     }
@@ -94,6 +105,9 @@ public abstract class Creature {
 
     // IdosoZ destrói equipamentos ao encontrá-los
     public abstract void destruirEquipamento();
+
+    public abstract boolean podePegarEquipamento(Equipamento equipamento);
+
 
     // Método abstrato para movimentação
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);

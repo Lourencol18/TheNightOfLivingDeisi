@@ -27,6 +27,11 @@ public class Idoso extends Creature {
         }
     }
 
+    @Override
+    public boolean podePegarEquipamento(Equipamento equipamento) {
+        return false;
+    }
+
     // Método para verificar se pode se mover (limitação de 1 célula)
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {

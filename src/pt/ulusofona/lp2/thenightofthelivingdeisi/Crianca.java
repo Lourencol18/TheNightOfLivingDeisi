@@ -26,6 +26,11 @@ public class Crianca extends Creature {
     }
 
     @Override
+    public boolean podePegarEquipamento(Equipamento equipamento) {
+        return equipamento.getId() == 0 || equipamento.getId() == 3;
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         // Verifica se é horizontal ou vertical e se é apenas 1 casa
         int distanciaX = Math.abs(xD - xO);

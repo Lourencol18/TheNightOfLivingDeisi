@@ -32,7 +32,7 @@ public class GameManager {
         turnoAtual = equipaInicial;
 
         try (Scanner scanner = new Scanner(file)) {
-            int currentLine = 1; // Para rastrear erros de linha
+            int currentLine = -1; // Para rastrear erros de linha
 
             // Lê dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
@@ -254,7 +254,7 @@ public class GameManager {
     }
 
     public int getCurrentTeamId() {
-        return turnoAtual;
+        return equipaAtual;
     }
 
     public  boolean isDay() {
@@ -428,8 +428,8 @@ public class GameManager {
     }
 
     public boolean move(int xO, int yO, int xD, int yD) {
-        // Verifica se as coordenadas estão dentro do tabuleiro
-        if (xD < 0 || xD >= tabuleiro.getWidth() || yD < 0 || yD >= tabuleiro.getHeight()) {
+        // Verifica se as coordenadas de destino estão dentro do tabuleiro
+        if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;
         }
 
@@ -447,32 +447,25 @@ public class GameManager {
             return false;
         }
 
-        // Determina a equipe correta com base no turno e na equipe inicial
-        boolean turnoParaHumanos = (turnoAtual % 2 == 0 && equipaInicial == 1) || (turnoAtual % 2 == 1 && equipaInicial == 0);
-        boolean equipeCorreta = (turnoParaHumanos && creatureToMove.isHuman()) || (!turnoParaHumanos && creatureToMove.isZombie());
-
-        // Verifica se é a vez da equipe correta
-        if (!equipeCorreta) {
+        // Verifica se a criatura pertence à equipe atual
+        boolean turnoParaHumanos = equipaAtual == 20;
+        if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             return false;
         }
 
-        // Verifica se há outra criatura no destino
+        // Verifica se há outra criatura na posição de destino
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
                 return false;
             }
         }
 
-        // Verifica se o movimento é válido (apenas em linha reta)
-        int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(yD - yO);
-
-        // Permite apenas movimento em linha reta (horizontal ou vertical)
-        if (!((distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1))) {
+        // Verifica se o movimento é válido
+        if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
             return false;
         }
 
-        // Verifica equipamentos na posição de destino
+        // Verifica se há um equipamento na posição de destino
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == xD && equipment.getY() == yD) {
@@ -482,30 +475,34 @@ public class GameManager {
         }
 
         // Executa o movimento
-        creatureToMove.x = xD;
-        creatureToMove.y = yD;
+        creatureToMove.setX(xD);
+        creatureToMove.setY(yD);
 
-        // Se houver equipamento na posição de destino
+        // Lida com interações no destino
         if (equipamentoParaInteragir != null) {
-            if (creatureToMove.isHuman()) { // Humanos pegam equipamentos
-                creatureToMove.pegarEquipamento(equipamentoParaInteragir); // Adiciona o equipamento ao humano
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
-            } else if (creatureToMove.isZombie()) { // Zumbis destroem equipamentos
-                creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
-                equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            if (creatureToMove.isHuman()) {
+                // Humanos pegam equipamentos
+                if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
+                    creatureToMove.pegarEquipamento(equipamentoParaInteragir);
+                    equipamentos.remove(equipamentoParaInteragir);
+                }
+            } else if (creatureToMove.isZombie()) {
+                // Zumbis destroem equipamentos
+                creatureToMove.destruirEquipamento();
+                equipamentos.remove(equipamentoParaInteragir);
             }
         }
 
-        // Incrementa o turno para alternar a equipe
+        // Atualiza o turno e alterna a equipe
         turnoAtual++;
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
-        // A cada 2 turnos, alterna entre dia e noite
+        // Alterna entre dia e noite a cada dois turnos
         if (turnoAtual % 2 == 0) {
             dia = !dia;
         }
 
-        return true;
+        return true; // Movimento realizado com sucesso
     }
 
     public boolean gameIsOver() {

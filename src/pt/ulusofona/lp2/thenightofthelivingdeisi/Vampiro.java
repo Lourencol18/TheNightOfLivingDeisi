@@ -24,6 +24,11 @@ public class Vampiro extends Creature {
     }
 
     @Override
+    public boolean podePegarEquipamento(Equipamento equipamento) {
+        return false;
+    }
+
+    @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
         // Vampiros só podem se mover à noite
         if (isDay) {
