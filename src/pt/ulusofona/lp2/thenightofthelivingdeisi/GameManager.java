@@ -331,7 +331,7 @@ public class GameManager {
 
                 // Construção da string
                 info.append(creature.getId()).append(" | ")             // ID
-                        .append(creature.getTipo()).append(" | ")           // Tipo (Criança, Adulto, etc.)
+                        .append(creature.getTipoCriatura()).append(" | ")           // Tipo (Criança, Adulto, etc.)
                         .append(creature.isHuman() ? "Humano" : "Zombie").append(" | ") // Equipe
                         .append(creature.getNome()).append(" | ")           // Nome
                         .append(vidaPrefix).append("0").append(" @ (")      // Exibe +0 ou -0
@@ -340,7 +340,8 @@ public class GameManager {
                 // Adiciona informações de equipamento, se aplicável
                 if (creature.getEquipamentoAtual() != null) {
                     Equipamento equipamento = creature.getEquipamentoAtual();
-                    info.append(" | ").append(equipamento.getNome()).append(" @ (")
+                    info.append(" | ").append(equipamento.getId()).append(" | ")
+                            .append(equipamento.getNome()).append(" @ (")
                             .append(equipamento.getX()).append(", ").append(equipamento.getY()).append(")");
                     String additionalInfo = equipamento.getInfo();
                     if (!additionalInfo.isEmpty()) {
