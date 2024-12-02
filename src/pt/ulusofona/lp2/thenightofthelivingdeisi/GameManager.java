@@ -545,6 +545,11 @@ public class GameManager {
 
         // Regras para interação entre criaturas
         if (targetCreature != null) {
+            if (creatureToMove instanceof Crianca) {
+                // Crianças não podem atacar zumbis
+                return false;
+            }
+
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 // Humano ataca Zumbi
                 personagens.remove(targetCreature); // Remove o zumbi do jogo
@@ -598,24 +603,25 @@ public class GameManager {
         }
 
         // Movimento normal ou com salto para adultos
-        if (creatureToMove instanceof Adulto) {
-            int dx = Math.abs(xD - xO);
-            int dy = Math.abs(yD - yO);
-            if (dx > 2 || dy > 2) {
-                return false; // Adultos podem mover no máximo 2 casas
-            }
-        }
-
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
         // Humanos podem pegar equipamentos
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
+            // Debug para verificar a lógica
+            System.out.println("Tentando pegar equipamento: " + equipamentoParaInteragir.getNome());
+            System.out.println("Criatura tentando pegar: " + creatureToMove.getNome());
+            System.out.println("Pode pegar? " + creatureToMove.podePegarEquipamento(equipamentoParaInteragir));
+
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
+                System.out.println("Equipamento capturado com sucesso!");
+            } else {
+                System.out.println("Equipamento não permitido para esta criatura.");
             }
         }
+
 
         // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
@@ -639,6 +645,7 @@ public class GameManager {
         advanceTurn();
         return true; // Movimento realizado com sucesso
     }
+
 
 
 

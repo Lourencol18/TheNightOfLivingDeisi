@@ -46,17 +46,8 @@ public class Crianca extends Creature {
 
     @Override
     public void pegarEquipamento(Equipamento equipamento) {
-        // Crianças podem pegar apenas certos tipos de equipamentos
-        if (isHuman) {
-            // Crianças humanas podem pegar apenas equipamentos defensivos
-            if (equipamento instanceof Lixivia || equipamento instanceof EscudoDeMadeira) {
-                super.pegarEquipamento(equipamento);  // Chama a lógica base
-            } else {
-                System.out.println("Crianças só podem pegar equipamentos defensivos!");
-            }
-        } else {
-            // Crianças zumbis não podem pegar equipamentos
-            System.out.println("Zumbis não podem pegar equipamentos!");
+        if (isHuman() && (equipamento instanceof Lixivia || equipamento instanceof EscudoDeMadeira)) {
+            super.pegarEquipamento(equipamento);  // Lógica base para pegar equipamento
         }
     }
 
