@@ -328,13 +328,22 @@ public class GameManager {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
-
                 // Caso específico: Cão
                 if (creature instanceof Cao) {
                     info.append(creature.getId()).append(" | ")         // ID
                             .append(creature.getTipoCriatura()).append(" | ") // Tipo (Cão)
                             .append(creature.getNome()).append(" @ (")      // Nome
                             .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    return info.toString();
+                }
+
+                // Caso específico: Vampiro
+                if (creature instanceof Vampiro) {
+                    info.append(creature.getId()).append(" | ")         // ID
+                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
+                            .append(creature.getNome()).append(" | ")       // Nome
+                            .append("-").append(creature.getContadorEquipamentos()) // Contador de equipamentos destruídos
+                            .append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
                     return info.toString();
                 }
 
@@ -374,6 +383,7 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
 
 
 
