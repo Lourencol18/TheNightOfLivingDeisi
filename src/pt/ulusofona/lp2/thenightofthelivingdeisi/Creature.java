@@ -113,6 +113,7 @@ public abstract class Creature {
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);
 
 
+
     public String getInfoAsString() {
         String tipoEquipe = isHuman() ? "Humano" : "Zombie";
         String modificador = isHuman() ? "+0" : "-0";

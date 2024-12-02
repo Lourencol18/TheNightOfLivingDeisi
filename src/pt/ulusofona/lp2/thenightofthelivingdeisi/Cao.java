@@ -35,10 +35,7 @@ public class Cao extends Creature {
         return (distanciaX == 0 && distanciaY <= 2) || (distanciaY == 0 && distanciaX <= 2);
     }
 
-    @Override
-    public boolean podeTerEquipamento(int equipmentTypeId) {
-        return false;
-    }
+
 
     @Override
     public String getInfoAsString() {
