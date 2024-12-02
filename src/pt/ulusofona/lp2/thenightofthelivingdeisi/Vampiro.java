@@ -20,8 +20,9 @@ public class Vampiro extends Creature {
 
     @Override
     public void destruirEquipamento() {
-        contadorEquipamentos++;
+        contadorEquipamentos++; // Incrementa o contador de destruições
     }
+
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {

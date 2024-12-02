@@ -22,12 +22,9 @@ public class Adulto extends Creature {
 
     @Override
     public void destruirEquipamento() {
-        // Zumbis e humanos podem ter comportamentos diferentes ao destruir equipamentos.
-        // Podemos deixar aqui o comportamento específico para cada tipo.
-        if (!isHuman) {
-            contadorEquipamentos++;  // Exemplo para zumbis destruírem equipamentos
-        }
+        contadorEquipamentos++; // Incrementa o contador de destruições
     }
+
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {

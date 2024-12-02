@@ -22,8 +22,11 @@ public class Crianca extends Creature {
 
     @Override
     public void destruirEquipamento() {
-        // Implementação para destruição de equipamentos (caso necessário)
+        contadorEquipamentos++; // Incrementa o contador de destruições
     }
+
+
+
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {

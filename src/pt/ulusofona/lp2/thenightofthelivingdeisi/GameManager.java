@@ -455,8 +455,10 @@ public class GameManager {
                 return info.toString();
             }
         }
-        return ""; // Retorno padrão caso o equipamento não seja encontrado
+        // Retorna null caso o equipamento não seja encontrado
+        return null;
     }
+
 
 
     public boolean hasEquipment(int creatureId, int equipmentTypeId) {
@@ -604,8 +606,8 @@ public class GameManager {
 
         // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
-            creatureToMove.destruirEquipamento();
-            equipamentos.remove(equipamentoParaInteragir);
+            creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
+            equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
         }
 
         // Humanos entram no Safe Haven
