@@ -468,13 +468,19 @@ public class GameManager {
                         return false;
 
                     case "Criança": // Crianças só podem ter equipamentos defensivos (0 e 3)
-                        return equipmentTypeId == 0 || equipmentTypeId == 3;
+                        if (equipmentTypeId == 0 || equipmentTypeId == 3) {
+                            return true;
+                        }
+                        return false;
 
                     case "Cão": // Cães não podem ter equipamentos
                         return false;
 
                     case "Adulto": // Adultos podem ter todos os tipos de equipamentos
-                        return equipamentoAtual.getId() == equipmentTypeId;
+                        if (equipamentoAtual.getId() == equipmentTypeId) {
+                            return true;
+                        }
+                        return false;
 
                     default:
                         return false; // Caso o tipo não seja reconhecido
@@ -483,6 +489,7 @@ public class GameManager {
         }
         return false; // Criatura não encontrada
     }
+
 
 
 
