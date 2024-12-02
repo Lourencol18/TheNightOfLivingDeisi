@@ -40,10 +40,6 @@ public class Idoso extends Creature {
         return distanciaX <= 1 && distanciaY <= 1 && (distanciaX + distanciaY > 0);
     }
 
-    @Override
-    public boolean podeTerEquipamento(int equipmentTypeId) {
-        return false;  // Idosos não podem ter equipamentos
-    }
 
     @Override
     public String toString() {

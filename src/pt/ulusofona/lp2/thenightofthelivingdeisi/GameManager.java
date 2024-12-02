@@ -419,14 +419,16 @@ public class GameManager {
             if (criatura.getId() == creatureId) {
                 Equipamento equipamentoAtual = criatura.getEquipamentoAtual();
 
-                // Verifica se a criatura tem um equipamento atual e se ela pode tê-lo
-                return equipamentoAtual != null
-                        && equipamentoAtual.getId() == equipmentTypeId
-                        && criatura.podeTerEquipamento(equipmentTypeId);
+                // Verifica se a criatura tem um equipamento atual e se o tipo corresponde
+                if (equipamentoAtual != null && equipamentoAtual.getId() == equipmentTypeId) {
+                    // Verifica se a criatura é capaz de pegar este tipo de equipamento
+                    return criatura.podePegarEquipamento(equipamentoAtual);
+                }
             }
         }
-        return false; // Criatura não encontrada ou regras não permitidas
+        return false; // Se a criatura não foi encontrada ou não possui o equipamento
     }
+
 
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se as coordenadas de destino estão dentro do tabuleiro

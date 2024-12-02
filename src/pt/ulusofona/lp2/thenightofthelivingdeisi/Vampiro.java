@@ -42,10 +42,7 @@ public class Vampiro extends Creature {
         return distanciaX <= 1 && distanciaY <= 1;
     }
 
-    @Override
-    public boolean podeTerEquipamento(int equipmentTypeId) {
-        return false;
-    }
+
 
     @Override
     public String getInfoAsString() {

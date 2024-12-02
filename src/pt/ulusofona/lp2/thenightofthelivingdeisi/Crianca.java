@@ -27,8 +27,10 @@ public class Crianca extends Creature {
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {
-        return equipamento.getId() == 0 || equipamento.getId() == 3;
+        // Somente crianças humanas podem pegar equipamentos defensivos
+        return isHuman() && (equipamento.getId() == 0 || equipamento.getId() == 3);
     }
+
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
@@ -54,14 +56,7 @@ public class Crianca extends Creature {
         }
     }
 
-    @Override
-    public boolean podeTerEquipamento(int equipmentTypeId) {
-        // Crianças humanas podem ter apenas certos tipos de equipamento
-        if (isHuman) {
-            return equipmentTypeId == 1 || equipmentTypeId == 3; // Apenas Lixívia ou Escudo
-        }
-        return false; // Zumbis não podem ter equipamentos
-    }
+
 
     @Override
     public String toString() {

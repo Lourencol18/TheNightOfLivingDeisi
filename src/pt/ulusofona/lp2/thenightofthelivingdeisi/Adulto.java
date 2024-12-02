@@ -42,11 +42,7 @@ public class Adulto extends Creature {
         return (distanciaX <= 2 && distanciaY <= 2);
     }
 
-    @Override
-    public boolean podeTerEquipamento(int equipmentTypeId) {
-        // Humanos podem pegar qualquer equipamento, zumbis não
-        return isHuman;
-    }
+
 
     @Override
     public void pegarEquipamento(Equipamento equipamento) {
