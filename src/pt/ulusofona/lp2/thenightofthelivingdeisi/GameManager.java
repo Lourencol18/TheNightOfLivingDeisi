@@ -321,24 +321,18 @@ public class GameManager {
         return Jogador;  // Retorna o array com 7 elementos
     }
 
+
+
     public String getCreatureInfoAsString(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
+
                 // Caso específico: Cão
                 if (creature instanceof Cao) {
                     info.append(creature.getId()).append(" | ")         // ID
                             .append(creature.getTipoCriatura()).append(" | ") // Tipo (Cão)
-                            .append(creature.getNome()).append(" @ (")      // Nome
-                            .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
-                    return info.toString();
-                }
-
-                // Caso específico: Vampiro
-                if (creature instanceof Vampiro) {
-                    info.append(creature.getId()).append(" | ")         // ID
-                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
                             .append(creature.getNome()).append(" @ (")      // Nome
                             .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
                     return info.toString();
@@ -352,8 +346,16 @@ public class GameManager {
                         .append(creature.getTipoCriatura()).append(" | ")   // Tipo (Criança, Adulto, etc.)
                         .append(creature.isHuman() ? "Humano" : "Zombie").append(" | ") // Equipe
                         .append(creature.getNome()).append(" | ")           // Nome
-                        .append(vidaPrefix).append(creature.getContadorEquipamentos()).append(" @ (") // Contador de equipamentos
-                        .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                        .append(vidaPrefix);
+
+                // Para humanos, incrementa o contador de equipamentos se houver um equipamento atual
+                if (creature.isHuman() && creature.getEquipamentoAtual() != null) {
+                    info.append(creature.getContadorEquipamentos() + 1);
+                } else {
+                    info.append(creature.getContadorEquipamentos());
+                }
+
+                info.append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
 
                 // Adiciona informações de equipamento, se aplicável
                 if (creature.getEquipamentoAtual() != null) {
@@ -372,6 +374,7 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
 
 
 
