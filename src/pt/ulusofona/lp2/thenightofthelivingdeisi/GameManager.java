@@ -337,24 +337,23 @@ public class GameManager {
                     return info.toString();
                 }
 
-                // Caso específico: Vampiro
-                if (creature instanceof Vampiro) {
-                    info.append(creature.getId()).append(" | ")         // ID
-                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
-                            .append(creature.getNome()).append(" | ")       // Nome
-                            .append("-").append(creature.getContadorEquipamentos()) // Contador de equipamentos destruídos
-                            .append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
-                    return info.toString();
-                }
-
                 // Determina o prefixo baseado no tipo da criatura (humano ou zumbi)
                 String vidaPrefix = creature.isHuman() ? "+" : "-";
 
-                // Construção da string padrão para outras criaturas
                 info.append(creature.getId()).append(" | ")             // ID
-                        .append(creature.getTipoCriatura()).append(" | ")   // Tipo (Criança, Adulto, etc.)
-                        .append(creature.isHuman() ? "Humano" : "Zombie").append(" | ") // Equipe
-                        .append(creature.getNome()).append(" | ")           // Nome
+                        .append(creature.getTipoCriatura()).append(" | ");   // Tipo (Criança, Adulto, etc.)
+
+                // Atualiza o tipo de equipe
+                if (creature.isZombie() && creature.isTransformed()) {
+                    info.append("Zombie (Transformado)"); // Exibe Transformado para zumbis
+                } else if (creature.isHuman()) {
+                    info.append("Humano");
+                } else {
+                    info.append("Zombie");
+                }
+
+                info.append(" | ")                                     // Separador
+                        .append(creature.getNome()).append(" | ")      // Nome
                         .append(vidaPrefix);
 
                 // Para humanos, incrementa o contador de equipamentos se houver um equipamento atual
@@ -383,6 +382,7 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
 
 
 
@@ -490,7 +490,6 @@ public class GameManager {
         return false; // Criatura não encontrada
     }
 
-
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
@@ -530,12 +529,9 @@ public class GameManager {
         if (targetCreature != null) {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 // Humano ataca Zombie
-                personagens.remove(targetCreature); // Remove o zombie do jogo
+                personagens.remove(targetCreature); // Remove o zumbi do jogo
                 creatureToMove.setX(xD);
                 creatureToMove.setY(yD);
-                turnoAtual++;
-                equipaAtual = (equipaAtual == 10) ? 20 : 10;
-                return true;
             } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 // Zombie tenta atacar Humano
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
@@ -545,31 +541,28 @@ public class GameManager {
                         PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                         if (pistola.temBalas()) {
                             pistola.gastarBala();
-                            turnoAtual++;
-                            equipaAtual = (equipaAtual == 10) ? 20 : 10;
-                            return true;
+                            advanceTurn();
+                            return true; // Defesa bem-sucedida
                         }
                     } else if (equipamentoAtual instanceof Lixivia) {
                         // Defesa com lixívia
                         Lixivia lixivia = (Lixivia) equipamentoAtual;
                         if (lixivia.temLitros()) {
                             lixivia.executarAcao(null, null);
-                            turnoAtual++;
-                            equipaAtual = (equipaAtual == 10) ? 20 : 10;
-                            return true;
+                            advanceTurn();
+                            return true; // Defesa bem-sucedida
                         }
                     } else if (equipamentoAtual instanceof EscudoDeMadeira) {
-                        // Defesa com escudo
-                        turnoAtual++;
-                        equipaAtual = (equipaAtual == 10) ? 20 : 10;
-                        return true;
+                        // Defesa com escudo (apenas bloqueia ataque)
+                        advanceTurn();
+                        return true; // Defesa bem-sucedida
                     }
                 }
 
                 // Transformação do humano em zumbi
-                targetCreature.transformar();
-                turnoAtual++;
-                equipaAtual = (equipaAtual == 10) ? 20 : 10;
+                targetCreature.setEquipa(10); // Atualiza a equipe para zumbi
+                targetCreature.transformar(); // Marca como transformado
+                advanceTurn();
                 return true;
             } else {
                 // Não pode ocupar a mesma posição de outra criatura
@@ -607,22 +600,25 @@ public class GameManager {
         // Humanos entram no Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             personagens.remove(creatureToMove); // Remove o humano do jogo
-            turnoAtual++;
-            equipaAtual = (equipaAtual == 10) ? 20 : 10;
+            advanceTurn();
             return true;
         }
 
         // Atualiza o turno e alterna a equipe
+        advanceTurn();
+        return true; // Movimento realizado com sucesso
+    }
+
+    // Método auxiliar para avançar o turno e alternar a equipe
+    private void advanceTurn() {
         turnoAtual++;
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
-
-        // Alterna entre dia e noite a cada dois turnos
         if (turnoAtual % 2 == 0) {
             dia = !dia;
         }
-
-        return true; // Movimento realizado com sucesso
     }
+
+
 
 
 

@@ -21,6 +21,7 @@ public abstract class Creature {
         this.y = y;
         this.equipa = equipa;
     }
+
     public boolean isTransformed() {
         return transformado;
     }
@@ -45,19 +46,20 @@ public abstract class Creature {
         return y;
     }
 
-
     public void setX(int x) {
         this.x = x;
     }
-
 
     public void setY(int y) {
         this.y = y;
     }
 
-
     public int getEquipa() {
         return equipa;
+    }
+
+    public void setEquipa(int novaEquipa) {
+        this.equipa = novaEquipa;
     }
 
     public boolean isZombie() {
@@ -76,7 +78,7 @@ public abstract class Creature {
         return equipamentos;
     }
 
-    public int getContadorEquipamentos(){
+    public int getContadorEquipamentos() {
         return contadorEquipamentos;
     }
 
@@ -90,7 +92,6 @@ public abstract class Creature {
         equipamentoAtual = equipamento;
         contadorEquipamentos++; // Incrementa o contador de equipamentos
     }
-
 
     // Método para soltar o equipamento atual
     public void soltarEquipamento() {
@@ -110,11 +111,8 @@ public abstract class Creature {
 
     public abstract boolean podePegarEquipamento(Equipamento equipamento);
 
-
     // Método abstrato para movimentação
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);
-
-
 
     public String getInfoAsString() {
         String tipoEquipe = isHuman() ? "Humano" : "Zombie";
