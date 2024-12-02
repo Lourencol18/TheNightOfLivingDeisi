@@ -29,9 +29,10 @@ public class GameManager {
         equipaAtual = -1;
         personagens.clear();
         equipamentos.clear();
+        turnoAtual = equipaInicial;
 
         try (Scanner scanner = new Scanner(file)) {
-            int currentLine = 0; // Para rastrear erros de linha
+            int currentLine = 1; // Para rastrear erros de linha
 
             // Lê dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
@@ -497,6 +498,7 @@ public class GameManager {
 
         // Incrementa o turno para alternar a equipe
         turnoAtual++;
+        equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
         // A cada 2 turnos, alterna entre dia e noite
         if (turnoAtual % 2 == 0) {

@@ -9,7 +9,7 @@ public class InvalidFileException extends Exception {
     }
 
     public int getLineWithError() {
-        return lineWithError; // Retorna a linha com erro
+        return this.lineWithError; // Retorna a linha com erro
     }
 }
 
