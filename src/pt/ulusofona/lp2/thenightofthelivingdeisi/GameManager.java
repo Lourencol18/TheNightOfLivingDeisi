@@ -529,6 +529,11 @@ public class GameManager {
             return false;
         }
 
+        // Verifica se o movimento é válido com base nas regras específicas de cada criatura
+        if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
+            return false;
+        }
+
         // Verifica se há outra criatura na posição de destino
         Creature targetCreature = null;
         for (Creature creature : personagens) {
@@ -538,7 +543,7 @@ public class GameManager {
             }
         }
 
-        // Interação entre Humanos e Zumbis
+        // Regras para interação entre criaturas
         if (targetCreature != null) {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 // Humano ataca Zumbi
@@ -592,7 +597,15 @@ public class GameManager {
             }
         }
 
-        // Movimento normal
+        // Movimento normal ou com salto para adultos
+        if (creatureToMove instanceof Adulto) {
+            int dx = Math.abs(xD - xO);
+            int dy = Math.abs(yD - yO);
+            if (dx > 2 || dy > 2) {
+                return false; // Adultos podem mover no máximo 2 casas
+            }
+        }
+
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
@@ -606,8 +619,8 @@ public class GameManager {
 
         // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
-            creatureToMove.destruirEquipamento(); // Incrementa o contador de destruições
-            equipamentos.remove(equipamentoParaInteragir); // Remove o equipamento do tabuleiro
+            creatureToMove.destruirEquipamento();
+            equipamentos.remove(equipamentoParaInteragir);
         }
 
         // Humanos entram no Safe Haven
@@ -626,6 +639,10 @@ public class GameManager {
         advanceTurn();
         return true; // Movimento realizado com sucesso
     }
+
+
+
+
 
 
     // Método para avançar o turno

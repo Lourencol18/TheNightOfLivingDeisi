@@ -37,11 +37,12 @@ public class Crianca extends Creature {
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        // Verifica se é horizontal ou vertical e se é apenas 1 casa
-        int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(xD - yD);
-        return (distanciaX == 1 && distanciaY == 0) || (distanciaX == 0 && distanciaY == 1);
+        // Pode mover 1 casa na horizontal ou vertical (não pode diagonal)
+        int dx = Math.abs(xD - xO);
+        int dy = Math.abs(yD - yO);
+        return (dx + dy == 1) && (dx == 0 || dy == 0);
     }
+
 
     @Override
     public void pegarEquipamento(Equipamento equipamento) {

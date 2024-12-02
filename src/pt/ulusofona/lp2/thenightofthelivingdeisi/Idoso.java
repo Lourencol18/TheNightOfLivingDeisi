@@ -32,13 +32,15 @@ public class Idoso extends Creature {
         return false;
     }
 
-    // Método para verificar se pode se mover (limitação de 1 célula)
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(yD - yO);
-        return distanciaX <= 1 && distanciaY <= 1 && (distanciaX + distanciaY > 0);
+        // Pode mover 1 casa apenas na diagonal
+        int dx = Math.abs(xD - xO);
+        int dy = Math.abs(yD - yO);
+        return dx == 1 && dy == 1;
     }
+
+
 
 
     @Override

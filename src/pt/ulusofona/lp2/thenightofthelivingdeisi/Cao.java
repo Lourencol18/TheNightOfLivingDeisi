@@ -28,11 +28,10 @@ public class Cao extends Creature {
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(yD - yO);
-
-        // Apenas movimento horizontal ou vertical, máximo de 2 casas
-        return (distanciaX == 0 && distanciaY <= 2) || (distanciaY == 0 && distanciaX <= 2);
+        // Pode mover até 2 casas na horizontal ou vertical (não pode diagonal)
+        int dx = Math.abs(xD - xO);
+        int dy = Math.abs(yD - yO);
+        return (dx + dy <= 2) && (dx == 0 || dy == 0);
     }
 
 

@@ -33,11 +33,14 @@ public class Adulto extends Creature {
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD) {
-        // Permite movimento em linha reta ou diagonal até 2 casas
-        int distanciaX = Math.abs(xD - xO);
-        int distanciaY = Math.abs(yD - yO);
-        return (distanciaX <= 2 && distanciaY <= 2);
+        // Pode mover até 2 casas em qualquer direção
+        int dx = Math.abs(xD - xO);
+        int dy = Math.abs(yD - yO);
+
+        // Movimento normal de até 2 casas
+        return dx <= 2 && dy <= 2;
     }
+
 
 
 
