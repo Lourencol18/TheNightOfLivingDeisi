@@ -470,8 +470,9 @@ public class GameManager {
                 switch (creature.getTipoCriatura()) {
 
                     case "Criança": // Crianças só podem ter equipamentos defensivos (0 e 3)
-                        //if (equipmentTypeId == 0 || equipmentTypeId == 3) {
-                        return equipamentoAtual.isOfType(equipmentTypeId);
+                        if (equipmentTypeId == 0 || equipmentTypeId == 3) { // Apenas tipos defensivos
+                            return equipamentoAtual.getTipo() == equipmentTypeId;
+                        }
 
                     case "Adulto": // Adultos podem ter todos os tipos de equipamentos
                         if (equipamentoAtual.getId() == equipmentTypeId) {
