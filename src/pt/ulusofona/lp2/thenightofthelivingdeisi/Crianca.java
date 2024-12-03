@@ -44,12 +44,14 @@ public class Crianca extends Creature {
     }
 
 
-    @Override
     public void pegarEquipamento(Equipamento equipamento) {
-        if (isHuman() && (equipamento instanceof Lixivia || equipamento instanceof EscudoDeMadeira)) {
-            super.pegarEquipamento(equipamento);  // Lógica base para pegar equipamento
+        if (equipamentoAtual != null) {
+            equipamentos.add(equipamentoAtual); // Adiciona o equipamento atual ao histórico
         }
+        equipamentoAtual = equipamento;
+        contadorEquipamentos++; // Incrementa o contador
     }
+
 
 
 

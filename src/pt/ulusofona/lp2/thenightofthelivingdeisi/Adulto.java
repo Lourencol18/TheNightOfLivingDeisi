@@ -44,16 +44,14 @@ public class Adulto extends Creature {
 
 
 
-    @Override
     public void pegarEquipamento(Equipamento equipamento) {
-        // Somente humanos podem pegar equipamentos
-        if (isHuman) {
-            if (equipamentoAtual != null) {
-                equipamentos.add(equipamentoAtual);  // Adiciona o equipamento atual ao histórico
-            }
-            equipamentoAtual = equipamento;  // Define o novo equipamento como atual
+        if (equipamentoAtual != null) {
+            equipamentos.add(equipamentoAtual); // Adiciona o equipamento atual ao histórico
         }
+        equipamentoAtual = equipamento;
+        contadorEquipamentos++; // Incrementa o contador
     }
+
 
     @Override
     public String toString() {

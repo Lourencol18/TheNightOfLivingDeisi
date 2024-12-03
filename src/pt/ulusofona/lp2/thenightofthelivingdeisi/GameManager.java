@@ -368,7 +368,7 @@ public class GameManager {
 
                 // Para humanos, incrementa o contador de equipamentos se houver um equipamento atual
                 if (creature.isHuman() && creature.getEquipamentoAtual() != null) {
-                    info.append(creature.getContadorEquipamentos() + 1);
+                    info.append(creature.getContadorEquipamentos() );
                 } else {
                     info.append(creature.getContadorEquipamentos());
                 }
