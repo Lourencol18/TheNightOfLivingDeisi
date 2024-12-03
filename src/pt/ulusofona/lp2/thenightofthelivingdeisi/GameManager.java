@@ -178,10 +178,10 @@ public class GameManager {
 
                     Equipamento equipamento;
                     switch (tipo) {
-                        case 0 -> equipamento = new EscudoDeMadeira(id, x, y);
-                        case 1 -> equipamento = new EspadaSamurai(id, x, y);
-                        case 2 -> equipamento = new PistolaWaltherPPK(id, x, y);
-                        case 3 -> equipamento = new Lixivia(id, x, y);
+                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo,x, y);
+                        case 1 -> equipamento = new EspadaSamurai(id, tipo,x, y);
+                        case 2 -> equipamento = new PistolaWaltherPPK(id,tipo ,x, y);
+                        case 3 -> equipamento = new Lixivia(id, tipo ,x, y);
                         default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
                     }
 
@@ -277,7 +277,7 @@ public class GameManager {
         // Verifica se há um equipamento na posição
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == x && equipment.getY() == y) {
-                return "E:" + equipment.getId();
+                return "E:" + equipment.getTipo();
             }
         }
 
@@ -432,7 +432,7 @@ public class GameManager {
                 StringBuilder info = new StringBuilder();
 
                 // Constrói a string no formato esperado
-                info.append(equipamento.getId()).append(" | ") // ID
+                info.append(equipamento.getTipo()).append(" | ") // ID
                         .append(equipamento.getNome()).append(" @ (") // Nome do equipamento
                         .append(equipamento.getX()).append(", ") // Posição X
                         .append(equipamento.getY()).append(")"); // Posição Y

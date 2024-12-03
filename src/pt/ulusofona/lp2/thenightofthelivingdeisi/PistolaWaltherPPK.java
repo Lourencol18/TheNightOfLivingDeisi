@@ -3,8 +3,8 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 public class PistolaWaltherPPK extends Equipamento {
     private int balas = 3;
 
-    public PistolaWaltherPPK(int id, int x, int y) {
-        super(-2, 2,"Pistola Walther PPK", x, y);
+    public PistolaWaltherPPK(int id, int tipo ,int x, int y) {
+        super(2, 2,"Pistola Walther PPK", x, y);
     }
 
     @Override

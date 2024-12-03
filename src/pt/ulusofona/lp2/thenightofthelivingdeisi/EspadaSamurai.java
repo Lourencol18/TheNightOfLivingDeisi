@@ -2,8 +2,8 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class EspadaSamurai extends Equipamento {
 
-    public EspadaSamurai(int id, int x, int y) {
-        super(-1, 1,"Espada samurai", x, y);
+    public EspadaSamurai(int id, int tipo ,int x, int y) {
+        super(1, 1,"Espada samurai", x, y);
 
     }
 
