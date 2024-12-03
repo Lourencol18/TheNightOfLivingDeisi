@@ -34,8 +34,10 @@ public class Crianca extends Creature {
         if (equipamento.getTipo() == 0 || equipamento.getTipo() == 3) {
             return true; // Permite pegar equipamentos defensivos
         }
+        if (equipamento.getTipo() == 1 || equipamento.getTipo() == 2) {
+            return false; // Permite pegar equipamentos defensivos
+        }
 
-        // Caso contrário, retorna false (não pode pegar equipamentos ofensivos)
         return false;
     }
 

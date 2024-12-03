@@ -579,7 +579,14 @@ public class GameManager {
             }
         }
 
-        // Movimento normal ou com salto para adultos
+        // Verifica se é uma criança e se pode pegar o equipamento
+        if (creatureToMove instanceof Crianca) {
+            if (equipamentoParaInteragir != null && !creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
+                return false; // Criança não pode se mover para o local do equipamento ofensivo
+            }
+        }
+
+        // Movimento normal
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
@@ -588,10 +595,8 @@ public class GameManager {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            } else {
             }
         }
-
 
         // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
@@ -615,6 +620,7 @@ public class GameManager {
         advanceTurn();
         return true; // Movimento realizado com sucesso
     }
+
 
 
 
