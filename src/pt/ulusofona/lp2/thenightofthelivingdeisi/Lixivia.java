@@ -4,7 +4,7 @@ public class Lixivia extends Equipamento {
     private double litros = 1.0;
 
     public Lixivia(int id, int x, int y) {
-        super(3, "Lixívia", x, y);
+        super(-3, 3,"Lixívia", x, y);
     }
 
     @Override

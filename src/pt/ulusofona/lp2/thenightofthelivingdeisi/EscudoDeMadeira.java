@@ -2,8 +2,8 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class EscudoDeMadeira extends Equipamento {
 
-    public EscudoDeMadeira(int id, int x, int y) {
-        super(0, "Escudo de madeira", x, y);
+    public EscudoDeMadeira(int id, int tpo, int x, int y) {
+        super(0, 0 ,"Escudo de madeira", x, y);
     }
 
     @Override

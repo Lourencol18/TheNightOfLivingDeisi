@@ -4,7 +4,7 @@ public class PistolaWaltherPPK extends Equipamento {
     private int balas = 3;
 
     public PistolaWaltherPPK(int id, int x, int y) {
-        super(2, "Pistola Walther PPK", x, y);
+        super(-2, 2,"Pistola Walther PPK", x, y);
     }
 
     @Override

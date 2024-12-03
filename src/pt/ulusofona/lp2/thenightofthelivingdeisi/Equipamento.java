@@ -2,14 +2,16 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public abstract class Equipamento {
     protected int id;
+    protected int tipo;
     protected String nome;
     protected int x;
     protected int y;
 
     protected int idDoTipo = 0;
 
-    public Equipamento(int id, String nome, int x, int y) {
+    public Equipamento(int id, int tipo,String nome, int x, int y) {
         this.id = id;
+        this.tipo = tipo;
         this.nome = nome;
         this.x = x;
         this.y = y;
@@ -17,6 +19,10 @@ public abstract class Equipamento {
 
     public int getId() {
         return id;
+    }
+
+    public int getTipo(){
+        return tipo;
     }
 
     public String getNome() {
