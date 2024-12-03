@@ -3,7 +3,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 public class EscudoDeMadeira extends Equipamento {
 
     public EscudoDeMadeira(int id, int x, int y) {
-        super(id, "Escudo de madeira", x, y);
+        super(0, "Escudo de madeira", x, y);
     }
 
     @Override
@@ -19,5 +19,9 @@ public class EscudoDeMadeira extends Equipamento {
     @Override
     public String toString() {
         return nome;
+    }
+
+    boolean isOfType(int id) {
+        return id == 0;
     }
 }

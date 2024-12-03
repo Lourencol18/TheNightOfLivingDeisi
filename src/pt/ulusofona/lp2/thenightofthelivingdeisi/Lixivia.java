@@ -37,4 +37,7 @@ public class Lixivia extends Equipamento {
         return litros + " litros";
     }
 
+    boolean isOfType(int id) {
+        return id == 3;
+    }
 }

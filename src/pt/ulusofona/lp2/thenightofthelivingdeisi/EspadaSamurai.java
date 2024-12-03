@@ -3,7 +3,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 public class EspadaSamurai extends Equipamento {
 
     public EspadaSamurai(int id, int x, int y) {
-        super(id, "Espada samurai", x, y);
+        super(1, "Espada samurai", x, y);
 
     }
 
@@ -25,5 +25,9 @@ public class EspadaSamurai extends Equipamento {
     @Override
     public String toString() {
         return nome;
+    }
+
+    boolean isOfType(int id) {
+        return id == 1;
     }
 }

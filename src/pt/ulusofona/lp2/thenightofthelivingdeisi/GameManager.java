@@ -468,17 +468,10 @@ public class GameManager {
 
                 // Verifica o tipo de criatura e suas restrições de equipamentos
                 switch (creature.getTipoCriatura()) {
-                    case "Idoso": // Idosos não podem ter equipamentos
-                        return false;
 
                     case "Criança": // Crianças só podem ter equipamentos defensivos (0 e 3)
-                        if (equipmentTypeId == 0 || equipmentTypeId == -3) {
-                            return true;
-                        }
-                        return false;
-
-                    case "Cão": // Cães não podem ter equipamentos
-                        return false;
+                        //if (equipmentTypeId == 0 || equipmentTypeId == 3) {
+                        return equipamentoAtual.isOfType(equipmentTypeId);
 
                     case "Adulto": // Adultos podem ter todos os tipos de equipamentos
                         if (equipamentoAtual.getId() == equipmentTypeId) {

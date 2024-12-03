@@ -6,6 +6,8 @@ public abstract class Equipamento {
     protected int x;
     protected int y;
 
+    protected int idDoTipo = -1;
+
     public Equipamento(int id, String nome, int x, int y) {
         this.id = id;
         this.nome = nome;
@@ -36,4 +38,5 @@ public abstract class Equipamento {
 
     public abstract String getInfo();
 
+    abstract boolean isOfType (int typeId);
 }

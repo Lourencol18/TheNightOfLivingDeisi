@@ -4,7 +4,7 @@ public class Cao extends Creature {
 
 
     public Cao(int id, String nome, int x, int y, int equipa) {
-        super(id, nome, x, y, equipa);
+        super(3, nome, x, y, equipa);
     }
 
     @Override
