@@ -593,17 +593,10 @@ public class GameManager {
 
         // Humanos podem pegar equipamentos
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
-            // Debug para verificar a lógica
-            System.out.println("Tentando pegar equipamento: " + equipamentoParaInteragir.getNome());
-            System.out.println("Criatura tentando pegar: " + creatureToMove.getNome());
-            System.out.println("Pode pegar? " + creatureToMove.podePegarEquipamento(equipamentoParaInteragir));
-
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-                System.out.println("Equipamento capturado com sucesso!");
             } else {
-                System.out.println("Equipamento não permitido para esta criatura.");
             }
         }
 
