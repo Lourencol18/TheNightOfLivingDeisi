@@ -475,10 +475,11 @@ public class GameManager {
                         }
 
                     case "Adulto": // Adultos podem ter todos os tipos de equipamentos
-                        if (equipamentoAtual.getId() == equipmentTypeId) {
-                            return true;
+                        if (equipmentTypeId == 0 || equipmentTypeId == 1 | equipmentTypeId == 2 | equipmentTypeId == 3) {
+                            return equipamentoAtual.getTipo() == equipmentTypeId;
                         }
-                        return false;
+
+
 
                     default:
                         return false; // Caso o tipo não seja reconhecido
