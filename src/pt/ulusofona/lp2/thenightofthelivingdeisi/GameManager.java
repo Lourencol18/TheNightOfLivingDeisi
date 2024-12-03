@@ -277,7 +277,7 @@ public class GameManager {
         // Verifica se há um equipamento na posição
         for (Equipamento equipment : equipamentos) {
             if (equipment.getX() == x && equipment.getY() == y) {
-                return "E:" + equipment.getTipo();
+                return "E:" + equipment.getId();
             }
         }
 
