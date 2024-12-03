@@ -31,7 +31,7 @@ public class Crianca extends Creature {
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {
         // Somente crianças humanas podem pegar equipamentos defensivos
-        return isHuman() && (equipamento.getId() == 0 || equipamento.getId() == 3);
+        return isHuman() && (equipamento.getTipo() == 0 || equipamento.getTipo() == 3);
     }
 
 

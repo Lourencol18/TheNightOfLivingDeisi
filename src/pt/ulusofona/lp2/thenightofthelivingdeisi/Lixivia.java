@@ -4,7 +4,7 @@ public class Lixivia extends Equipamento {
     private double litros = 1.0;
 
     public Lixivia(int id, int tipo ,int x, int y) {
-        super(3, 3,"Lixívia", x, y);
+        super(id, 3,"Lixívia", x, y);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class Lixivia extends Equipamento {
     }
 
     boolean isOfType(int id) {
-        return id == 3;
+        return id == -3;
     }
 }

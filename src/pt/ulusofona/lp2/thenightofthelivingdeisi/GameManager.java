@@ -270,7 +270,7 @@ public class GameManager {
             if (creature.getX() == x && creature.getY() == y) {
                 // Identifica se a criatura é humano ou zumbi
                 String tipo = creature.isHuman() ? "H" : "Z";
-                return tipo + ":" + creature.getTipo();
+                return tipo + ":" + creature.getId();
             }
         }
 
