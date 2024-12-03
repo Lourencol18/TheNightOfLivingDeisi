@@ -430,25 +430,16 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getId() == id) {
                 StringBuilder info = new StringBuilder();
-
-                // Constrói a string no formato esperado
-                info.append(equipamento.getTipo()).append(" | ") // ID
-                        .append(equipamento.getNome()).append(" @ (") // Nome do equipamento
-                        .append(equipamento.getX()).append(", ") // Posição X
-                        .append(equipamento.getY()).append(")"); // Posição Y
-
-                // Adiciona informações específicas do equipamento, se aplicável
-                String additionalInfo = equipamento.getInfo();
-                if (!additionalInfo.isEmpty()) {
-                    info.append(" | ").append(additionalInfo);
-                }
-
+                info.append(equipamento.getId()).append(" | ") // Use getId() para o ID correto
+                        .append(equipamento.getNome()).append(" @ (")
+                        .append(equipamento.getX()).append(", ")
+                        .append(equipamento.getY()).append(")");
                 return info.toString();
             }
         }
-        // Retorna null caso o equipamento não seja encontrado
-        return null;
+        return null; // Caso o equipamento não seja encontrado
     }
+
 
 
 
