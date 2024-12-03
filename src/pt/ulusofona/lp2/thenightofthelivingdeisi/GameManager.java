@@ -396,15 +396,6 @@ public class GameManager {
 
 
 
-
-
-
-
-
-
-
-
-
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
@@ -428,7 +419,7 @@ public class GameManager {
                         tipoNumerico,                     // Tipo numérico (0, 1, 2, 3)
                         String.valueOf(equipment.getX()), // Posição X
                         String.valueOf(equipment.getY()), // Posição Y
-                        null                              // Placeholder para ícones ou imagens
+                        null                             // Placeholder para ícones ou imagens
                 };
             }
         }
@@ -481,7 +472,7 @@ public class GameManager {
                         return false;
 
                     case "Criança": // Crianças só podem ter equipamentos defensivos (0 e 3)
-                        if (equipmentTypeId == 0 || equipmentTypeId == 3) {
+                        if (equipmentTypeId == 0 || equipmentTypeId == -3) {
                             return true;
                         }
                         return false;
