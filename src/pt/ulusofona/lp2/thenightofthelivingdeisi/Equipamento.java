@@ -6,7 +6,7 @@ public abstract class Equipamento {
     protected int x;
     protected int y;
 
-    protected int idDoTipo = -1;
+    protected int idDoTipo = 0;
 
     public Equipamento(int id, String nome, int x, int y) {
         this.id = id;
