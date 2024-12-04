@@ -45,12 +45,15 @@ public class GameManager {
             }
             int width, height;
             try {
-                width = Integer.parseInt(tamanho[0]);
-                height = Integer.parseInt(tamanho[1]);
+                height = Integer.parseInt(tamanho[0]); // Linhas (altura)
+                width = Integer.parseInt(tamanho[1]); // Colunas (largura)
             } catch (NumberFormatException e) {
                 throw new InvalidFileException("Dimensões do tabuleiro não são números válidos.", currentLine);
             }
+
+            // Inicializa o tabuleiro
             tabuleiro = new Tabuleiro(width, height);
+            System.out.println("Tabuleiro criado com dimensões: " + height + "x" + width);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
@@ -101,29 +104,29 @@ public class GameManager {
                     int equipa = Integer.parseInt(criaturaData[1]);
                     int tipoCriatura = Integer.parseInt(criaturaData[2]);
                     String nome = criaturaData[3];
-                    int x = Integer.parseInt(criaturaData[4]);
-                    int y = Integer.parseInt(criaturaData[5]);
+                    int x = Integer.parseInt(criaturaData[4]); // Coluna
+                    int y = Integer.parseInt(criaturaData[5]); // Linha
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
-                        throw new InvalidFileException("Coordenadas da criatura fora dos limites.", currentLine);
+                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Criatura ignorada.");
+                        continue; // Ignora criaturas fora dos limites
                     }
 
                     Creature criatura;
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano (Criança)
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano (Adulto)
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano (Idoso)
-                            case 3 -> criatura = new Cao(id, nome, x, y, equipa,true); // Humano (Cão) - Sempre humano
-                            case 4 -> throw new InvalidFileException("Tipo de criatura inválido para humanos (não pode ser Vampiro).", currentLine);
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true);
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true);
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true);
+                            case 3 -> criatura = new Cao(id, nome, x, y, equipa, true);
                             default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false); // Zumbi (Criança)
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false); // Zumbi (Adulto)
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false); // Zumbi (Idoso)
-                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa); // Zumbi (Vampiro) - Sempre zumbi
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false);
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false);
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false);
+                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
                             default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
                         }
                     } else {
@@ -173,15 +176,16 @@ public class GameManager {
                     int y = Integer.parseInt(equipamentoData[3]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
-                        throw new InvalidFileException("Coordenadas do equipamento fora dos limites.", currentLine);
+                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Equipamento ignorado.");
+                        continue; // Ignora equipamentos fora dos limites
                     }
 
                     Equipamento equipamento;
                     switch (tipo) {
-                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo,x, y);
-                        case 1 -> equipamento = new EspadaSamurai(id, tipo,x, y);
-                        case 2 -> equipamento = new PistolaWaltherPPK(id,tipo ,x, y);
-                        case 3 -> equipamento = new Lixivia(id, tipo ,x, y);
+                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo, x, y);
+                        case 1 -> equipamento = new EspadaSamurai(id, tipo, x, y);
+                        case 2 -> equipamento = new PistolaWaltherPPK(id, tipo, x, y);
+                        case 3 -> equipamento = new Lixivia(id, tipo, x, y);
                         default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
                     }
 
@@ -193,8 +197,7 @@ public class GameManager {
             }
 
             // Lê o número de Safe Havens
-
-            int numSafeHavens = 0;  // Se não houver número, definimos como 0
+            int numSafeHavens = 0; // Se não houver número, definimos como 0
             if (scanner.hasNext()) {
                 currentLine++;
                 try {
@@ -226,12 +229,10 @@ public class GameManager {
                     int y = Integer.parseInt(coordenadas[1]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
-                        throw new InvalidFileException("Coordenadas do Safe Haven fora dos limites.", currentLine);
+                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Safe Haven ignorado.");
+                        continue; // Ignora Safe Havens fora dos limites
                     }
 
-                    // Criação do Safe Haven e adição ao tabuleiro
-                    SafeHaven safeHaven = new SafeHaven(x, y);
-                    SafeHaven.add(safeHaven);  // Adiciona ao conjunto de SafeHavens
                     tabuleiro.adicionarSafeHaven(x, y);
 
                 } catch (NumberFormatException e) {
@@ -239,8 +240,11 @@ public class GameManager {
                 }
             }
 
+        } catch (IOException e) {
+            throw new FileNotFoundException("Erro ao abrir o ficheiro.");
         }
     }
+
 
 
 
