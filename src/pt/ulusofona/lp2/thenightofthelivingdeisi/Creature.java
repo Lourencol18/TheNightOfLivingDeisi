@@ -109,6 +109,8 @@ public abstract class Creature {
 
     public abstract String getTipo();
 
+
+
     // IdosoZ destrói equipamentos ao encontrá-los
     public abstract void destruirEquipamento();
 

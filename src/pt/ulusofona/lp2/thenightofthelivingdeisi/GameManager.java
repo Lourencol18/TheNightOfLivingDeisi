@@ -520,12 +520,7 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se o movimento é válido com base nas regras específicas de cada criatura
-        // Vampiros só podem se mover à noite
-        if (creatureToMove instanceof Vampiro && isDay()) {
-            return false;
-        }
-
+        // Verifica se o movimento é válido
         if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
             return false;
         }
@@ -539,86 +534,40 @@ public class GameManager {
             }
         }
 
-        // Regras para interação entre criaturas
+        // Interação entre criaturas
         if (targetCreature != null) {
-            if (creatureToMove instanceof Crianca) {
-                // Crianças não podem atacar zumbis
-                return false;
-            }
-
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                // Humano ataca Zumbi
-                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-                if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                personagens.remove(targetCreature); // Humano mata o zumbi
+            } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
+                Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
+                if (equipamentoAtual != null && equipamentoAtual instanceof PistolaWaltherPPK) {
                     PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                     if (pistola.temBalas()) {
-                        pistola.gastarBala(); // Gasta uma bala
-                        personagens.remove(targetCreature); // Remove o zumbi do jogo
-                        creatureToMove.setX(xD);
-                        creatureToMove.setY(yD);
+                        pistola.gastarBala();
                         advanceTurn();
-                        return true; // Movimento e ataque bem-sucedidos
-                    } else {
-                        return false; // Se a pistola não tiver balas, não pode atacar
+                        return true; // Defesa com sucesso
                     }
                 }
-
-                // Se o humano não tiver pistola, o ataque não é permitido
-                return false;
-            } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
-                // Zumbi tenta atacar Humano
-                Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
-                if (equipamentoAtual != null) {
-                    if (equipamentoAtual instanceof PistolaWaltherPPK) {
-                        // Defesa com pistola
-                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                        if (pistola.temBalas()) {
-                            pistola.gastarBala();
-                            advanceTurn();
-                            return true; // Defesa bem-sucedida
-                        }
-                    } else if (equipamentoAtual instanceof Lixivia) {
-                        // Defesa com lixívia
-                        Lixivia lixivia = (Lixivia) equipamentoAtual;
-                        if (lixivia.temLitros()) {
-                            lixivia.executarAcao(null, null);
-                            advanceTurn();
-                            return true; // Defesa bem-sucedida
-                        }
-                    } else if (equipamentoAtual instanceof EscudoDeMadeira) {
-                        // Defesa com escudo (apenas bloqueia ataque)
-                        advanceTurn();
-                        return true; // Defesa bem-sucedida
-                    }
-                }
-
-                // Transformação do humano em zumbi
-                targetCreature.setEquipa(10); // Atualiza a equipe para zumbi
-                targetCreature.transformar(); // Marca como transformado
-                targetCreature.setEquipamentoAtual(null); // Remove o equipamento após a transformação
-                advanceTurn();
-                return true;
-
+                targetCreature.transformar(); // Humano vira zumbi
             } else {
-                // Não pode ocupar a mesma posição de outra criatura
-                return false;
+                return false; // Movimento inválido
             }
         }
 
-        // Verifica se há um equipamento na posição de destino
+        // Verifica se há equipamento na posição de destino
         Equipamento equipamentoParaInteragir = null;
-        for (Equipamento equipment : equipamentos) {
-            if (equipment.getX() == xD && equipment.getY() == yD) {
-                equipamentoParaInteragir = equipment;
+        for (Equipamento equipamento : equipamentos) {
+            if (equipamento.getX() == xD && equipamento.getY() == yD) {
+                equipamentoParaInteragir = equipamento;
                 break;
             }
         }
 
-        // Movimento normal ou com salto para adultos
+        // Atualiza a posição da criatura
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
-        // Humanos podem pegar equipamentos
+        // Interação com equipamentos
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
@@ -626,30 +575,28 @@ public class GameManager {
             }
         }
 
-        // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
-            creatureToMove.destruirEquipamento();
-            equipamentos.remove(equipamentoParaInteragir);
+            equipamentos.remove(equipamentoParaInteragir); // Zumbi destrói equipamento
         }
 
-        // Humanos entram no Safe Haven
+        // Interação com Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                    boolean entrou = safeHaven.entrar(creatureToMove); // Adiciona a criatura ao Safe Haven
-                    if (entrou) {
-                        personagens.remove(creatureToMove); // Remove a criatura da lista de personagens
-                        advanceTurn(); // Avança o turno
+                    if (safeHaven.entrar(creatureToMove)) {
+                        personagens.remove(creatureToMove); // Remove do jogo
+                        advanceTurn();
                         return true;
                     }
                 }
             }
         }
 
-        // Atualiza o turno e alterna a equipe
-        advanceTurn();
-        return true; // Movimento realizado com sucesso
+        advanceTurn(); // Avança o turno
+        return true;
     }
+
+
 
 
 
@@ -663,11 +610,38 @@ public class GameManager {
         turnoAtual++;
 
         // Alterna entre 2 turnos de dia e 2 turnos de noite
-        dia = ((turnoAtual + 1) / 2) % 2 == 0;
+        dia = (turnoAtual / 2) % 2 == 0;
 
         // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
+
+        // Verifica se houve transformações ou mortes
+        boolean houveEventos = false;
+        for (Creature creature : personagens) {
+            if (creature.isZombie() && creature.isTransformed()) {
+                houveEventos = true;
+                break;
+            }
+        }
+
+        // Atualiza o contador de turnos sem eventos
+        if (houveEventos) {
+            turnoSemEventos = 0; // Reseta se houver eventos
+        } else {
+            turnoSemEventos++; // Incrementa se não houver eventos
+        }
+
+        // Verificação de término do jogo
+        if (turnoSemEventos >= 8 || gameIsOver()) {
+            terminado = true; // Marca o jogo como terminado
+        }
     }
+
+
+
+
+
+
 
 
 
@@ -677,18 +651,50 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        // 1. Verifica se passaram 8 turnos sem transformações ou mortes
+        // 1. Verifica se passaram 8 turnos sem transformações ou mortes de zumbis
         if (turnoSemEventos >= 8) {
+            return true; // Jogo acaba por inatividade
+        }
+
+        // 2. Verifica se existem apenas elementos de uma equipe no tabuleiro
+        boolean existemHumanos = false;
+        boolean existemZumbis = false;
+
+        for (Creature creature : personagens) {
+            if (creature.isHuman()) {
+                existemHumanos = true; // Existem humanos restantes
+            } else if (creature.isZombie()) {
+                existemZumbis = true; // Existem zumbis restantes
+            }
+
+            // Se ambas as equipes ainda têm membros, o jogo não termina
+            if (existemHumanos && existemZumbis) {
+                return false;
+            }
+        }
+
+        // 3. Verifica se todos os humanos fugiram para o Safe Haven ou foram transformados
+        boolean todosHumanosNoSafeHaven = true;
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature criatura : personagens) {
+                if (criatura.isHuman() && !safeHaven.getCriaturasDentro().contains(criatura)) {
+                    todosHumanosNoSafeHaven = false;
+                    break;
+                }
+            }
+            if (!todosHumanosNoSafeHaven) {
+                break;
+            }
+        }
+
+        // Se não há humanos no tabuleiro (todos fugiram ou transformados) ou todos os zumbis morreram
+        if (!existemHumanos || !existemZumbis || todosHumanosNoSafeHaven) {
             return true;
         }
 
-        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
-        boolean existemHumanos = personagens.stream().anyMatch(Creature::isHuman);
-        boolean existemZumbis = personagens.stream().anyMatch(Creature::isZombie);
-
-        // O jogo termina se apenas humanos ou apenas zumbis existirem
-        return !existemHumanos || !existemZumbis;
+        return false; // Jogo continua
     }
+
 
 
 
