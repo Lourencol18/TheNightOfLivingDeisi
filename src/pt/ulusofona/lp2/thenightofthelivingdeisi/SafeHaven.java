@@ -23,12 +23,15 @@ public class SafeHaven {
             return false; // Apenas humanos podem entrar
         }
 
+        // Adiciona a criatura ao Safe Haven, se ainda não estiver
         if (!criaturasDentro.contains(criatura)) {
             criaturasDentro.add(criatura);
-            System.out.println("Criatura adicionada ao Safe Haven: " + criatura.getNome() + " (ID: " + criatura.getId() + ")");
+            return true; // Sucesso na entrada
         }
-        return true;
+
+        return false; // Já está no Safe Haven
     }
+
 
 
 

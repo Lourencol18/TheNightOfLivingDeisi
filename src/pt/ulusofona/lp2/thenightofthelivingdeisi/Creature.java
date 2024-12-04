@@ -13,6 +13,7 @@ public abstract class Creature {
     protected Equipamento equipamentoAtual = null; // Equipamento em uso
     protected int contadorEquipamentos = 0;
     protected boolean transformado = false;
+    private int equipamentosDestruidos = 0;
 
     public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
@@ -21,6 +22,14 @@ public abstract class Creature {
         this.y = y;
         this.equipa = equipa;
     }
+    public int getEquipamentosDestruidos() {
+        return equipamentosDestruidos;
+    }
+
+    public void incrementarEquipamentosDestruidos() {
+        equipamentosDestruidos++;
+    }
+
 
     public boolean isTransformed() {
         return transformado;
@@ -115,6 +124,9 @@ public abstract class Creature {
     public abstract void destruirEquipamento();
 
     public abstract boolean podePegarEquipamento(Equipamento equipamento);
+    public void incrementarEquipamentosDestruidos(int quantidade) {
+        equipamentosDestruidos += quantidade;
+    }
 
     // Método abstrato para movimentação
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);

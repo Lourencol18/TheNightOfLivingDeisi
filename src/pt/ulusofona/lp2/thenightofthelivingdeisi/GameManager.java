@@ -22,6 +22,7 @@ public class GameManager {
    private boolean terminado = false;
    private int turnoSemEventos = 0;
     private int numSafeHavens = 0;
+    private int turnosSemEventos = 0; // Contador de turnos sem eventos
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
@@ -348,7 +349,7 @@ public class GameManager {
                     info.append(creature.getId()).append(" | ")         // ID
                             .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
                             .append(creature.getNome()).append(" | ")      // Nome
-                            .append("-").append(creature.getContadorEquipamentos()) // Contador de equipamentos destruídos
+                            .append("-").append(creature.getEquipamentosDestruidos()) // Contador de equipamentos destruídos
                             .append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
                     return info.toString();
                 }
@@ -372,9 +373,9 @@ public class GameManager {
                         .append(creature.getNome()).append(" | ")      // Nome
                         .append(vidaPrefix);
 
-                // Para humanos, incrementa o contador de equipamentos se houver um equipamento atual
-                if (creature.isHuman() && creature.getEquipamentoAtual() != null) {
-                    info.append(creature.getContadorEquipamentos() );
+                // Exibe o contador de equipamentos destruídos para zumbis
+                if (creature.isZombie()) {
+                    info.append(creature.getEquipamentosDestruidos());
                 } else {
                     info.append(creature.getContadorEquipamentos());
                 }
@@ -398,6 +399,8 @@ public class GameManager {
         }
         return "Criatura não encontrada.";
     }
+
+
 
 
 
@@ -520,6 +523,11 @@ public class GameManager {
             return false;
         }
 
+        // Verifica se o vampiro está tentando se mover de dia
+        if (creatureToMove instanceof Vampiro && isDay()) {
+            return false;
+        }
+
         // Verifica se o movimento é válido
         if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
             return false;
@@ -537,24 +545,44 @@ public class GameManager {
         // Interação entre criaturas
         if (targetCreature != null) {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                personagens.remove(targetCreature); // Humano mata o zumbi
+                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
+                if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                    if (pistola.temBalas()) {
+                        pistola.gastarBala();
+                        personagens.remove(targetCreature); // Zumbi morto
+                        creatureToMove.setX(xD); // Move o humano para a casa onde o zumbi estava
+                        creatureToMove.setY(yD);
+                        advanceTurn();
+                        return true;
+                    }
+                }
+                return false; // Humano não tem como se defender
             } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
-                if (equipamentoAtual != null && equipamentoAtual instanceof PistolaWaltherPPK) {
+                if (equipamentoAtual instanceof PistolaWaltherPPK) {
                     PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                     if (pistola.temBalas()) {
                         pistola.gastarBala();
                         advanceTurn();
-                        return true; // Defesa com sucesso
+                        return true; // Defesa bem-sucedida
                     }
                 }
+
+                // Transferência do contador de equipamentos
+                int equipamentosUsados = targetCreature.getContadorEquipamentos();
                 targetCreature.transformar(); // Humano vira zumbi
+                targetCreature.setEquipa(10); // Atualiza a equipe
+                targetCreature.soltarEquipamento(); // Remove o equipamento do humano transformado
+                targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados); // Adiciona o valor ao contador destruído
+                advanceTurn();
+                return true;
             } else {
                 return false; // Movimento inválido
             }
         }
 
-        // Verifica se há equipamento na posição de destino
+        // Verifica se há um equipamento na posição de destino
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
@@ -576,6 +604,7 @@ public class GameManager {
         }
 
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
+            creatureToMove.incrementarEquipamentosDestruidos(); // Incrementa o contador
             equipamentos.remove(equipamentoParaInteragir); // Zumbi destrói equipamento
         }
 
@@ -606,36 +635,45 @@ public class GameManager {
 
 
 
+
+
+
+
+
+
+
+
     private void advanceTurn() {
         turnoAtual++;
 
         // Alterna entre 2 turnos de dia e 2 turnos de noite
-        dia = (turnoAtual / 2) % 2 == 0;
+        dia = ((turnoAtual + 1) / 2) % 2 == 0;
 
         // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
-        // Verifica se houve transformações ou mortes
+        // Verifica se houve eventos significativos (mortos ou transformações)
         boolean houveEventos = false;
+
         for (Creature creature : personagens) {
-            if (creature.isZombie() && creature.isTransformed()) {
-                houveEventos = true;
+            if (creature.isZombie() && creature.getEquipamentosDestruidos() > 0) {
+                houveEventos = true; // Equipamentos destruídos contam como evento
+                break;
+            }
+            if (creature.isHuman() && creature.isTransformed()) {
+                houveEventos = true; // Transformação conta como evento
                 break;
             }
         }
 
         // Atualiza o contador de turnos sem eventos
         if (houveEventos) {
-            turnoSemEventos = 0; // Reseta se houver eventos
+            turnosSemEventos = 0; // Reinicia o contador
         } else {
-            turnoSemEventos++; // Incrementa se não houver eventos
-        }
-
-        // Verificação de término do jogo
-        if (turnoSemEventos >= 8 || gameIsOver()) {
-            terminado = true; // Marca o jogo como terminado
+            turnosSemEventos++; // Incrementa se nenhum evento ocorreu
         }
     }
+
 
 
 
@@ -651,49 +689,31 @@ public class GameManager {
 
 
     public boolean gameIsOver() {
-        // 1. Verifica se passaram 8 turnos sem transformações ou mortes de zumbis
-        if (turnoSemEventos >= 8) {
-            return true; // Jogo acaba por inatividade
+        // 1. Verifica se passaram 8 turnos sem transformações ou mortes
+        if (turnosSemEventos >= 8) {
+            return true;
         }
 
-        // 2. Verifica se existem apenas elementos de uma equipe no tabuleiro
+        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
         boolean existemHumanos = false;
         boolean existemZumbis = false;
 
         for (Creature creature : personagens) {
             if (creature.isHuman()) {
-                existemHumanos = true; // Existem humanos restantes
-            } else if (creature.isZombie()) {
-                existemZumbis = true; // Existem zumbis restantes
+                existemHumanos = true;
             }
-
-            // Se ambas as equipes ainda têm membros, o jogo não termina
+            if (creature.isZombie()) {
+                existemZumbis = true;
+            }
             if (existemHumanos && existemZumbis) {
-                return false;
+                break; // Ambos existem, jogo continua
             }
         }
 
-        // 3. Verifica se todos os humanos fugiram para o Safe Haven ou foram transformados
-        boolean todosHumanosNoSafeHaven = true;
-        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-            for (Creature criatura : personagens) {
-                if (criatura.isHuman() && !safeHaven.getCriaturasDentro().contains(criatura)) {
-                    todosHumanosNoSafeHaven = false;
-                    break;
-                }
-            }
-            if (!todosHumanosNoSafeHaven) {
-                break;
-            }
-        }
-
-        // Se não há humanos no tabuleiro (todos fugiram ou transformados) ou todos os zumbis morreram
-        if (!existemHumanos || !existemZumbis || todosHumanosNoSafeHaven) {
-            return true;
-        }
-
-        return false; // Jogo continua
+        // O jogo termina se apenas humanos ou apenas zumbis existirem
+        return !existemHumanos || !existemZumbis;
     }
+
 
 
 
