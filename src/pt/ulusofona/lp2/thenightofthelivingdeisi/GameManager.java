@@ -114,7 +114,7 @@ public class GameManager {
                             case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano (Criança)
                             case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano (Adulto)
                             case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano (Idoso)
-                            case 3 -> criatura = new Cao(id, nome, x, y, 20); // Humano (Cão) - Sempre humano
+                            case 3 -> criatura = new Cao(id, nome, x, y, equipa,true); // Humano (Cão) - Sempre humano
                             case 4 -> throw new InvalidFileException("Tipo de criatura inválido para humanos (não pode ser Vampiro).", currentLine);
                             default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }

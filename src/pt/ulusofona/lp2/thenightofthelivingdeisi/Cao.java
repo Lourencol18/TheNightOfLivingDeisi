@@ -3,8 +3,11 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 public class Cao extends Creature {
 
 
-    public Cao(int id, String nome, int x, int y, int equipa) {
-        super(3, nome, x, y, equipa);
+    private boolean isHuman;
+
+    public Cao(int id, String nome, int x, int y, int equipa, boolean isHuman) {
+        super(id, nome, x, y, equipa); // Chama o construtor da classe pai (Creature)
+        this.isHuman = isHuman;  // Define se é humano ou zumbi
     }
 
     @Override
