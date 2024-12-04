@@ -24,7 +24,7 @@ public class Lixivia extends Equipamento {
     }
 
     @Override
-    public String toString() {
+     public String toString() {
         return nome + " (" + litros + " L restantes)";
     }
 

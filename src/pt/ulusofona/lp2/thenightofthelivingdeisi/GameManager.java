@@ -436,15 +436,23 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getId() == id) {
                 StringBuilder info = new StringBuilder();
-                info.append(equipamento.getId()).append(" | ") // Use getId() para o ID correto
+                info.append(equipamento.getId()).append(" | ") // ID do equipamento
                         .append(equipamento.getNome()).append(" @ (")
                         .append(equipamento.getX()).append(", ")
                         .append(equipamento.getY()).append(")");
+
+                // Adiciona informações extras específicas do equipamento, se disponíveis
+                String additionalInfo = equipamento.getInfo();
+                if (additionalInfo != null && !additionalInfo.isEmpty()) {
+                    info.append(" | ").append(additionalInfo);
+                }
+
                 return info.toString();
             }
         }
         return null; // Caso o equipamento não seja encontrado
     }
+
 
 
 
@@ -513,6 +521,11 @@ public class GameManager {
         }
 
         // Verifica se o movimento é válido com base nas regras específicas de cada criatura
+        // Vampiros só podem se mover à noite
+        if (creatureToMove instanceof Vampiro && isDay()) {
+            return false;
+        }
+
         if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
             return false;
         }
@@ -535,9 +548,23 @@ public class GameManager {
 
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 // Humano ataca Zumbi
-                personagens.remove(targetCreature); // Remove o zumbi do jogo
-                creatureToMove.setX(xD);
-                creatureToMove.setY(yD);
+                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
+                if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                    if (pistola.temBalas()) {
+                        pistola.gastarBala(); // Gasta uma bala
+                        personagens.remove(targetCreature); // Remove o zumbi do jogo
+                        creatureToMove.setX(xD);
+                        creatureToMove.setY(yD);
+                        advanceTurn();
+                        return true; // Movimento e ataque bem-sucedidos
+                    } else {
+                        return false; // Se a pistola não tiver balas, não pode atacar
+                    }
+                }
+
+                // Se o humano não tiver pistola, o ataque não é permitido
+                return false;
             } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 // Zumbi tenta atacar Humano
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
@@ -568,8 +595,10 @@ public class GameManager {
                 // Transformação do humano em zumbi
                 targetCreature.setEquipa(10); // Atualiza a equipe para zumbi
                 targetCreature.transformar(); // Marca como transformado
+                targetCreature.setEquipamentoAtual(null); // Remove o equipamento após a transformação
                 advanceTurn();
                 return true;
+
             } else {
                 // Não pode ocupar a mesma posição de outra criatura
                 return false;
@@ -609,8 +638,7 @@ public class GameManager {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
                     boolean entrou = safeHaven.entrar(creatureToMove); // Adiciona a criatura ao Safe Haven
                     if (entrou) {
-                        System.out.println("Criatura entrou no Safe Haven: " + creatureToMove.getNome() + " (ID: " + creatureToMove.getId() + ")");
-                        personagens.remove(creatureToMove); // Remove a criatura de personagens
+                        personagens.remove(creatureToMove); // Remove a criatura da lista de personagens
                         advanceTurn(); // Avança o turno
                         return true;
                     }
@@ -618,11 +646,14 @@ public class GameManager {
             }
         }
 
-
         // Atualiza o turno e alterna a equipe
         advanceTurn();
         return true; // Movimento realizado com sucesso
     }
+
+
+
+
 
 
 

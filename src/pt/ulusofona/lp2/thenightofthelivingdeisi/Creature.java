@@ -101,6 +101,9 @@ public abstract class Creature {
             equipamentoAtual = null;
         }
     }
+    public void setEquipamentoAtual(Equipamento equipamentoAtual) {
+        this.equipamentoAtual = equipamentoAtual; // Atualiza ou remove o equipamento atual
+    }
 
     public abstract String getTipoCriatura();
 
