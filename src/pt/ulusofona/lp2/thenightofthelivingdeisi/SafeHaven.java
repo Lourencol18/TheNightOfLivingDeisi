@@ -18,21 +18,24 @@ public class SafeHaven {
         this.criaturasDentro = new ArrayList<>();
     }
 
-    // Permite que uma criatura entre no Safe Haven
     public boolean entrar(Creature criatura) {
         if (!criatura.isHuman()) {
-            return false;  // Apenas humanos podem entrar
+            return false; // Apenas humanos podem entrar
         }
 
-        // Adiciona a criatura ao Safe Haven
-        criaturasDentro.add(criatura);
+        if (!criaturasDentro.contains(criatura)) {
+            criaturasDentro.add(criatura);
+            System.out.println("Criatura adicionada ao Safe Haven: " + criatura.getNome() + " (ID: " + criatura.getId() + ")");
+        }
         return true;
     }
 
-    // Retorna as criaturas dentro do Safe Haven
+
+
     public List<Creature> getCriaturasDentro() {
-        return criaturasDentro;
+        return new ArrayList<>(criaturasDentro); // Retorna uma cópia da lista para evitar modificações externas
     }
+
 
     // Retorna as coordenadas do Safe Haven
     public int getX() {
@@ -62,6 +65,18 @@ public class SafeHaven {
         }
         return false;
     }
+    public void mostrarCriaturasNoSafeHaven(SafeHaven safeHaven) {
+        List<Creature> criaturasDentro = safeHaven.getCriaturasDentro();
+        if (criaturasDentro.isEmpty()) {
+            System.out.println("Nenhuma criatura encontrada no Safe Haven.");
+        } else {
+            for (Creature criatura : criaturasDentro) {
+                System.out.println("ID: " + criatura.getId() + ", Nome: " + criatura.getNome());
+            }
+        }
+    }
+
+
 
     // Retorna todos os Safe Havens registrados
     public static Set<SafeHaven> getSafeHavens() {

@@ -32,15 +32,16 @@ public class GameManager {
         turnoAtual = equipaInicial;
 
         try (Scanner scanner = new Scanner(file)) {
-            int currentLine = 0; // Para rastrear a linha com erro
+            int currentLine = -1; // Para rastrear erros de linha
 
             // Lê dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
-                throw new InvalidFileException("Ficheiro inválido: dimensões do tabuleiro ausentes.", currentLine);
+                throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro ausentes.", currentLine);
             }
+            currentLine++;
             String[] tamanho = scanner.nextLine().trim().split(" ");
             if (tamanho.length != 2) {
-                throw new InvalidFileException("Ficheiro inválido: dimensões do tabuleiro mal formatadas.", currentLine);
+                throw new InvalidFileException("Arquivo inválido: dimensões do tabuleiro mal formatadas.", currentLine);
             }
             int width, height;
             try {
@@ -49,32 +50,29 @@ public class GameManager {
             } catch (NumberFormatException e) {
                 throw new InvalidFileException("Dimensões do tabuleiro não são números válidos.", currentLine);
             }
-            if (width <= 0 || height <= 0) {
-                throw new InvalidFileException("Dimensões do tabuleiro devem ser positivas.", currentLine);
-            }
             tabuleiro = new Tabuleiro(width, height);
 
-            // Lê a equipa inicial
-            currentLine++;
+            // Lê a equipe inicial
             if (!scanner.hasNext()) {
-                throw new InvalidFileException("Ficheiro inválido: equipa inicial ausente.", currentLine);
+                throw new InvalidFileException("Arquivo inválido: equipe inicial ausente.", currentLine);
             }
+            currentLine++;
             try {
                 equipaInicial = Integer.parseInt(scanner.next());
             } catch (NumberFormatException e) {
-                throw new InvalidFileException("Equipa inicial não é um número válido.", currentLine);
+                throw new InvalidFileException("Equipe inicial não é um número válido.", currentLine);
             }
             if (equipaInicial != 10 && equipaInicial != 20) {
-                throw new InvalidFileException("Equipa inicial deve ser 10 ou 20.", currentLine);
+                throw new InvalidFileException("Equipe inicial deve ser 10 ou 20.", currentLine);
             }
             equipaAtual = equipaInicial;
 
             // Lê o número de criaturas
+            if (!scanner.hasNext()) {
+                throw new InvalidFileException("Arquivo inválido: número de criaturas ausente.", currentLine);
+            }
             currentLine++;
             int numCreatures;
-            if (!scanner.hasNext()) {
-                throw new InvalidFileException("Ficheiro inválido: número de criaturas ausente.", currentLine);
-            }
             try {
                 numCreatures = Integer.parseInt(scanner.next());
             } catch (NumberFormatException e) {
@@ -87,9 +85,6 @@ public class GameManager {
             // Processa cada criatura
             for (int i = 0; i < numCreatures; i++) {
                 currentLine++;
-                if (!scanner.hasNextLine()) {
-                    throw new InvalidFileException("Ficheiro inválido: dados da criatura ausentes.", currentLine);
-                }
                 String linhaCriatura = scanner.nextLine().trim();
                 if (linhaCriatura.isEmpty()) {
                     i--;
@@ -100,6 +95,7 @@ public class GameManager {
                 if (criaturaData.length != 6) {
                     throw new InvalidFileException("Dados da criatura mal formatados.", currentLine);
                 }
+
                 try {
                     int id = Integer.parseInt(criaturaData[0]);
                     int equipa = Integer.parseInt(criaturaData[1]);
@@ -115,22 +111,23 @@ public class GameManager {
                     Creature criatura;
                     if (equipa == 20) { // Humanos
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true);
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true);
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true);
-                            case 3 -> criatura = new Cao(id, nome, x, y, equipa);
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true); // Humano (Criança)
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true); // Humano (Adulto)
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true); // Humano (Idoso)
+                            case 3 -> criatura = new Cao(id, nome, x, y, 20); // Humano (Cão) - Sempre humano
+                            case 4 -> throw new InvalidFileException("Tipo de criatura inválido para humanos (não pode ser Vampiro).", currentLine);
                             default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
                         }
                     } else if (equipa == 10) { // Zumbis
                         switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false);
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false);
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false);
-                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
+                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false); // Zumbi (Criança)
+                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false); // Zumbi (Adulto)
+                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false); // Zumbi (Idoso)
+                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa); // Zumbi (Vampiro) - Sempre zumbi
                             default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
                         }
                     } else {
-                        throw new InvalidFileException("Equipa inválida.", currentLine);
+                        throw new InvalidFileException("Equipe inválida.", currentLine);
                     }
 
                     personagens.add(criatura);
@@ -141,11 +138,11 @@ public class GameManager {
             }
 
             // Lê o número de equipamentos
+            if (!scanner.hasNext()) {
+                throw new InvalidFileException("Arquivo inválido: número de equipamentos ausente.", currentLine);
+            }
             currentLine++;
             int numEquipments;
-            if (!scanner.hasNext()) {
-                throw new InvalidFileException("Ficheiro inválido: número de equipamentos ausente.", currentLine);
-            }
             try {
                 numEquipments = Integer.parseInt(scanner.next());
             } catch (NumberFormatException e) {
@@ -158,9 +155,6 @@ public class GameManager {
             // Processa cada equipamento
             for (int i = 0; i < numEquipments; i++) {
                 currentLine++;
-                if (!scanner.hasNextLine()) {
-                    throw new InvalidFileException("Ficheiro inválido: dados do equipamento ausentes.", currentLine);
-                }
                 String linhaEquipamento = scanner.nextLine().trim();
                 if (linhaEquipamento.isEmpty()) {
                     i--;
@@ -171,6 +165,7 @@ public class GameManager {
                 if (equipamentoData.length != 4) {
                     throw new InvalidFileException("Dados do equipamento mal formatados.", currentLine);
                 }
+
                 try {
                     int id = Integer.parseInt(equipamentoData[0]);
                     int tipo = Integer.parseInt(equipamentoData[1]);
@@ -183,10 +178,10 @@ public class GameManager {
 
                     Equipamento equipamento;
                     switch (tipo) {
-                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo, x, y);
-                        case 1 -> equipamento = new EspadaSamurai(id, tipo, x, y);
-                        case 2 -> equipamento = new PistolaWaltherPPK(id, tipo, x, y);
-                        case 3 -> equipamento = new Lixivia(id, tipo, x, y);
+                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo,x, y);
+                        case 1 -> equipamento = new EspadaSamurai(id, tipo,x, y);
+                        case 2 -> equipamento = new PistolaWaltherPPK(id,tipo ,x, y);
+                        case 3 -> equipamento = new Lixivia(id, tipo ,x, y);
                         default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
                     }
 
@@ -197,25 +192,53 @@ public class GameManager {
                 }
             }
 
-            // Processa Safe Havens
+            // Lê o número de Safe Havens
+
+            int numSafeHavens = 0;  // Se não houver número, definimos como 0
             if (scanner.hasNext()) {
-                int numSafeHavens = Integer.parseInt(scanner.next());
-                for (int i = 0; i < numSafeHavens; i++) {
-                    currentLine++;
-                    String[] safeHavenData = scanner.nextLine().trim().split(" : ");
-                    if (safeHavenData.length != 2) {
-                        throw new InvalidFileException("Dados do Safe Haven mal formatados.", currentLine);
-                    }
-                    int x = Integer.parseInt(safeHavenData[0]);
-                    int y = Integer.parseInt(safeHavenData[1]);
+                currentLine++;
+                try {
+                    numSafeHavens = Integer.parseInt(scanner.next());
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Número de Safe Havens não é um número válido.", currentLine);
+                }
+                if (numSafeHavens < 0) {
+                    throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
+                }
+            }
+
+            // Processa cada Safe Haven
+            for (int i = 0; i < numSafeHavens; i++) {
+                currentLine++;
+                String linhaSafeHaven = scanner.nextLine().trim();
+                if (linhaSafeHaven.isEmpty()) {
+                    i--;
+                    continue;
+                }
+
+                String[] coordenadas = linhaSafeHaven.split(" : ");
+                if (coordenadas.length != 2) {
+                    throw new InvalidFileException("Dados do Safe Haven mal formatados.", currentLine);
+                }
+
+                try {
+                    int x = Integer.parseInt(coordenadas[0]);
+                    int y = Integer.parseInt(coordenadas[1]);
+
                     if (!tabuleiro.dentroDosLimites(x, y)) {
                         throw new InvalidFileException("Coordenadas do Safe Haven fora dos limites.", currentLine);
                     }
+
+                    // Criação do Safe Haven e adição ao tabuleiro
+                    SafeHaven safeHaven = new SafeHaven(x, y);
+                    SafeHaven.add(safeHaven);  // Adiciona ao conjunto de SafeHavens
                     tabuleiro.adicionarSafeHaven(x, y);
+
+                } catch (NumberFormatException e) {
+                    throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
                 }
             }
-        } catch (IOException e) {
-            throw new FileNotFoundException("Erro ao abrir o ficheiro.");
+
         }
     }
 
@@ -567,10 +590,8 @@ public class GameManager {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            } else {
             }
         }
-
 
         // Zumbis destroem equipamentos
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
@@ -582,18 +603,23 @@ public class GameManager {
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                    safeHaven.entrar(creatureToMove); // Adiciona a criatura ao Safe Haven
-                    personagens.remove(creatureToMove); // Remove a criatura da lista de personagens
-                    advanceTurn();
-                    return true;
+                    boolean entrou = safeHaven.entrar(creatureToMove); // Adiciona a criatura ao Safe Haven
+                    if (entrou) {
+                        System.out.println("Criatura entrou no Safe Haven: " + creatureToMove.getNome() + " (ID: " + creatureToMove.getId() + ")");
+                        personagens.remove(creatureToMove); // Remove a criatura de personagens
+                        advanceTurn(); // Avança o turno
+                        return true;
+                    }
                 }
             }
         }
+
 
         // Atualiza o turno e alterna a equipe
         advanceTurn();
         return true; // Movimento realizado com sucesso
     }
+
 
 
 
@@ -675,15 +701,16 @@ public class GameManager {
     public List<Integer> getIdsInSafeHaven() {
         List<Integer> idsInSafeHaven = new ArrayList<>();
 
-        // Itera sobre todos os Safe Havens e coleta os IDs das criaturas dentro
         for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
             for (Creature criatura : safeHaven.getCriaturasDentro()) {
+
                 idsInSafeHaven.add(criatura.getId());
             }
         }
 
         return idsInSafeHaven;
     }
+
 
 
 
