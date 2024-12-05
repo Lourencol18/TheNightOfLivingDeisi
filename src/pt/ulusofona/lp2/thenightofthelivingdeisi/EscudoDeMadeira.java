@@ -6,6 +6,10 @@ public class EscudoDeMadeira extends Equipamento {
         super(id, 0 ,"Escudo de madeira", x, y);
     }
 
+    boolean isOfType(int id) {
+        return id == 0;
+    }
+
     @Override
     public boolean executarAcao(Creature atacante, Creature alvo) {
         return false; // Ataque é inválido
@@ -21,7 +25,9 @@ public class EscudoDeMadeira extends Equipamento {
         return nome;
     }
 
-    boolean isOfType(int id) {
-        return id == 0;
+
+    @Override
+    public boolean isDefensivo() {
+        return true;
     }
 }

@@ -30,4 +30,9 @@ public class EspadaSamurai extends Equipamento {
     boolean isOfType(int id) {
         return id == 1;
     }
+
+    @Override
+    public boolean isDefensivo() {
+        return false;
+    }
 }

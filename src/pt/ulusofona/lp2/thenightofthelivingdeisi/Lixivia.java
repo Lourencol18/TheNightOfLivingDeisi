@@ -40,4 +40,9 @@ public class Lixivia extends Equipamento {
     boolean isOfType(int id) {
         return id == -3;
     }
+
+    @Override
+    public boolean isDefensivo() {
+        return true;
+    }
 }

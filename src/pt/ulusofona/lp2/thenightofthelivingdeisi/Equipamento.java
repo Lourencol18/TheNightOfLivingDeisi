@@ -45,4 +45,6 @@ public abstract class Equipamento {
     public abstract String getInfo();
 
     abstract boolean isOfType (int typeId);
+
+    public abstract boolean isDefensivo();
 }

@@ -30,15 +30,7 @@ public class Crianca extends Creature {
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {
-        // Verifica se é um equipamento defensivo (tipo 0 ou 3)
-        if (equipamento.getTipo() == 0 || equipamento.getTipo() == 3) {
-            return true; // Permite pegar equipamentos defensivos
-        }
-        if (equipamento.getTipo() == 1 || equipamento.getTipo() == 2) {
-            return false; // Permite pegar equipamentos defensivos
-        }
-
-        return false;
+      return equipamento.isDefensivo();
     }
 
 

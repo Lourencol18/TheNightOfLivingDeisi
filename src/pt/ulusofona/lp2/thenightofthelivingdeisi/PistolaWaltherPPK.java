@@ -44,4 +44,9 @@ public class PistolaWaltherPPK extends Equipamento {
     boolean isOfType(int id) {
         return id == 2;
     }
+
+    @Override
+    public boolean isDefensivo() {
+        return false;
+    }
 }
