@@ -131,6 +131,8 @@ public abstract class Creature {
     // Método abstrato para movimentação
     public abstract boolean podeMover(int xO, int yO, int xD, int yD);
 
+    public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
+
     public String getInfoAsString() {
         String tipoEquipe = isHuman() ? "Humano" : "Zombie";
         String modificador = isHuman() ? "+0" : "-0";

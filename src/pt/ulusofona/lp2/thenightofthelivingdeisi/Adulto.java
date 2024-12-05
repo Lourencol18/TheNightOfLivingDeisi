@@ -41,7 +41,10 @@ public class Adulto extends Creature {
         return dx <= 2 && dy <= 2;
     }
 
-
+    @Override
+    public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        return true;
+    }
 
 
     public void pegarEquipamento(Equipamento equipamento) {

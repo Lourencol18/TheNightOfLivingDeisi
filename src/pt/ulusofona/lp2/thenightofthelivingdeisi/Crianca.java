@@ -42,13 +42,23 @@ public class Crianca extends Creature {
         return (dx + dy == 1) && (dx == 0 || dy == 0);
     }
 
+    @Override
+    public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        if (equipamento == null) {
+            return true; // Se não houver equipamento, pode mover
+        }
+        return equipamento.isDefensivo();
+    }
+
 
     public void pegarEquipamento(Equipamento equipamento) {
-        if (equipamentoAtual != null) {
-            equipamentos.add(equipamentoAtual); // Adiciona o equipamento atual ao histórico
+        if (podePegarEquipamento(equipamento)) {
+            this.equipamentoAtual = equipamento;
+            contadorEquipamentos++;
+        } else {
+            throw new IllegalStateException("A criança não pode pegar este equipamento.");
         }
-        equipamentoAtual = equipamento;
-        contadorEquipamentos++; // Incrementa o contador
+        // Incrementa o contador
     }
 
 

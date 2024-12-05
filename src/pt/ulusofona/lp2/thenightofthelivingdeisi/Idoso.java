@@ -40,7 +40,10 @@ public class Idoso extends Creature {
         return dx == 1 && dy == 1;
     }
 
-
+    @Override
+    public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        return true;
+    }
 
 
     @Override

@@ -37,6 +37,10 @@ public class Cao extends Creature {
         return (dx + dy <= 2) && (dx == 0 || dy == 0);
     }
 
+    @Override
+    public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        return false;
+    }
 
 
     @Override

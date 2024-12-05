@@ -591,6 +591,11 @@ public class GameManager {
             }
         }
 
+        if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
+            System.out.println("Movimento bloqueado: a criatura não pode se mover para a posição (" + xD + ", " + yD + ") por causa do equipamento.");
+            return false;
+        }
+
         // Atualiza a posição da criatura
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
@@ -604,6 +609,7 @@ public class GameManager {
         }
 
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
+            creatureToMove.destruirEquipamento();
             creatureToMove.incrementarEquipamentosDestruidos(); // Incrementa o contador
             equipamentos.remove(equipamentoParaInteragir); // Zumbi destrói equipamento
         }
