@@ -504,6 +504,7 @@ public class GameManager {
         return false; // Criatura não encontrada
     }
 
+
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
@@ -687,7 +688,8 @@ public class GameManager {
 
 
 
-    private void advanceTurn() {
+
+        private void advanceTurn() {
         turnoAtual++;
 
         // Alterna entre 2 turnos de dia e 2 turnos de noite

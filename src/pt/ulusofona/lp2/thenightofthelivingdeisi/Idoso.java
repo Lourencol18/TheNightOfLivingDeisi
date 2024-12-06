@@ -33,20 +33,22 @@ public class Idoso extends Creature {
         return true;
     }
 
+
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
-       if (isDay && isHuman){
-           return true;
-       }
-       if (!isHuman && !isDay || !isHuman && isDay){
-           return true;
-       }
-        // Pode mover 1 casa apenas na diagonal
-            int dx = Math.abs(xD - xO);
-            int dy = Math.abs(yD - yO);
-            return dx == 1 && dy == 1;
+        if (isHuman) {
+            // Idoso humano só pode se mover de dia
+            if (!isDay) {
+                return false;
+            }
+        }
 
+        // Verifica se o movimento é na diagonal
+        int dx = Math.abs(xD - xO);
+        int dy = Math.abs(yD - yO);
+        return dx == 1 && dy == 1;
     }
+
 
     @Override
     public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
