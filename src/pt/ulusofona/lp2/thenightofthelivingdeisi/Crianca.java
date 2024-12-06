@@ -44,10 +44,15 @@ public class Crianca extends Creature {
 
     @Override
     public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
-        if (equipamento == null) {
+        if (equipamento == null ) {
             return true; // Se não houver equipamento, pode mover
+        } else if(equipamento.isDefensivo()){
+            return true;
+        }else if (!equipamento.isDefensivo() && isZombie()){
+            return true;
         }
-        return equipamento.isDefensivo();
+
+        return false;
     }
 
 
