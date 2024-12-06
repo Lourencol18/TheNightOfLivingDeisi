@@ -527,7 +527,6 @@ public class GameManager {
 
         // Verifica se a criatura é um idoso e está carregando um equipamento
         if (creatureToMove instanceof Idoso && creatureToMove.getEquipamentoAtual() != null) {
-            System.out.println("Movimento inválido: Idosos não podem se mover enquanto carregam equipamentos.");
             return false;
         }
 
@@ -543,13 +542,11 @@ public class GameManager {
             if (creatureToMove.isHuman()) {
                 // Idoso humano só pode se mover durante o turno dos humanos e de dia
                 if (!turnoParaHumanos || !isDay()) {
-                    System.out.println("Movimento inválido: Idoso humano só pode se mover de dia no turno dos humanos.");
                     return false;
                 }
             } else if (creatureToMove.isZombie()) {
                 // Idoso zumbi só pode se mover durante o turno dos zumbis
                 if (turnoParaHumanos) {
-                    System.out.println("Movimento inválido: Idoso zumbi só pode se mover no turno dos zumbis.");
                     return false;
                 }
             }
@@ -564,6 +561,11 @@ public class GameManager {
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
             return false;
         }
+        // Verifica se a criatura é um zumbi e está tentando ir para um Safe Haven
+        if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
+            return false; // Movimento inválido
+        }
+
 
         // Verifica se há outra criatura na posição de destino
         Creature targetCreature = null;
@@ -624,7 +626,6 @@ public class GameManager {
                     PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                     if (pistola.temBalas()) {
                         pistola.gastarBala(); // Consome uma bala
-                        System.out.println("Humano com pistola matou o zumbi. Balas restantes: " + pistola.getBalas());
                         personagens.remove(targetCreature); // Remove o zumbi do jogo
                         creatureToMove.setX(xD); // Move o humano para a posição do zumbi
                         creatureToMove.setY(yD);
