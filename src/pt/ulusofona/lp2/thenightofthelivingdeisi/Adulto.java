@@ -33,16 +33,36 @@ public class Adulto extends Creature {
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
-        // Pode mover até 2 casas em qualquer direção
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);
 
-        // Movimento normal de até 2 casas
-        return dx <= 2 && dy <= 2;
+        // Permitir movimento de 1 ou 2 casas em linha reta ou diagonal
+        if ((dx == 1 && dy == 0) || (dx == 0 && dy == 1)) { // Movimento de 1 casa em linha reta
+            return true;
+        }
+
+        if ((dx == 2 && dy == 0) || (dx == 0 && dy == 2)) { // Movimento de 2 casas em linha reta
+            return true;
+        }
+
+        if (dx == dy && (dx == 1 || dx == 2)) { // Movimento diagonal de 1 ou 2 casas
+            return true;
+        }
+
+        return false; // Bloqueia movimentos fora dessas regras
     }
+
+
 
     @Override
     public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        return true;
+    }
+
+    @Override
+    public boolean podeSerAtacado() {
+
+
         return true;
     }
 

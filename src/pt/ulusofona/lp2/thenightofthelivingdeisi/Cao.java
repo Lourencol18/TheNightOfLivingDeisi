@@ -34,11 +34,19 @@ public class Cao extends Creature {
         // Pode mover até 2 casas na horizontal ou vertical (não pode diagonal)
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);
-        return (dx + dy <= 2) && (dx == 0 || dy == 0);
+        if ((dx == 2 && dy == 0) || (dx == 0 && dy == 2)) { // Movimento em linha reta
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean podeMoverParaComEquipamento(Equipamento equipamento) {
+        return false;
+    }
+
+    @Override
+    public boolean podeSerAtacado() {
         return false;
     }
 

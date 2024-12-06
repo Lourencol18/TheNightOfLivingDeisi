@@ -134,6 +134,8 @@ public abstract class Creature {
 
     public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
 
+    public abstract boolean podeSerAtacado();
+
     public String getInfoAsString() {
         String tipoEquipe = isHuman() ? "Humano" : "Zombie";
         String modificador = isHuman() ? "+0" : "-0";

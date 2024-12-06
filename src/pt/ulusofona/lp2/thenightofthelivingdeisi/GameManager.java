@@ -542,9 +542,20 @@ public class GameManager {
             }
         }
 
+
+
+
         // Interação entre criaturas
         if (targetCreature != null) {
-            if (creatureToMove.isHuman() && targetCreature.isZombie()) {
+            if (creatureToMove.isZombie() && targetCreature.isHuman()) {
+                Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
+                if (equipamentoAtual != null && equipamentoAtual.isDefensivo()) {
+                    System.out.println("Ataque bloqueado por equipamento defensivo: Jogada válida, mas sem efeito.");
+                    advanceTurn(); // Conta como jogada
+                    return true; // Jogada realizada, mas sem efeito
+                }
+            }
+            else if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 if (equipamentoAtual instanceof PistolaWaltherPPK) {
                     PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
@@ -592,7 +603,6 @@ public class GameManager {
         }
 
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
-            System.out.println("Movimento bloqueado: a criatura não pode se mover para a posição (" + xD + ", " + yD + ") por causa do equipamento.");
             return false;
         }
 
