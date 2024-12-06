@@ -230,7 +230,6 @@ public class GameManager {
                     int y = Integer.parseInt(coordenadas[1]);
 
                     if (!tabuleiro.dentroDosLimites(x, y)) {
-                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Safe Haven ignorado.");
                         continue; // Ignora Safe Havens fora dos limites
                     }
 
@@ -401,7 +400,7 @@ public class GameManager {
                 return info.toString();
             }
         }
-        return "Criatura não encontrada.";
+        return null;
     }
 
 
@@ -635,17 +634,19 @@ public class GameManager {
         }
 
         // Interação com Safe Haven
-        if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
-            for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-                if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                    if (safeHaven.entrar(creatureToMove)) {
-                        personagens.remove(creatureToMove); // Remove do jogo
+        if (creatureToMove.isHuman()) {
+
+            if (tabuleiro.isSafeHaven(xD, yD)) {
+
+                for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
+                    if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
+                        safeHaven.entrar(creatureToMove);
+                        personagens.remove(creatureToMove);
                         advanceTurn();
                         return true;
                     }
                 }
-            }
-        }
+        }   }
 
         advanceTurn(); // Avança o turno
         return true;

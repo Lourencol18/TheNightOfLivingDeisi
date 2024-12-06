@@ -18,25 +18,19 @@ public class SafeHaven {
         this.criaturasDentro = new ArrayList<>();
     }
 
-    public boolean entrar(Creature criatura) {
-        if (!criatura.isHuman()) {
-            return false; // Apenas humanos podem entrar
+    public void entrar(Creature creature) {
+        if (!criaturasDentro.contains(creature)) {
+            criaturasDentro.add(creature); // Adiciona a criatura ao Safe Haven
+            System.out.println("Criatura adicionada ao Safe Haven: " + creature.getNome());
         }
-
-        // Adiciona a criatura ao Safe Haven, se ainda não estiver
-        if (!criaturasDentro.contains(criatura)) {
-            criaturasDentro.add(criatura);
-            return true; // Sucesso na entrada
-        }
-
-        return false; // Já está no Safe Haven
     }
 
 
 
 
+
     public List<Creature> getCriaturasDentro() {
-        return new ArrayList<>(criaturasDentro); // Retorna uma cópia da lista para evitar modificações externas
+        return criaturasDentro; // Retorna uma cópia da lista para evitar modificações externas
     }
 
 
@@ -68,15 +62,17 @@ public class SafeHaven {
         }
         return false;
     }
-    public void mostrarCriaturasNoSafeHaven(SafeHaven safeHaven) {
-        List<Creature> criaturasDentro = safeHaven.getCriaturasDentro();
+
+    public String getCriaturasNoSafeHaven() {
         if (criaturasDentro.isEmpty()) {
-            System.out.println("Nenhuma criatura encontrada no Safe Haven.");
-        } else {
-            for (Creature criatura : criaturasDentro) {
-                System.out.println("ID: " + criatura.getId() + ", Nome: " + criatura.getNome());
-            }
+            return "Nenhuma criatura no Safe Haven.";
         }
+
+        StringBuilder criaturas = new StringBuilder("Criaturas no Safe Haven:\n");
+        for (Creature creature : criaturasDentro) {
+            criaturas.append(creature.getNome()).append(" (").append(creature.getTipoCriatura()).append(")\n");
+        }
+        return criaturas.toString();
     }
 
 

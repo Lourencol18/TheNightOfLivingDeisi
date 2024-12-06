@@ -7,7 +7,7 @@ public class Tabuleiro {
     private int width;
     private int height;
     private Object[][] grid; // Array bidimensional para armazenar criaturas e equipamentos
-    private List<SafeHaven> safeHavens; // Lista de Safe Havens
+    private List<SafeHaven> safeHavens = new ArrayList<>(); // Lista de Safe Havens
 
     public Tabuleiro(int width, int height) {
         this.width = width;
@@ -70,10 +70,13 @@ public class Tabuleiro {
     // Verifica se uma posição é um Safe Haven
     public boolean isSafeHaven(int x, int y) {
         for (SafeHaven safeHaven : safeHavens) {
+
             if (safeHaven.getX() == x && safeHaven.getY() == y) {
+
                 return true;
             }
         }
+
         return false;
     }
 
