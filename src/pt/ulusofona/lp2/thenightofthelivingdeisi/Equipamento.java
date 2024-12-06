@@ -37,7 +37,13 @@ public abstract class Equipamento {
         return y;
     }
 
+    public void setY(int y) {
+        this.y = y;
+    }
 
+    public void setX(int x) {
+        this.x = x;
+    }
 
     // Métodos abstratos para ações específicas
     public abstract boolean executarAcao(Creature atacante, Creature alvo);
