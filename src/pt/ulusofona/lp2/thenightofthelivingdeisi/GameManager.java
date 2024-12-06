@@ -542,7 +542,13 @@ public class GameManager {
             }
         }
 
-
+        if (creatureToMove instanceof Idoso && creatureToMove.isHuman()) {
+            System.out.println("Idoso humano moveu-se para (" + xD + ", " + yD + ") sem pegar o equipamento.");
+            creatureToMove.setX(xD);
+            creatureToMove.setY(yD);
+            advanceTurn();
+            return true;
+        }
 
 
         // Interação entre criaturas

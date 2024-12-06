@@ -34,7 +34,11 @@ public class Cao extends Creature {
         // Pode mover até 2 casas na horizontal ou vertical (não pode diagonal)
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);
-        if ((dx == 2 && dy == 0) || (dx == 0 && dy == 2)) { // Movimento em linha reta
+        if ((dx == 1 && dy == 0) || (dx == 0 && dy == 1)) { // Movimento de 1 casa em linha reta
+            return true;
+        }
+
+        if ((dx == 2 && dy == 0) || (dx == 0 && dy == 2)) { // Movimento de 2 casas em linha reta
             return true;
         }
         return false;
