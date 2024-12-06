@@ -2,10 +2,7 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -827,16 +824,42 @@ public class GameManager {
     }
 
     public void saveGame(File file) throws IOException {
-        // Implemente a lógica de salvar o estado do jogo no arquivo
-        try (FileWriter writer = new FileWriter(file)) {
-            // Escreva os dados necessários no arquivo
-            writer.write("Dimensões: " + tabuleiro.getHeight() + "x" + tabuleiro.getWidth() + "\n");
-            writer.write("Equipe inicial: " + equipaInicial + "\n");
-            writer.write("Turno atual: " + turnoAtual + "\n");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            // Grava as dimensões do tabuleiro diretamente (substitua pelas dimensões reais do tabuleiro)
+            int largura = tabuleiro.getWidth(); // Se o tabuleiro tiver métodos como getLargura() e getAltura()
+            int altura = tabuleiro.getHeight();  // Altere para os métodos corretos, ou substitua por valores fixos
+            writer.write(largura + " " + altura + "\n");
 
-            // Adicione outros dados relevantes (criaturas, equipamentos, etc.)
+            // Grava os personagens
+            writer.write(personagens.size() + "\n");
+            for (Creature creature : personagens) {
+                writer.write(creature.getId() + " : "
+                        + creature.getTipoCriatura() + " : "
+                        + creature.getNome() + " : "
+                        + creature.getX() + " : "
+                        + creature.getY() + " : "
+                        + creature.getEquipa() + "\n");
+            }
+
+            // Grava os equipamentos
+            writer.write(equipamentos.size() + "\n");
+            for (Equipamento equipamento : equipamentos) {
+                writer.write(equipamento.getId() + " : "
+                        + equipamento.getNome() + " : "
+                        + equipamento.getX() + " : "
+                        + equipamento.getY() + "\n");
+            }
+
+            // Grava os Safe Havens
+            List<SafeHaven> safeHavens = tabuleiro.getSafeHavens();
+            writer.write(safeHavens.size() + "\n");
+            for (SafeHaven safeHaven : safeHavens) {
+                writer.write(safeHaven.getX() + " : " + safeHaven.getY() + "\n");
+            }
         }
     }
+
+
 
 
     public List<Integer> getIdsInSafeHaven() {

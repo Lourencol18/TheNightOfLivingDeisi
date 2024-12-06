@@ -1,0 +1,21 @@
+7 7
+20
+10
+1 : Criança : Melanie : 5 : 4 : 10
+2 : Adulto : Walker : 5 : 3 : 10
+3 : Idoso : Frankenstein : 2 : 4 : 10
+4 : Vampiro : Crawler : 0 : 1 : 10
+5 : Criança : Babe : 1 : 0 : 10
+6 : Criança : Karate Kid : 3 : 4 : 20
+7 : Adulto : Freddie M. : 4 : 3 : 20
+8 : Idoso : James Bond : 5 : 6 : 20
+9 : Adulto : John Wayne : 6 : 5 : 20
+10 : Cão : Max : 2 : 2 : 20
+4
+-1 : Escudo de madeira : 6 : 3
+-3 : Espada samurai : 2 : 1
+-2 : Pistola Walther PPK : 4 : 5
+-4 : Lixívia : 4 : 4
+2
+0 : 6
+6 : 0
