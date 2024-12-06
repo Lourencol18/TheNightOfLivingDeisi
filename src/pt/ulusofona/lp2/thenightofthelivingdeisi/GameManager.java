@@ -531,6 +531,7 @@ public class GameManager {
             return false;
         }
 
+
         // Verifica se é a vez da equipe correta
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
@@ -582,19 +583,18 @@ public class GameManager {
                         PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                         if (pistola.temBalas()) {
                             pistola.gastarBala();
-                            System.out.println("Defesa com pistola: Humano protegido. Balas restantes: " + pistola.getBalas());
                             advanceTurn(); // Conta como jogada
                             return true;
                         }
                     }
 
                     if (equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
-                        System.out.println("Jogada inválida: Humano com espada não pode ser atacado.");
-                        return false;
+                        advanceTurn();
+                        return true;
                     }
 
                     if (equipamentoAtual.isDefensivo()) {
-                        advanceTurn(); // Conta como jogada
+                        advanceTurn();
                         return true;
                     }
                 }
@@ -757,7 +757,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem transformações ou mortes
-        if (turnosSemEventos >= 8) {
+        if (turnosSemEventos >= 10) {
             return true;
         }
 
