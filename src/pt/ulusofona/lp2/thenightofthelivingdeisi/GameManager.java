@@ -489,6 +489,10 @@ public class GameManager {
                         if (equipmentTypeId == 0 || equipmentTypeId == 1 | equipmentTypeId == 2 | equipmentTypeId == 3) {
                             return equipamentoAtual.getTipo() == equipmentTypeId;
                         }
+                    case "Idoso":
+                        if (equipmentTypeId == 0 || equipmentTypeId == 1 | equipmentTypeId == 2 | equipmentTypeId == 3) {
+                            return equipamentoAtual.getTipo() == equipmentTypeId;
+                        }
 
 
 
@@ -520,10 +524,33 @@ public class GameManager {
             return false;
         }
 
+        // Verifica se a criatura é um idoso e está carregando um equipamento
+        if (creatureToMove instanceof Idoso && creatureToMove.getEquipamentoAtual() != null) {
+            System.out.println("Movimento inválido: Idosos não podem se mover enquanto carregam equipamentos.");
+            return false;
+        }
+
         // Verifica se é a vez da equipe correta
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             return false;
+        }
+
+        // Regras específicas para idosos
+        if (creatureToMove instanceof Idoso) {
+            if (creatureToMove.isHuman()) {
+                // Idoso humano só pode se mover durante o turno dos humanos e de dia
+                if (!turnoParaHumanos || !isDay()) {
+                    System.out.println("Movimento inválido: Idoso humano só pode se mover de dia no turno dos humanos.");
+                    return false;
+                }
+            } else if (creatureToMove.isZombie()) {
+                // Idoso zumbi só pode se mover durante o turno dos zumbis
+                if (turnoParaHumanos) {
+                    System.out.println("Movimento inválido: Idoso zumbi só pode se mover no turno dos zumbis.");
+                    return false;
+                }
+            }
         }
 
         // Verifica se o vampiro está tentando se mover de dia
@@ -545,55 +572,45 @@ public class GameManager {
             }
         }
 
-        if (creatureToMove instanceof Idoso && creatureToMove.isHuman()) {
-            creatureToMove.setX(xD);
-            creatureToMove.setY(yD);
-            advanceTurn();
-            return true;
-        }
-
-        // Interação entre criaturas
+        // Lógica de interação entre criaturas permanece
         if (targetCreature != null) {
-            // Zumbi tenta atacar humano
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
                 if (equipamentoAtual != null) {
-                    // **Nova Regra: Humanos com Espada não podem ser atacados**
                     if (equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
                         System.out.println("Jogada inválida: Humano com espada não pode ser atacado.");
-                        return false; // Bloqueia o ataque
+                        return false;
                     }
 
-                    // Verifica se o humano tem equipamento defensivo
                     if (equipamentoAtual.isDefensivo()) {
                         advanceTurn(); // Conta como jogada
-                        return true; // Jogada realizada, mas sem efeito
+                        return true;
                     }
                 }
 
-                // Transferência do contador de equipamentos
+                // Transformação de humano em zumbi
                 int equipamentosUsados = targetCreature.getContadorEquipamentos();
-                targetCreature.transformar(); // Humano vira zumbi
-                targetCreature.setEquipa(10); // Atualiza a equipe
-                targetCreature.soltarEquipamento(); // Remove o equipamento do humano transformado
-                targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados); // Adiciona o valor ao contador destruído
+                targetCreature.transformar();
+                targetCreature.setEquipa(10);
+                targetCreature.soltarEquipamento();
+                targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
                 advanceTurn();
                 return true;
             }
 
-            // **Nova Regra: Humanos com Espadas Matam Zumbis**
+            // Humano com espada mata zumbi
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 if (equipamentoAtual != null && equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
                     System.out.println("Humano com espada matou o zumbi.");
-                    personagens.remove(targetCreature); // Remove o zumbi do jogo
-                    creatureToMove.setX(xD); // Move o humano para a posição do zumbi
+                    personagens.remove(targetCreature);
+                    creatureToMove.setX(xD);
                     creatureToMove.setY(yD);
                     advanceTurn();
                     return true;
                 }
 
-                // Caso o humano não tenha a espada, não consegue atacar o zumbi
+                // Caso o humano não tenha espada, não consegue atacar o zumbi
                 return false;
             }
 
@@ -627,8 +644,8 @@ public class GameManager {
 
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
-            creatureToMove.incrementarEquipamentosDestruidos(); // Incrementa o contador
-            equipamentos.remove(equipamentoParaInteragir); // Zumbi destrói equipamento
+            creatureToMove.incrementarEquipamentosDestruidos();
+            equipamentos.remove(equipamentoParaInteragir);
         }
 
         // Interação com Safe Haven
@@ -648,6 +665,8 @@ public class GameManager {
         advanceTurn(); // Avança o turno
         return true;
     }
+
+
 
 
 

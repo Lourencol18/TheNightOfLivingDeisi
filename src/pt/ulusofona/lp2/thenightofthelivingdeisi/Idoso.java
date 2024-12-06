@@ -30,15 +30,15 @@ public class Idoso extends Creature {
 
     @Override
     public boolean podePegarEquipamento(Equipamento equipamento) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
-       if (!isDay && isHuman){
-           return false;
+       if (isDay && isHuman){
+           return true;
        }
-       if (!isHuman && !isDay){
+       if (!isHuman && !isDay || !isHuman && isDay){
            return true;
        }
         // Pode mover 1 casa apenas na diagonal
