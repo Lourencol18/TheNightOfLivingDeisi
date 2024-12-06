@@ -15,6 +15,7 @@ public abstract class Creature {
     protected boolean transformado = false;
     private int equipamentosDestruidos = 0;
 
+
     public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
         this.nome = nome;
@@ -129,7 +130,7 @@ public abstract class Creature {
     }
 
     // Método abstrato para movimentação
-    public abstract boolean podeMover(int xO, int yO, int xD, int yD);
+    public abstract boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay);
 
     public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
 

@@ -4,6 +4,7 @@ public class Idoso extends Creature {
 
     private boolean isHuman;  // Flag para saber se é humano ou zumbi
 
+
     // Construtor
     public Idoso(int id, String nome, int x, int y, int equipa, boolean isHuman) {
         super(id, nome, x, y, equipa); // Chama o construtor da classe pai (Creature)
@@ -33,11 +34,18 @@ public class Idoso extends Creature {
     }
 
     @Override
-    public boolean podeMover(int xO, int yO, int xD, int yD) {
+    public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
+       if (!isDay && isHuman){
+           return false;
+       }
+       if (!isHuman && !isDay){
+           return true;
+       }
         // Pode mover 1 casa apenas na diagonal
-        int dx = Math.abs(xD - xO);
-        int dy = Math.abs(yD - yO);
-        return dx == 1 && dy == 1;
+            int dx = Math.abs(xD - xO);
+            int dy = Math.abs(yD - yO);
+            return dx == 1 && dy == 1;
+
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Adulto extends Creature {
     }
 
     @Override
-    public boolean podeMover(int xO, int yO, int xD, int yD) {
+    public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
         // Pode mover até 2 casas em qualquer direção
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);

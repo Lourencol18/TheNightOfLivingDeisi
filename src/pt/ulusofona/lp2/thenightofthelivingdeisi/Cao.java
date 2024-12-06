@@ -30,7 +30,7 @@ public class Cao extends Creature {
     }
 
     @Override
-    public boolean podeMover(int xO, int yO, int xD, int yD) {
+    public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
         // Pode mover até 2 casas na horizontal ou vertical (não pode diagonal)
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);

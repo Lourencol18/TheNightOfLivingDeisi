@@ -30,7 +30,7 @@ public class Vampiro extends Creature {
     }
 
     @Override
-    public boolean podeMover(int xO, int yO, int xD, int yD) {
+    public boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay) {
         // Pode mover 1 casa em qualquer direção
         int dx = Math.abs(xD - xO);
         int dy = Math.abs(yD - yO);

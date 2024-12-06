@@ -529,7 +529,7 @@ public class GameManager {
         }
 
         // Verifica se o movimento é válido
-        if (!creatureToMove.podeMover(xO, yO, xD, yD)) {
+        if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
             return false;
         }
 
