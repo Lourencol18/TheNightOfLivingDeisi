@@ -825,39 +825,52 @@ public class GameManager {
 
     public void saveGame(File file) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            // Grava as dimensões do tabuleiro diretamente (substitua pelas dimensões reais do tabuleiro)
-            int largura = tabuleiro.getWidth(); // Se o tabuleiro tiver métodos como getLargura() e getAltura()
-            int altura = tabuleiro.getHeight();  // Altere para os métodos corretos, ou substitua por valores fixos
-            writer.write(largura + " " + altura + "\n");
+            // Grava as dimensões do tabuleiro
+            writer.write(tabuleiro.getWidth() + " " + tabuleiro.getHeight() + "\n");
+
+            // Grava a equipe inicial
+            writer.write(equipaAtual + "\n");
 
             // Grava os personagens
             writer.write(personagens.size() + "\n");
             for (Creature creature : personagens) {
+                // Determina o tipo numérico da criatura com base em `getTipoCriatura`
+                int tipoNumerico = switch (creature.getTipoCriatura()) {
+                    case "Criança" -> 0;
+                    case "Adulto" -> 1;
+                    case "Idoso" -> 2;
+                    case "Cão" -> 3;
+                    case "Vampiro" -> 4;
+                    default -> -1; // Tipo desconhecido
+                };
+
                 writer.write(creature.getId() + " : "
-                        + creature.getTipoCriatura() + " : "
+                        + creature.getEquipa() + " : "
+                        + tipoNumerico + " : " // Grava o número correspondente ao tipo
                         + creature.getNome() + " : "
                         + creature.getX() + " : "
-                        + creature.getY() + " : "
-                        + creature.getEquipa() + "\n");
+                        + creature.getY() + "\n");
             }
 
             // Grava os equipamentos
             writer.write(equipamentos.size() + "\n");
             for (Equipamento equipamento : equipamentos) {
                 writer.write(equipamento.getId() + " : "
-                        + equipamento.getNome() + " : "
+                        + equipamento.getTipo() + " : "
                         + equipamento.getX() + " : "
                         + equipamento.getY() + "\n");
             }
 
             // Grava os Safe Havens
-            List<SafeHaven> safeHavens = tabuleiro.getSafeHavens();
-            writer.write(safeHavens.size() + "\n");
-            for (SafeHaven safeHaven : safeHavens) {
+            writer.write(tabuleiro.getSafeHavens().size() + "\n");
+            for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 writer.write(safeHaven.getX() + " : " + safeHaven.getY() + "\n");
             }
         }
     }
+
+
+
 
 
 

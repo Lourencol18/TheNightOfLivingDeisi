@@ -1,0 +1,21 @@
+7 7
+20
+10
+1 : 10 : Zombie : Melanie : 5 : 4
+2 : 10 : Zombie : Walker : 5 : 3
+3 : 10 : Zombie : Frankenstein : 2 : 4
+4 : 10 : Zombie : Crawler : 0 : 1
+5 : 10 : Zombie : Babe : 1 : 0
+6 : 20 : Humano : Karate Kid : 3 : 4
+7 : 20 : Humano : Freddie M. : 4 : 3
+8 : 20 : Humano : James Bond : 5 : 6
+9 : 20 : Humano : John Wayne : 6 : 5
+10 : 20 : Humano : Max : 2 : 2
+4
+-1 : 0 : 6 : 3
+-3 : 1 : 2 : 1
+-2 : 2 : 4 : 5
+-4 : 3 : 4 : 4
+2
+0 : 6
+6 : 0
