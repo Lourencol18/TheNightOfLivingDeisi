@@ -16,6 +16,7 @@ public abstract class Creature {
     private int equipamentosDestruidos = 0;
 
 
+
     public Creature(int id, String nome, int x, int y, int equipa) {
         this.id = id;
         this.nome = nome;
@@ -135,6 +136,9 @@ public abstract class Creature {
     public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
 
     public abstract boolean podeSerAtacado();
+
+
+
 
     public String getInfoAsString() {
         String tipoEquipe = isHuman() ? "Humano" : "Zombie";

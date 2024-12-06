@@ -307,7 +307,11 @@ public class GameManager {
                 if (creature.getEquipa() == 20) {
                     team = "Humano";  // Se a equipe for 20, é Humano
                 } else if (creature.getEquipa() == 10) {
-                    team = "Zombie";  // Se a equipe for 10, é Zombie
+                    if (creature.isTransformed()) {  // Verifica se o zumbi foi transformado
+                        team = "Zombie (Transformado)";
+                    } else {
+                        team = "Zombie";  // Zumbi normal
+                    }
                 }
 
                 // Preenche o array com as informações da criatura
@@ -543,7 +547,6 @@ public class GameManager {
         }
 
         if (creatureToMove instanceof Idoso && creatureToMove.isHuman()) {
-            System.out.println("Idoso humano moveu-se para (" + xD + ", " + yD + ") sem pegar o equipamento.");
             creatureToMove.setX(xD);
             creatureToMove.setY(yD);
             advanceTurn();
@@ -554,6 +557,9 @@ public class GameManager {
         // Interação entre criaturas
         if (targetCreature != null) {
 
+            if (creatureToMove.isZombie() && creatureToMove instanceof Crianca && targetCreature instanceof Cao) {
+                return false; // Bloqueia a jogada
+            }
              if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 if (equipamentoAtual instanceof PistolaWaltherPPK) {
@@ -579,7 +585,6 @@ public class GameManager {
                     }
                 } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                     if (equipamentoAtual != null && equipamentoAtual.isDefensivo()) {
-                        System.out.println("Ataque bloqueado por equipamento defensivo: Jogada válida, mas sem efeito.");
                         advanceTurn(); // Conta como jogada
                         return true; // Jogada realizada, mas sem efeito
                     }
