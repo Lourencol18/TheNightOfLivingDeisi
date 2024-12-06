@@ -61,7 +61,9 @@ public class Adulto extends Creature {
 
     @Override
     public boolean podeSerAtacado() {
-
+        if (!isHuman){
+            return false;
+        }
 
         return true;
     }

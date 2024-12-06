@@ -60,6 +60,9 @@ public class Crianca extends Creature {
         if(equipamentoAtual.isDefensivo() ){
             return false;
         }
+        if (isZombie()){
+            return false;
+        }
         return true;
     }
 
