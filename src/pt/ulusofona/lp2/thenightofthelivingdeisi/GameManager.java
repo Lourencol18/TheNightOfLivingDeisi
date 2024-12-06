@@ -525,10 +525,7 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se a criatura é um idoso e está carregando um equipamento
-        if (creatureToMove instanceof Idoso && creatureToMove.getEquipamentoAtual() != null) {
-            return false;
-        }
+
 
 
         // Verifica se é a vez da equipe correta
@@ -550,6 +547,21 @@ public class GameManager {
                     return false;
                 }
             }
+            // Verifica se o idoso está carregando um equipamento
+            if (creatureToMove.getEquipamentoAtual() != null) {
+                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
+
+                // Deixa o equipamento na posição original antes de mover o idoso
+                equipamentoAtual.setX(xO);
+                equipamentoAtual.setY(yO);
+
+                // Adiciona o equipamento à lista de equipamentos no tabuleiro
+                equipamentos.add(equipamentoAtual);
+
+                // Remove o equipamento do idoso
+                creatureToMove.soltarEquipamento();
+            }
+
         }
 
         // Verifica se o vampiro está tentando se mover de dia
