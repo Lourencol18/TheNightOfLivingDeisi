@@ -758,7 +758,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem transformações ou mortes
-        if (turnosSemEventos >= 10) {
+        if (turnosSemEventos >= 8) {
             return true;
         }
 
