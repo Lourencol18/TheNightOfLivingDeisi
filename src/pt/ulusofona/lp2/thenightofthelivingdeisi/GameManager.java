@@ -552,38 +552,20 @@ public class GameManager {
             return true;
         }
 
-
         // Interação entre criaturas
         if (targetCreature != null) {
-
-            if (creatureToMove.isZombie() && creatureToMove instanceof Crianca && targetCreature instanceof Cao) {
-                return false; // Bloqueia a jogada
-            }
-             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-                if (equipamentoAtual instanceof PistolaWaltherPPK) {
-                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                    if (pistola.temBalas()) {
-                        pistola.gastarBala();
-                        personagens.remove(targetCreature); // Zumbi morto
-                        creatureToMove.setX(xD); // Move o humano para a casa onde o zumbi estava
-                        creatureToMove.setY(yD);
-                        advanceTurn();
-                        return true;
-                    }
-                }
-                return false; // Humano não tem como se defender
-            } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
+            // Zumbi tenta atacar humano
+            if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
-                if (equipamentoAtual instanceof PistolaWaltherPPK) {
-                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                    if (pistola.temBalas()) {
-                        pistola.gastarBala();
-                        advanceTurn();
-                        return true; // Defesa bem-sucedida
+                if (equipamentoAtual != null) {
+                    // **Nova Regra: Humanos com Espada não podem ser atacados**
+                    if (equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
+                        System.out.println("Jogada inválida: Humano com espada não pode ser atacado.");
+                        return false; // Bloqueia o ataque
                     }
-                } else if (creatureToMove.isZombie() && targetCreature.isHuman()) {
-                    if (equipamentoAtual != null && equipamentoAtual.isDefensivo()) {
+
+                    // Verifica se o humano tem equipamento defensivo
+                    if (equipamentoAtual.isDefensivo()) {
                         advanceTurn(); // Conta como jogada
                         return true; // Jogada realizada, mas sem efeito
                     }
@@ -597,9 +579,25 @@ public class GameManager {
                 targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados); // Adiciona o valor ao contador destruído
                 advanceTurn();
                 return true;
-            } else {
-                return false; // Movimento inválido
             }
+
+            // **Nova Regra: Humanos com Espadas Matam Zumbis**
+            if (creatureToMove.isHuman() && targetCreature.isZombie()) {
+                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
+                if (equipamentoAtual != null && equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
+                    System.out.println("Humano com espada matou o zumbi.");
+                    personagens.remove(targetCreature); // Remove o zumbi do jogo
+                    creatureToMove.setX(xD); // Move o humano para a posição do zumbi
+                    creatureToMove.setY(yD);
+                    advanceTurn();
+                    return true;
+                }
+
+                // Caso o humano não tenha a espada, não consegue atacar o zumbi
+                return false;
+            }
+
+            return false; // Movimento inválido
         }
 
         // Verifica se há um equipamento na posição de destino
@@ -635,10 +633,8 @@ public class GameManager {
 
         // Interação com Safe Haven
         if (creatureToMove.isHuman()) {
-
             if (tabuleiro.isSafeHaven(xD, yD)) {
-
-                for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
+                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
                     if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
                         safeHaven.entrar(creatureToMove);
                         personagens.remove(creatureToMove);
@@ -646,11 +642,13 @@ public class GameManager {
                         return true;
                     }
                 }
-        }   }
+            }
+        }
 
         advanceTurn(); // Avança o turno
         return true;
     }
+
 
 
 
