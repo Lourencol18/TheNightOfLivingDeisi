@@ -522,6 +522,24 @@ public class GameManager {
             return false;
         }
 
+        // Lógica específica para o cão
+        if (creatureToMove.getTipoCriatura().equals("Cão")) { // Verifica se é um cão
+            int dx = Math.abs(xD - xO);
+            int dy = Math.abs(yD - yO);
+
+            // Se for movimento de 2 casas, verifica se há uma criatura no meio
+            if ((dx == 2 && dy == 0) || (dx == 0 && dy == 2)) {
+                int xMid = xO + (xD - xO) / 2;
+                int yMid = yO + (yD - yO) / 2;
+
+                // Verifica se existe uma criatura na posição intermediária
+                for (Creature creature : personagens) {
+                    if (creature.getX() == xMid && creature.getY() == yMid) {
+                        return false;
+                    }
+                }
+            }
+        }
 
 
 

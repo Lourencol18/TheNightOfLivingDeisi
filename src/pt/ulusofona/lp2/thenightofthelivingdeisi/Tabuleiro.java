@@ -44,6 +44,7 @@ public class Tabuleiro {
         }
     }
 
+
     // Adiciona um Safe Haven ao tabuleiro
     public boolean adicionarSafeHaven(int x, int y) {
         if (!dentroDosLimites(x, y)) {
