@@ -578,6 +578,16 @@ public class GameManager {
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
                 if (equipamentoAtual != null) {
+                    if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                        if (pistola.temBalas()) {
+                            pistola.gastarBala();
+                            System.out.println("Defesa com pistola: Humano protegido. Balas restantes: " + pistola.getBalas());
+                            advanceTurn(); // Conta como jogada
+                            return true;
+                        }
+                    }
+
                     if (equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
                         System.out.println("Jogada inválida: Humano com espada não pode ser atacado.");
                         return false;
@@ -603,14 +613,25 @@ public class GameManager {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 if (equipamentoAtual != null && equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
-                    System.out.println("Humano com espada matou o zumbi.");
                     personagens.remove(targetCreature);
                     creatureToMove.setX(xD);
                     creatureToMove.setY(yD);
                     advanceTurn();
                     return true;
                 }
-
+                // Lógica para pistola (Tipo 2 ou similar)
+                if (equipamentoAtual != null && equipamentoAtual instanceof PistolaWaltherPPK) {
+                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                    if (pistola.temBalas()) {
+                        pistola.gastarBala(); // Consome uma bala
+                        System.out.println("Humano com pistola matou o zumbi. Balas restantes: " + pistola.getBalas());
+                        personagens.remove(targetCreature); // Remove o zumbi do jogo
+                        creatureToMove.setX(xD); // Move o humano para a posição do zumbi
+                        creatureToMove.setY(yD);
+                        advanceTurn();
+                        return true;
+                    }
+                }
                 // Caso o humano não tenha espada, não consegue atacar o zumbi
                 return false;
             }
