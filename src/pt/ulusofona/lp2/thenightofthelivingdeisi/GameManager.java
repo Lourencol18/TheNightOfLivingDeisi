@@ -732,17 +732,33 @@ public class GameManager {
 
         // Interação com equipamentos
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
+            Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
+
+            if (equipamentoAtual != null) {
+                // Deixa o equipamento atual na posição original
+                equipamentoAtual.setX(xO); // Define a posição do equipamento para a posição inicial do humano
+                equipamentoAtual.setY(yO);
+                equipamentos.add(equipamentoAtual); // Adiciona o equipamento ao tabuleiro
+                creatureToMove.soltarEquipamento(); // Solta o equipamento atual
+            }
+
+            // Pega o novo equipamento
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
-                creatureToMove.pegarEquipamento(equipamentoParaInteragir);
-                equipamentos.remove(equipamentoParaInteragir);
+                creatureToMove.pegarEquipamento(equipamentoParaInteragir); // Atualiza o equipamento da criatura
+                equipamentos.remove(equipamentoParaInteragir); // Remove o novo equipamento do tabuleiro
             }
         }
-
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
+            // Zumbi destrói o equipamento
             creatureToMove.destruirEquipamento();
-            creatureToMove.incrementarEquipamentosDestruidos();
+
+            // Incrementa o contador de equipamentos destruídos
+            creatureToMove.incrementarEquipamentosDestruidos(1);
+
+            // Remove o equipamento do tabuleiro
             equipamentos.remove(equipamentoParaInteragir);
         }
+
 
         // Interação com Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
@@ -873,8 +889,9 @@ public class GameManager {
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
 
-        // Número de turnos terminados
-        resultados.add("Nr. de turnos terminados: " + (turnoAtual + 1));
+        // Adiciona o texto do número de turnos e o número em linhas separadas
+        resultados.add("Nr. de turnos terminados:");
+        resultados.add(String.valueOf(turnoAtual + 1)); // Adiciona o número do turno em uma linha separada
         resultados.add("");
 
         // Separador para os vivos
@@ -897,6 +914,7 @@ public class GameManager {
 
         return resultados;
     }
+
 
     public void saveGame(File file) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
