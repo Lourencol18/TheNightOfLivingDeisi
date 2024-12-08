@@ -791,7 +791,6 @@ public class GameManager {
         return true;
     }
 
-
     private void advanceTurn() {
         turnoAtual++;
 
@@ -804,17 +803,32 @@ public class GameManager {
         // Verifica se houve eventos relevantes (transformações ou mortes)
         boolean houveEventos = false;
 
+        // Verificar se humanos foram transformados em zumbis
         for (Creature creature : personagens) {
-            // Verifica se humanos foram transformados em zumbis
             if (creature.isTransformed()) {
-                houveEventos = true;
+                houveEventos = true; // Transformação ocorreu
                 break;
             }
+        }
 
-            // Verifica se zumbis foram eliminados
-            if (creature.getX() == -1 && creature.getY() == -1) {
-                houveEventos = true;
-                break;
+        // Verificar se há zumbis não presentes no tabuleiro (mortos)
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) {
+                boolean encontrado = false;
+                for (int y = 0; y < tabuleiro.getHeight(); y++) {
+                    for (int x = 0; x < tabuleiro.getWidth(); x++) {
+                        Creature criaturaNoTabuleiro = tabuleiro.getCriaturaAtPosition(x, y);
+                        if (criaturaNoTabuleiro != null && criaturaNoTabuleiro.getId() == creature.getId()) {
+                            encontrado = true;
+                            break;
+                        }
+                    }
+                    if (encontrado) break;
+                }
+                if (!encontrado) {
+                    houveEventos = true; // Zumbi foi removido (morto)
+                    break;
+                }
             }
         }
 
@@ -825,6 +839,8 @@ public class GameManager {
             turnosSemEventos++; // Incrementa o contador se nenhum evento ocorreu
         }
     }
+
+
 
 
 
