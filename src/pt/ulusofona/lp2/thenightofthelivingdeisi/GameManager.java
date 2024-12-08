@@ -297,7 +297,7 @@ public class GameManager {
         String team = "";  // Variável para armazenar o time (Humano ou Zombie)
 
         // Percorre a lista de personagens (criaturas)
-        for (Creature creature : personagens) {  // Usando a lista 'personagens' em vez de 'getCreatures'
+        for (Creature creature : personagens) {  // Usando a lista 'personagens'
             if (creature.getId() == id) {  // Se encontrar a criatura com o ID correspondente
                 // Verifica a equipe da criatura (Humano ou Zombie)
                 if (creature.getEquipa() == 20) {
@@ -310,15 +310,31 @@ public class GameManager {
                     }
                 }
 
-                // Preenche o array com as informações da criatura
+                // Preenche os campos comuns
                 Jogador[0] = String.valueOf(creature.getId());    // ID da criatura
                 Jogador[1] = creature.getTipoCriatura();           // Tipo de criatura (ex.: "Criança", "Adulto", etc.)
                 Jogador[2] = team;                                 // Time (Humano ou Zombie)
                 Jogador[3] = creature.getNome();                   // Nome da criatura
-                Jogador[4] = String.valueOf(creature.getX());      // Coordenada X
-                Jogador[5] = String.valueOf(creature.getY());      // Coordenada Y
-                Jogador[6] = null;                                 // PNG (pode ser adicionado se necessário)
 
+                // Verifica se a criatura está em um Safe Haven
+                boolean inSafeHaven = false;
+                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+                    if (safeHaven.getCriaturasDentro().contains(creature)) {
+                        inSafeHaven = true;
+                        break;
+                    }
+                }
+
+                // Se a criatura estiver em um Safe Haven, retorna null para as coordenadas
+                if (inSafeHaven) {
+                    Jogador[4] = null;  // Coordenada X
+                    Jogador[5] = null;  // Coordenada Y
+                } else {
+                    Jogador[4] = String.valueOf(creature.getX());  // Coordenada X
+                    Jogador[5] = String.valueOf(creature.getY());  // Coordenada Y
+                }
+
+                Jogador[6] = null;  // PNG ou outro dado, se necessário
                 return Jogador;  // Retorna o array com as informações da criatura
             }
         }
@@ -330,13 +346,24 @@ public class GameManager {
 
 
 
+
     public String getCreatureInfoAsString(int id) {
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
+                // Verifica se a criatura está dentro de um Safe Haven
+                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+                    if (safeHaven.getCriaturasDentro().contains(creature)) {
+                        info.append(creature.getId()).append(" | ")
+                                .append(creature.getTipoCriatura()).append(" | ")
+                                .append(creature.getNome()).append(" @ Safe Haven");
+                        return info.toString();
+                    }
+                }
+
                 // Caso específico: Cão
-                if (creature instanceof Cao) {
+                if (creature.getTipoCriatura().equals("Cão")) {
                     info.append(creature.getId()).append(" | ")         // ID
                             .append(creature.getTipoCriatura()).append(" | ") // Tipo (Cão)
                             .append(creature.getNome()).append(" @ (")      // Nome
@@ -345,7 +372,7 @@ public class GameManager {
                 }
 
                 // Caso específico: Vampiro
-                if (creature instanceof Vampiro) {
+                if (creature.getTipoCriatura().equals("Vampiro")) {
                     info.append(creature.getId()).append(" | ")         // ID
                             .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
                             .append(creature.getNome()).append(" | ")      // Nome
@@ -365,7 +392,7 @@ public class GameManager {
                     info.append("Zombie (Transformado)"); // Exibe Transformado para zumbis
                 } else if (creature.isHuman()) {
                     info.append("Humano");
-                } else if (!(creature instanceof Vampiro)) {
+                } else if (!creature.getTipoCriatura().equals("Vampiro")) {
                     info.append("Zombie");
                 }
 
@@ -718,18 +745,29 @@ public class GameManager {
         }
 
         // Interação com Safe Haven
-        if (creatureToMove.isHuman()) {
-            if (tabuleiro.isSafeHaven(xD, yD)) {
-                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-                    if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                        safeHaven.entrar(creatureToMove);
-                        personagens.remove(creatureToMove);
-                        advanceTurn();
-                        return true;
-                    }
+        if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
+            for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+                if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
+                    // Adiciona a criatura ao Safe Haven
+                    safeHaven.entrar(creatureToMove);
+
+                    // Remove a criatura da lista de personagens
+                    personagens.remove(creatureToMove);
+
+                    // Atualiza as coordenadas da criatura para (-1, -1)
+                    creatureToMove.setX(-1);
+                    creatureToMove.setY(-1);
+
+                    // Avança o turno após a criatura entrar no Safe Haven
+                    advanceTurn();
+
+                    // Retorna true para confirmar o movimento
+                    return true;
                 }
             }
         }
+
+
 
         advanceTurn(); // Avança o turno
         return true;
@@ -804,7 +842,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem transformações ou mortes
-        if (turnosSemEventos >= 12) {
+        if (turnosSemEventos >= 8) {
             return true;
         }
 
@@ -836,7 +874,7 @@ public class GameManager {
         ArrayList<String> resultados = new ArrayList<>();
 
         // Número de turnos terminados
-        resultados.add("Nr. de turnos terminados: " + turnoAtual);
+        resultados.add("Nr. de turnos terminados: " + (turnoAtual + 1));
         resultados.add("");
 
         // Separador para os vivos
