@@ -21,6 +21,7 @@ public class GameManager {
     private int numSafeHavens = 0;
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
 
+
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
         equipaInicial = -1;
@@ -530,6 +531,9 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
+        // Reseta a flag no início de cada movimento
+
+
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;
@@ -568,8 +572,6 @@ public class GameManager {
             }
         }
 
-
-
         // Verifica se é a vez da equipe correta
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
@@ -603,7 +605,6 @@ public class GameManager {
                 // Remove o equipamento do idoso
                 creatureToMove.soltarEquipamento();
             }
-
         }
 
         // Verifica se o vampiro está tentando se mover de dia
@@ -620,7 +621,6 @@ public class GameManager {
             return false; // Movimento inválido
         }
 
-
         // Verifica se há outra criatura na posição de destino
         Creature targetCreature = null;
         for (Creature creature : personagens) {
@@ -630,7 +630,7 @@ public class GameManager {
             }
         }
 
-        // Lógica de interação entre criaturas permanece
+        // Lógica de interação entre criaturas
         if (targetCreature != null) {
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
@@ -658,13 +658,13 @@ public class GameManager {
                             int equipamentosUsados = targetCreature.getContadorEquipamentos();
                             targetCreature.transformar();
                             targetCreature.setEquipa(10);
+
                             targetCreature.soltarEquipamento();
                             targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
                             advanceTurn();
                             return true; // Transformação realizada
                         }
                     }
-
 
                     // Lógica para outros equipamentos defensivos
                     if (equipamentoAtual.getTipo() == 1 || equipamentoAtual.isDefensivo()) {
@@ -673,14 +673,15 @@ public class GameManager {
                     }
                 }
 
-
                 // Transformação de humano em zumbi
                 int equipamentosUsados = targetCreature.getContadorEquipamentos();
                 targetCreature.transformar();
                 targetCreature.setEquipa(10);
+
                 targetCreature.soltarEquipamento();
                 targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
                 advanceTurn();
+
                 return true;
             }
 
@@ -692,6 +693,7 @@ public class GameManager {
                     creatureToMove.setX(xD);
                     creatureToMove.setY(yD);
                     advanceTurn();
+
                     return true;
                 }
                 // Lógica para pistola (Tipo 2 ou similar)
@@ -703,6 +705,7 @@ public class GameManager {
                         creatureToMove.setX(xD); // Move o humano para a posição do zumbi
                         creatureToMove.setY(yD);
                         advanceTurn();
+
                         return true;
                     }
                 }
@@ -757,8 +760,9 @@ public class GameManager {
 
             // Remove o equipamento do tabuleiro
             equipamentos.remove(equipamentoParaInteragir);
-        }
 
+
+        }
 
         // Interação com Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
@@ -777,92 +781,55 @@ public class GameManager {
                     // Avança o turno após a criatura entrar no Safe Haven
                     advanceTurn();
 
-                    // Retorna true para confirmar o movimento
-                    return true;
+
+                    return true; // Retorna true para confirmar o movimento
                 }
             }
         }
-
-
 
         advanceTurn(); // Avança o turno
         return true;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private void advanceTurn() {
+    private void advanceTurn() {
         turnoAtual++;
-
-        // Alterna entre 2 turnos de dia e 2 turnos de noite
         dia = ((turnoAtual + 1) / 2) % 2 == 0;
-
-        // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
+    }
 
-        // Verifica se houve eventos significativos (mortos ou transformações)
+
+
+    public boolean gameIsOver() {
+        // Verifica se houve transformações ou mortes
         boolean houveEventos = false;
 
         for (Creature creature : personagens) {
-            if (creature.isZombie() && creature.getEquipamentosDestruidos() > 0) {
-                houveEventos = true; // Equipamentos destruídos contam como evento
+            // Verifica transformações de humanos em zumbis
+            if (creature.isHuman() && creature.isTransformed()) {
+                houveEventos = true;
                 break;
             }
-            if (creature.isHuman() && creature.isTransformed()) {
-                houveEventos = true; // Transformação conta como evento
+            // Verifica mortes de zumbis (criaturas removidas do tabuleiro)
+            if (creature.isZombie() && (creature.getX() == -1 && creature.getY() == -1)) {
+                houveEventos = true;
                 break;
             }
         }
 
         // Atualiza o contador de turnos sem eventos
         if (houveEventos) {
-            turnosSemEventos = 0; // Reinicia o contador
+            turnosSemEventos = 0; // Reseta se houve eventos
         } else {
-            turnosSemEventos++; // Incrementa se nenhum evento ocorreu
+            turnosSemEventos++; // Incrementa se não houve eventos
         }
-    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public boolean gameIsOver() {
-        // 1. Verifica se passaram 8 turnos sem transformações ou mortes
+        // Se passaram 8 turnos sem eventos, o jogo termina
         if (turnosSemEventos >= 8) {
             return true;
         }
 
-        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
+        // Verifica se restam apenas elementos de uma equipe no tabuleiro
         boolean existemHumanos = false;
         boolean existemZumbis = false;
 
@@ -874,13 +841,15 @@ public class GameManager {
                 existemZumbis = true;
             }
             if (existemHumanos && existemZumbis) {
-                break; // Ambos existem, jogo continua
+                break; // Ambos existem, o jogo continua
             }
         }
 
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
+
+
 
 
 
