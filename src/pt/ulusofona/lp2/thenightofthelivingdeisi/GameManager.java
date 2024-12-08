@@ -794,24 +794,25 @@ public class GameManager {
 
     private void advanceTurn() {
         turnoAtual++;
+
+        // Alterna entre turnos de dia e noite
         dia = ((turnoAtual + 1) / 2) % 2 == 0;
+
+        // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
-    }
 
-
-
-    public boolean gameIsOver() {
-        // Verifica se houve transformações ou mortes
+        // Verifica se houve eventos relevantes (transformações ou mortes)
         boolean houveEventos = false;
 
         for (Creature creature : personagens) {
-            // Verifica transformações de humanos em zumbis
-            if (creature.isHuman() && creature.isTransformed()) {
+            // Verifica se humanos foram transformados em zumbis
+            if (creature.isTransformed()) {
                 houveEventos = true;
                 break;
             }
-            // Verifica mortes de zumbis (criaturas removidas do tabuleiro)
-            if (creature.isZombie() && (creature.getX() == -1 && creature.getY() == -1)) {
+
+            // Verifica se zumbis foram eliminados
+            if (creature.getX() == -1 && creature.getY() == -1) {
                 houveEventos = true;
                 break;
             }
@@ -819,12 +820,17 @@ public class GameManager {
 
         // Atualiza o contador de turnos sem eventos
         if (houveEventos) {
-            turnosSemEventos = 0; // Reseta se houve eventos
+            turnosSemEventos = 0; // Reinicia o contador
         } else {
-            turnosSemEventos++; // Incrementa se não houve eventos
+            turnosSemEventos++; // Incrementa o contador se nenhum evento ocorreu
         }
+    }
 
-        // Se passaram 8 turnos sem eventos, o jogo termina
+
+
+
+    public boolean gameIsOver() {
+        // Verifica se passaram 8 turnos sem transformações ou mortes
         if (turnosSemEventos >= 8) {
             return true;
         }
@@ -841,13 +847,16 @@ public class GameManager {
                 existemZumbis = true;
             }
             if (existemHumanos && existemZumbis) {
-                break; // Ambos existem, o jogo continua
+                break; // Ambos existem, jogo continua
             }
         }
 
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
+
+
+
 
 
 
