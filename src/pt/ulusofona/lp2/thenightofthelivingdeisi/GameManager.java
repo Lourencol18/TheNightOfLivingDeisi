@@ -616,17 +616,36 @@ public class GameManager {
                             return true;
                         }
                     }
+                    if (equipamentoAtual instanceof Lixivia) {
+                        Lixivia lixivia = (Lixivia) equipamentoAtual;
 
-                    if (equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
-                        advanceTurn();
-                        return true;
+                        if (lixivia.getLitros() > 0.0) {
+                            if (lixivia.executarAcao(creatureToMove, targetCreature)) {
+                                advanceTurn(); // Conta como jogada
+                                return true; // Defesa bem-sucedida
+                            }
+                        }
+
+                        // Se a lixívia estiver esgotada
+                        if (lixivia.getLitros() <= 0.0) {
+                            int equipamentosUsados = targetCreature.getContadorEquipamentos();
+                            targetCreature.transformar();
+                            targetCreature.setEquipa(10);
+                            targetCreature.soltarEquipamento();
+                            targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
+                            advanceTurn();
+                            return true; // Transformação realizada
+                        }
                     }
 
-                    if (equipamentoAtual.isDefensivo()) {
+
+                    // Lógica para outros equipamentos defensivos
+                    if (equipamentoAtual.getTipo() == 1 || equipamentoAtual.isDefensivo()) {
                         advanceTurn();
                         return true;
                     }
                 }
+
 
                 // Transformação de humano em zumbi
                 int equipamentosUsados = targetCreature.getContadorEquipamentos();
@@ -785,7 +804,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem transformações ou mortes
-        if (turnosSemEventos >= 8) {
+        if (turnosSemEventos >= 12) {
             return true;
         }
 

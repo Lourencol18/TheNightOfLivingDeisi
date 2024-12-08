@@ -9,15 +9,19 @@ public class Lixivia extends Equipamento {
 
     @Override
     public boolean executarAcao(Creature atacante, Creature alvo) {
-        if (litros > 0.3) {
+        if (litros > 0.0) {
+            // Consome 0.3 litros por uso
             litros -= 0.3;
+            if (litros < 0.0) {
+                litros = 0.0; // Garante que não fique negativo
+            }
+            litros = Math.round(litros * 10.0) / 10.0; // Arredonda para 1 casa decimal
+            return true; // Defesa bem-sucedida
         } else {
-            litros = 0.0;
-             // Se litros acabarem, humano vira zumbi
+            return false; // Lixívia esgotada, ataque passa
         }
-        litros = Math.round(litros * 10.0) / 10.0; // Arredonda para 1 casa decimal
-        return false;
     }
+
 
     public boolean temLitros() {
         return litros > 0.0;
