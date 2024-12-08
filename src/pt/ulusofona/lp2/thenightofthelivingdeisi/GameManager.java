@@ -791,6 +791,7 @@ public class GameManager {
         return true;
     }
 
+
     private void advanceTurn() {
         turnoAtual++;
 
@@ -803,32 +804,17 @@ public class GameManager {
         // Verifica se houve eventos relevantes (transformações ou mortes)
         boolean houveEventos = false;
 
-        // Verificar se humanos foram transformados em zumbis
         for (Creature creature : personagens) {
+            // Verifica se humanos foram transformados em zumbis
             if (creature.isTransformed()) {
-                houveEventos = true; // Transformação ocorreu
+                houveEventos = true;
                 break;
             }
-        }
 
-        // Verificar se há zumbis não presentes no tabuleiro (mortos)
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) {
-                boolean encontrado = false;
-                for (int y = 0; y < tabuleiro.getHeight(); y++) {
-                    for (int x = 0; x < tabuleiro.getWidth(); x++) {
-                        Creature criaturaNoTabuleiro = tabuleiro.getCriaturaAtPosition(x, y);
-                        if (criaturaNoTabuleiro != null && criaturaNoTabuleiro.getId() == creature.getId()) {
-                            encontrado = true;
-                            break;
-                        }
-                    }
-                    if (encontrado) break;
-                }
-                if (!encontrado) {
-                    houveEventos = true; // Zumbi foi removido (morto)
-                    break;
-                }
+            // Verifica se zumbis foram eliminados
+            if (creature.getX() == -1 && creature.getY() == -1) {
+                houveEventos = true;
+                break;
             }
         }
 
@@ -843,15 +829,13 @@ public class GameManager {
 
 
 
-
-
     public boolean gameIsOver() {
-        // Verifica se passaram 8 turnos sem transformações ou mortes
+        // 1. Verifica se passaram 8 turnos sem eventos significativos
         if (turnosSemEventos >= 8) {
-            return true;
+            return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
         }
 
-        // Verifica se restam apenas elementos de uma equipe no tabuleiro
+        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
         boolean existemHumanos = false;
         boolean existemZumbis = false;
 
@@ -863,13 +847,14 @@ public class GameManager {
                 existemZumbis = true;
             }
             if (existemHumanos && existemZumbis) {
-                break; // Ambos existem, jogo continua
+                break; // Ambos existem, o jogo continua
             }
         }
 
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
+
 
 
 
