@@ -793,7 +793,7 @@ public class GameManager {
 
 
     private void advanceTurn() {
-        turnoAtual++;
+        turnoAtual++; // Avança o turno
 
         // Alterna entre turnos de dia e noite
         dia = ((turnoAtual + 1) / 2) % 2 == 0;
@@ -801,20 +801,34 @@ public class GameManager {
         // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
+        // Armazena os IDs de zumbis antes do turno
+        List<Integer> zumbisAntesDoTurno = new ArrayList<>();
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) {
+                zumbisAntesDoTurno.add(creature.getId());
+            }
+        }
+
         // Verifica se houve eventos relevantes (transformações ou mortes)
         boolean houveEventos = false;
 
+        // Lógica para verificação de eventos: transformações e mortes
         for (Creature creature : personagens) {
             // Verifica se humanos foram transformados em zumbis
             if (creature.isTransformed()) {
                 houveEventos = true;
                 break;
             }
+        }
 
-            // Verifica se zumbis foram eliminados
-            if (creature.getX() == -1 && creature.getY() == -1) {
-                houveEventos = true;
-                break;
+        // Verifica se algum zumbi foi removido (morto)
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) {
+                // Se algum zumbi que estava antes não estiver mais na lista
+                if (!zumbisAntesDoTurno.contains(creature.getId())) {
+                    houveEventos = true; // Marcar como evento de morte de zumbi
+                    break;
+                }
             }
         }
 
@@ -822,9 +836,11 @@ public class GameManager {
         if (houveEventos) {
             turnosSemEventos = 0; // Reinicia o contador
         } else {
-            turnosSemEventos++; // Incrementa o contador se nenhum evento ocorreu
+            turnosSemEventos++; // Incrementa o contador se não houve evento
         }
     }
+
+
 
 
 
@@ -854,6 +870,8 @@ public class GameManager {
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
+
+
 
 
 
