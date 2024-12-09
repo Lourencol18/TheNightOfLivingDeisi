@@ -28,9 +28,6 @@ public class GameManager {
         equipamentos.clear();
         turnoAtual = equipaInicial;
 
-        // Conjunto para verificar IDs duplicados
-        HashSet<Integer> idsUsados = new HashSet<>();
-
         try (Scanner scanner = new Scanner(file)) {
             int currentLine = -1; // Para rastrear erros de linha
 
@@ -101,12 +98,6 @@ public class GameManager {
 
                 try {
                     int id = Integer.parseInt(criaturaData[0]);
-                    if (idsUsados.contains(id)) {
-                        System.out.println("ID duplicado encontrado para criatura: " + id + ". Ignorando.");
-                        continue; // Ignora criaturas com IDs duplicados
-                    }
-                    idsUsados.add(id); // Marca o ID como usado
-
                     int equipa = Integer.parseInt(criaturaData[1]);
                     int tipoCriatura = Integer.parseInt(criaturaData[2]);
                     String nome = criaturaData[3];
@@ -177,12 +168,6 @@ public class GameManager {
 
                 try {
                     int id = Integer.parseInt(equipamentoData[0]);
-                    if (idsUsados.contains(id)) {
-                        System.out.println("ID duplicado encontrado para equipamento: " + id + ". Ignorando.");
-                        continue; // Ignora equipamentos com IDs duplicados
-                    }
-                    idsUsados.add(id); // Marca o ID como usado
-
                     int tipo = Integer.parseInt(equipamentoData[1]);
                     int x = Integer.parseInt(equipamentoData[2]);
                     int y = Integer.parseInt(equipamentoData[3]);
@@ -255,6 +240,8 @@ public class GameManager {
             throw new FileNotFoundException("Erro ao abrir o ficheiro.");
         }
     }
+
+
 
 
 
@@ -546,7 +533,7 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
-        // Reseta a flag no início de cada movimento
+
 
 
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
@@ -562,6 +549,7 @@ public class GameManager {
                 break;
             }
         }
+
 
         // Se não houver criatura na origem, retorna falso
         if (creatureToMove == null) {
@@ -644,7 +632,6 @@ public class GameManager {
                 break;
             }
         }
-
         // Lógica de interação entre criaturas
         if (targetCreature != null) {
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
@@ -708,9 +695,9 @@ public class GameManager {
                     creatureToMove.setX(xD);
                     creatureToMove.setY(yD);
                     advanceTurn();
-
                     return true;
                 }
+
                 // Lógica para pistola (Tipo 2 ou similar)
                 if (equipamentoAtual != null && equipamentoAtual instanceof PistolaWaltherPPK) {
                     PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
