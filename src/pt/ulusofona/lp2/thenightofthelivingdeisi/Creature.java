@@ -28,9 +28,7 @@ public abstract class Creature {
         return equipamentosDestruidos;
     }
 
-    public void incrementarEquipamentosDestruidos() {
-        equipamentosDestruidos++;
-    }
+
 
 
     public boolean isTransformed() {

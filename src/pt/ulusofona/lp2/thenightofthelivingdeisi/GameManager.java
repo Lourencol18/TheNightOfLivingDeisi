@@ -18,7 +18,7 @@ public class GameManager {
    private int turnoSemEventos = 0;
     private int numSafeHavens = 0;
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
-
+    private boolean zumbiMorto = false;
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
@@ -533,9 +533,6 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
-
-
-
         // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;
@@ -549,7 +546,6 @@ public class GameManager {
                 break;
             }
         }
-
 
         // Se não houver criatura na origem, retorna falso
         if (creatureToMove == null) {
@@ -684,6 +680,7 @@ public class GameManager {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 if (equipamentoAtual != null && equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
                     personagens.remove(targetCreature);
+                    zumbiMorto = true; // Nova linha para marcar morte do zumbi
                     creatureToMove.setX(xD);
                     creatureToMove.setY(yD);
                     advanceTurn();
@@ -696,10 +693,10 @@ public class GameManager {
                     if (pistola.temBalas()) {
                         pistola.gastarBala(); // Consome uma bala
                         personagens.remove(targetCreature); // Remove o zumbi do jogo
+                        zumbiMorto = true; // Nova linha para marcar morte do zumbi
                         creatureToMove.setX(xD); // Move o humano para a posição do zumbi
                         creatureToMove.setY(yD);
                         advanceTurn();
-
                         return true;
                     }
                 }
@@ -754,8 +751,6 @@ public class GameManager {
 
             // Remove o equipamento do tabuleiro
             equipamentos.remove(equipamentoParaInteragir);
-
-
         }
 
         // Interação com Safe Haven - ANTES de atualizar coordenadas
@@ -780,7 +775,7 @@ public class GameManager {
             }
         }
 
-// Só atualiza coordenadas SE NÃO entrou no Safe Haven
+        // Só atualiza coordenadas SE NÃO entrou no Safe Haven
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
@@ -875,8 +870,9 @@ public class GameManager {
         }
 
         // Se houve a morte de um zumbi, reseta o contador de turnos sem eventos
-        if (houveMorteDeZumbi) {
+        if (houveMorteDeZumbi || zumbiMorto) { // Modificação aqui para incluir zumbiMorto
             turnosSemEventos = 0; // Resetando o contador de turnos sem eventos
+            zumbiMorto = false; // Reseta a flag para o próximo turno
         }
 
         // Verificação de presença de humanos e zumbis
@@ -895,7 +891,6 @@ public class GameManager {
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
-
 
 
 
