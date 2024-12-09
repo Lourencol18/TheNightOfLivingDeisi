@@ -102,7 +102,8 @@ public class GameManager {
                 try {
                     int id = Integer.parseInt(criaturaData[0]);
                     if (idsUsados.contains(id)) {
-                        throw new InvalidFileException("ID duplicado encontrado para criatura: " + id, currentLine);
+                        System.out.println("ID duplicado encontrado para criatura: " + id + ". Ignorando.");
+                        continue; // Ignora criaturas com IDs duplicados
                     }
                     idsUsados.add(id); // Marca o ID como usado
 
@@ -177,7 +178,8 @@ public class GameManager {
                 try {
                     int id = Integer.parseInt(equipamentoData[0]);
                     if (idsUsados.contains(id)) {
-                        throw new InvalidFileException("ID duplicado encontrado para equipamento: " + id, currentLine);
+                        System.out.println("ID duplicado encontrado para equipamento: " + id + ". Ignorando.");
+                        continue; // Ignora equipamentos com IDs duplicados
                     }
                     idsUsados.add(id); // Marca o ID como usado
 
@@ -253,6 +255,7 @@ public class GameManager {
             throw new FileNotFoundException("Erro ao abrir o ficheiro.");
         }
     }
+
 
 
 
