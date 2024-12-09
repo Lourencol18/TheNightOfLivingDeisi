@@ -19,6 +19,7 @@ public class GameManager {
     private int numSafeHavens = 0;
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
     private boolean zumbiMorto = false;
+    private boolean humanoTransformado = false;
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
@@ -670,6 +671,7 @@ public class GameManager {
 
                 targetCreature.soltarEquipamento();
                 targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
+                humanoTransformado = true;
                 advanceTurn();
 
                 return true;
@@ -849,30 +851,10 @@ public class GameManager {
         boolean existemHumanos = false;
         boolean existemZumbis = false;
 
-        // 3. Lista dos IDs dos zumbis antes do turno atual
-        List<Integer> idsZumbisAntesDoTurno = new ArrayList<>();
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) {
-                idsZumbisAntesDoTurno.add(creature.getId());
-            }
-        }
-
-        // 4. Verifica se algum zumbi foi morto (removido do tabuleiro)
-        boolean houveMorteDeZumbi = false;
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) {
-                // Se o zumbi não está mais na lista de IDs antes do turno, ele morreu
-                if (!idsZumbisAntesDoTurno.contains(creature.getId())) {
-                    houveMorteDeZumbi = true;
-                    break; // Morte de um zumbi detectada
-                }
-            }
-        }
-
-        // Se houve a morte de um zumbi, reseta o contador de turnos sem eventos
-        if (houveMorteDeZumbi || zumbiMorto) { // Modificação aqui para incluir zumbiMorto
+        if (zumbiMorto || humanoTransformado) {
             turnosSemEventos = 0; // Resetando o contador de turnos sem eventos
             zumbiMorto = false; // Reseta a flag para o próximo turno
+            humanoTransformado = false; // Reseta a flag para o próximo turno
         }
 
         // Verificação de presença de humanos e zumbis
@@ -891,7 +873,6 @@ public class GameManager {
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
-
 
 
 
