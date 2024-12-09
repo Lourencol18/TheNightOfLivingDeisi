@@ -556,7 +556,7 @@ public class GameManager {
             return false;
         }
 
-            // Lógica específica para o cão
+        // Lógica específica para o cão
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 return false;
@@ -622,6 +622,10 @@ public class GameManager {
         }
         // Lógica de interação entre criaturas
         if (targetCreature != null) {
+            if ((creatureToMove.isZombie() || creatureToMove instanceof Vampiro) &&
+                    targetCreature.getTipoCriatura().equals("Cão")) {
+                return false;
+            }
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
                 if (equipamentoAtual != null) {
@@ -754,7 +758,7 @@ public class GameManager {
 
         }
 
-        // Interação com Safe Haven
+        // Interação com Safe Haven - ANTES de atualizar coordenadas
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
@@ -771,11 +775,14 @@ public class GameManager {
                     // Avança o turno após a criatura entrar no Safe Haven
                     advanceTurn();
 
-
                     return true; // Retorna true para confirmar o movimento
                 }
             }
         }
+
+// Só atualiza coordenadas SE NÃO entrou no Safe Haven
+        creatureToMove.setX(xD);
+        creatureToMove.setY(yD);
 
         advanceTurn(); // Avança o turno
         return true;
