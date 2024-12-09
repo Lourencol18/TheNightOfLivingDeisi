@@ -3,10 +3,8 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class GameManager {
    private Tabuleiro tabuleiro;
@@ -29,6 +27,9 @@ public class GameManager {
         personagens.clear();
         equipamentos.clear();
         turnoAtual = equipaInicial;
+
+        // Conjunto para verificar IDs duplicados
+        HashSet<Integer> idsUsados = new HashSet<>();
 
         try (Scanner scanner = new Scanner(file)) {
             int currentLine = -1; // Para rastrear erros de linha
@@ -100,6 +101,11 @@ public class GameManager {
 
                 try {
                     int id = Integer.parseInt(criaturaData[0]);
+                    if (idsUsados.contains(id)) {
+                        throw new InvalidFileException("ID duplicado encontrado para criatura: " + id, currentLine);
+                    }
+                    idsUsados.add(id); // Marca o ID como usado
+
                     int equipa = Integer.parseInt(criaturaData[1]);
                     int tipoCriatura = Integer.parseInt(criaturaData[2]);
                     String nome = criaturaData[3];
@@ -170,6 +176,11 @@ public class GameManager {
 
                 try {
                     int id = Integer.parseInt(equipamentoData[0]);
+                    if (idsUsados.contains(id)) {
+                        throw new InvalidFileException("ID duplicado encontrado para equipamento: " + id, currentLine);
+                    }
+                    idsUsados.add(id); // Marca o ID como usado
+
                     int tipo = Integer.parseInt(equipamentoData[1]);
                     int x = Integer.parseInt(equipamentoData[2]);
                     int y = Integer.parseInt(equipamentoData[3]);
@@ -242,6 +253,7 @@ public class GameManager {
             throw new FileNotFoundException("Erro ao abrir o ficheiro.");
         }
     }
+
 
 
 
@@ -801,7 +813,7 @@ public class GameManager {
         // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
-        // Armazena os IDs de zumbis antes do turno
+        // Armazenar os IDs dos zumbis antes do turno
         List<Integer> zumbisAntesDoTurno = new ArrayList<>();
         for (Creature creature : personagens) {
             if (creature.isZombie()) {
@@ -824,7 +836,7 @@ public class GameManager {
         // Verifica se algum zumbi foi removido (morto)
         for (Creature creature : personagens) {
             if (creature.isZombie()) {
-                // Se algum zumbi que estava antes não estiver mais na lista
+                // Se algum zumbi que estava antes não estiver mais na lista, ele morreu
                 if (!zumbisAntesDoTurno.contains(creature.getId())) {
                     houveEventos = true; // Marcar como evento de morte de zumbi
                     break;
@@ -845,6 +857,8 @@ public class GameManager {
 
 
 
+
+
     public boolean gameIsOver() {
         // 1. Verifica se passaram 8 turnos sem eventos significativos
         if (turnosSemEventos >= 8) {
@@ -855,6 +869,32 @@ public class GameManager {
         boolean existemHumanos = false;
         boolean existemZumbis = false;
 
+        // 3. Lista dos IDs dos zumbis antes do turno atual
+        List<Integer> idsZumbisAntesDoTurno = new ArrayList<>();
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) {
+                idsZumbisAntesDoTurno.add(creature.getId());
+            }
+        }
+
+        // 4. Verifica se algum zumbi foi morto (removido do tabuleiro)
+        boolean houveMorteDeZumbi = false;
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) {
+                // Se o zumbi não está mais na lista de IDs antes do turno, ele morreu
+                if (!idsZumbisAntesDoTurno.contains(creature.getId())) {
+                    houveMorteDeZumbi = true;
+                    break; // Morte de um zumbi detectada
+                }
+            }
+        }
+
+        // Se houve a morte de um zumbi, reseta o contador de turnos sem eventos
+        if (houveMorteDeZumbi) {
+            turnosSemEventos = 0; // Resetando o contador de turnos sem eventos
+        }
+
+        // Verificação de presença de humanos e zumbis
         for (Creature creature : personagens) {
             if (creature.isHuman()) {
                 existemHumanos = true;
@@ -870,6 +910,8 @@ public class GameManager {
         // O jogo termina se apenas humanos ou apenas zumbis existirem
         return !existemHumanos || !existemZumbis;
     }
+
+
 
 
 
