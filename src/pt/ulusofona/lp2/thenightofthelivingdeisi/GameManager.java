@@ -361,12 +361,26 @@ public class GameManager {
             for (Creature creature : safeHaven.getCriaturasDentro()) {
                 if (creature.getId() == id) {
                     StringBuilder info = new StringBuilder();
+
+                    // Formato base
                     info.append(creature.getId())
                             .append(" | ")
                             .append(creature.getTipoCriatura())
-                            .append(" | ")
-                            .append(creature.getNome())
-                            .append(" @ Safe Haven");
+                            .append(" | ");
+
+                    // Para Cão, usa o formato simplificado
+                    if (creature.getTipoCriatura().equals("Cão")) {
+                        info.append(creature.getNome())
+                                .append(" @ Safe Haven");
+                    } else {
+                        // Para outras criaturas, usa o formato completo
+                        info.append("Humano | ")
+                                .append(creature.getNome())
+                                .append(" | +")
+                                .append(creature.getContadorEquipamentos())
+                                .append(" @ Safe Haven");
+                    }
+
                     return info.toString();
                 }
             }
@@ -882,40 +896,38 @@ public class GameManager {
 
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
-        ArrayList<Creature> vivos = new ArrayList<>();
-        ArrayList<Creature> outros = new ArrayList<>();
 
-        // Separa as criaturas em vivos e outros
+        // Adiciona o texto do número de turnos e o número em linhas separadas
+        resultados.add("Nr. de turnos terminados:");
+        resultados.add(String.valueOf(turnoAtual + 1)); // Adiciona o número do turno em uma linha separada
+        resultados.add("");
+
+        // Separador para os vivos
+        resultados.add("OS VIVOS");
         for (Creature creature : personagens) {
-            if (creature.isHuman()) {
-                vivos.add(creature);
-            } else if (creature.isZombie()) {
-                outros.add(creature);
+            if (creature.isHuman()) { // Tipo 1 representa humano
+                resultados.add(creature.getId() + " " + creature.getNome());
+            }
+        }
+// Adiciona humanos que estão no Safe Haven
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature creature : safeHaven.getCriaturasDentro()) {
+                if (creature.isHuman()) {
+                    resultados.add(creature.getId() + " " + creature.getNome());
+                }
             }
         }
 
-        // Ordena as listas pelo ID
-        vivos.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
-        outros.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
+        resultados.add(""); // Linha em branco entre os vivos e os outros
 
-        // Adiciona o cabeçalho
-        resultados.add("Nr. de turnos terminados:");
-        resultados.add(String.valueOf(turnoAtual + 1));
-        resultados.add("");
-
-        // Adiciona os vivos em ordem
-        resultados.add("OS VIVOS");
-        for (Creature creature : vivos) {
-            resultados.add(creature.getId() + " " + creature.getNome());
-        }
-        resultados.add("");
-
-        // Adiciona os outros em ordem
+        // Separador para os outros (zumbis)
         resultados.add("OS OUTROS");
-        for (Creature creature : outros) {
-            resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
+        for (Creature creature : personagens) {
+            if (creature.isZombie()) { // Tipo 0 representa zumbi
+                resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
+            }
         }
-        resultados.add("-----");
+        resultados.add("-----"); // Separador final
 
         return resultados;
     }
