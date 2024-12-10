@@ -570,42 +570,33 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean move(int xO, int yO, int xD, int yD) {
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
-            return false;
-        }
+            return false;}
 
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
                 creatureToMove = creature;
-                break;
-            }
-        }
+                break;}}
 
         if (creatureToMove == null) {
-            return false;
-        }
+            return false;}
 
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
-                return false;
-            }
-        }
+                return false;}}
 
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
-            return false;
-        }
+            return false;}
 
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman()) {
                 if (!turnoParaHumanos || !isDay()) {
-                    return false;
-                }
+                    return false;}
             } else if (creatureToMove.isZombie()) {
                 if (turnoParaHumanos) {
                     return false;
-                }
-            }
+                }}
             if (creatureToMove.getEquipamentoAtual() != null) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 equipamentoAtual.setX(xO);
@@ -616,48 +607,37 @@ public class GameManager {
         }
 
         if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
-            return false;
-        }
+            return false;}
 
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
-            return false;
-        }
+            return false;}
 
         if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
-            return false;
-        }
+            return false;}
 
         Creature targetCreature = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
                 targetCreature = creature;
-                break;
-            }
-        }
+                break;}}
 
         if (targetCreature != null) {
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
-                return false;
-            }
+                return false;}
 
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
-                return processarDefesa(creatureToMove, targetCreature);
-            }
+                return processarDefesa(creatureToMove, targetCreature);}
 
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                return processarAtaque(creatureToMove, targetCreature, xD, yD);
-            }
-            return false;
-        }
+                return processarAtaque(creatureToMove, targetCreature, xD, yD);}
+           return false;}
 
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
                 equipamentoParaInteragir = equipamento;
-                break;
-            }
-        }
+                break;}}
 
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
             return false;
@@ -678,8 +658,7 @@ public class GameManager {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            }
-        }
+            }}
 
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
@@ -696,10 +675,7 @@ public class GameManager {
                     personagens.remove(creatureToMove);
                     advanceTurn();
                     return true;
-                }
-            }
-        }
-
+                }}}
         advanceTurn();
         return true;
     }
