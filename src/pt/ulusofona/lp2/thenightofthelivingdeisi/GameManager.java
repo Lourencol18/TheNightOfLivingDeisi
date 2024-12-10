@@ -28,7 +28,7 @@ public class GameManager {
         personagens.clear();
         equipamentos.clear();
         turnoAtual = equipaInicial;
-
+        SafeHaven.getSafeHavens().clear();
         try (Scanner scanner = new Scanner(file)) {
             int currentLine = -1; // Para rastrear erros de linha
 
@@ -194,8 +194,6 @@ public class GameManager {
                 }
             }
 
-            // Lê o número de Safe Havens
-            int numSafeHavens = 0; // Se não houver número, definimos como 0
             if (scanner.hasNext()) {
                 currentLine++;
                 try {
@@ -206,34 +204,39 @@ public class GameManager {
                 if (numSafeHavens < 0) {
                     throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
                 }
-            }
 
-            // Processa cada Safe Haven
-            for (int i = 0; i < numSafeHavens; i++) {
-                currentLine++;
-                String linhaSafeHaven = scanner.nextLine().trim();
-                if (linhaSafeHaven.isEmpty()) {
-                    i--;
-                    continue;
-                }
-
-                String[] coordenadas = linhaSafeHaven.split(" : ");
-                if (coordenadas.length != 2) {
-                    throw new InvalidFileException("Dados do Safe Haven mal formatados.", currentLine);
-                }
-
-                try {
-                    int x = Integer.parseInt(coordenadas[0]);
-                    int y = Integer.parseInt(coordenadas[1]);
-
-                    if (!tabuleiro.dentroDosLimites(x, y)) {
-                        continue; // Ignora Safe Havens fora dos limites
+                // Processa cada Safe Haven
+                for (int i = 0; i < numSafeHavens; i++) {
+                    currentLine++;
+                    String linhaSafeHaven = scanner.nextLine().trim();
+                    if (linhaSafeHaven.isEmpty()) {
+                        i--;
+                        continue;
                     }
 
-                    tabuleiro.adicionarSafeHaven(x, y);
+                    String[] coordenadas = linhaSafeHaven.split(" : ");
+                    if (coordenadas.length != 2) {
+                        throw new InvalidFileException("Dados do Safe Haven mal formatados.", currentLine);
+                    }
 
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
+                    try {
+                        int x = Integer.parseInt(coordenadas[0]);
+                        int y = Integer.parseInt(coordenadas[1]);
+
+                        if (!tabuleiro.dentroDosLimites(x, y)) {
+                            continue; // Ignora Safe Havens fora dos limites
+                        }
+
+                        // Cria um novo SafeHaven
+                        SafeHaven safeHaven = new SafeHaven(x, y);
+                        // Adiciona ao tabuleiro
+                        tabuleiro.adicionarSafeHaven(x, y);
+                        // Registra no conjunto estático de SafeHavens
+                        SafeHaven.add(safeHaven);
+
+                    } catch (NumberFormatException e) {
+                        throw new InvalidFileException("Coordenadas do Safe Haven contêm valores inválidos.", currentLine);
+                    }
                 }
             }
 
@@ -297,128 +300,163 @@ public class GameManager {
     }
 
     public String[] getCreatureInfo(int id) {
-        String[] Jogador = new String[7];  // Array para armazenar as informações
-        String team = "";  // Variável para armazenar o time (Humano ou Zombie)
+        String[] Jogador = new String[7];
+        String team = "";
 
-        // Percorre a lista de personagens (criaturas)
-        for (Creature creature : personagens) {  // Usando a lista 'personagens'
-            if (creature.getId() == id) {  // Se encontrar a criatura com o ID correspondente
-                // Verifica a equipe da criatura (Humano ou Zombie)
-                if (creature.getEquipa() == 20) {
-                    team = "Humano";  // Se a equipe for 20, é Humano
-                } else if (creature.getEquipa() == 10) {
-                    if (creature.isTransformed()) {  // Verifica se o zumbi foi transformado
-                        team = "Zombie (Transformado)";
-                    } else {
-                        team = "Zombie";  // Zumbi normal
+        // Primeiro verifica nos SafeHavens
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature creature : safeHaven.getCriaturasDentro()) {
+                if (creature.getId() == id) {
+                    // Preenche informações para criaturas no SafeHaven
+                    if (creature.getEquipa() == 20) {
+                        team = "Humano";
+                    } else if (creature.getEquipa() == 10) {
+                        team = creature.isTransformed() ? "Zombie (Transformado)" : "Zombie";
                     }
+
+                    Jogador[0] = String.valueOf(creature.getId());
+                    Jogador[1] = creature.getTipoCriatura();
+                    Jogador[2] = team;
+                    Jogador[3] = creature.getNome();
+                    // Para criaturas no SafeHaven, coordenadas são null
+                    Jogador[4] = null;
+                    Jogador[5] = null;
+                    Jogador[6] = null;
+                    return Jogador;
                 }
-
-                // Preenche os campos comuns
-                Jogador[0] = String.valueOf(creature.getId());    // ID da criatura
-                Jogador[1] = creature.getTipoCriatura();           // Tipo de criatura (ex.: "Criança", "Adulto", etc.)
-                Jogador[2] = team;                                 // Time (Humano ou Zombie)
-                Jogador[3] = creature.getNome();                   // Nome da criatura
-
-                // Verifica se a criatura está em um Safe Haven
-                boolean inSafeHaven = false;
-                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-                    if (safeHaven.getCriaturasDentro().contains(creature)) {
-                        inSafeHaven = true;
-                        break;
-                    }
-                }
-
-                // Se a criatura estiver em um Safe Haven, retorna null para as coordenadas
-                if (inSafeHaven) {
-                    Jogador[4] = null;  // Coordenada X
-                    Jogador[5] = null;  // Coordenada Y
-                } else {
-                    Jogador[4] = String.valueOf(creature.getX());  // Coordenada X
-                    Jogador[5] = String.valueOf(creature.getY());  // Coordenada Y
-                }
-
-                Jogador[6] = null;  // PNG ou outro dado, se necessário
-                return Jogador;  // Retorna o array com as informações da criatura
             }
         }
 
-        // Caso não encontre a criatura, retorna um array com 7 elementos e uma mensagem de erro
-        Jogador[0] = "Criatura não encontrada";  // Preenche o índice 0 com a mensagem de erro
-        return Jogador;  // Retorna o array com 7 elementos
+        // Se não encontrou no SafeHaven, procura nas criaturas no tabuleiro
+        for (Creature creature : personagens) {
+            if (creature.getId() == id) {
+                if (creature.getEquipa() == 20) {
+                    team = "Humano";
+                } else if (creature.getEquipa() == 10) {
+                    team = creature.isTransformed() ? "Zombie (Transformado)" : "Zombie";
+                }
+
+                Jogador[0] = String.valueOf(creature.getId());
+                Jogador[1] = creature.getTipoCriatura();
+                Jogador[2] = team;
+                Jogador[3] = creature.getNome();
+                Jogador[4] = String.valueOf(creature.getX());
+                Jogador[5] = String.valueOf(creature.getY());
+                Jogador[6] = null;
+                return Jogador;
+            }
+        }
+
+        // Caso não encontre a criatura
+        Jogador[0] = "Criatura não encontrada";
+        return Jogador;
     }
 
 
 
 
     public String getCreatureInfoAsString(int id) {
+        // Primeiro verifica nas criaturas dentro dos SafeHavens
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature creature : safeHaven.getCriaturasDentro()) {
+                if (creature.getId() == id) {
+                    StringBuilder info = new StringBuilder();
+                    info.append(creature.getId())
+                            .append(" | ")
+                            .append(creature.getTipoCriatura())
+                            .append(" | ")
+                            .append(creature.getNome())
+                            .append(" @ (")
+                            .append(creature.getX())
+                            .append(", ")
+                            .append(creature.getY())
+                            .append(")");
+                    return info.toString();
+                }
+            }
+        }
+
+        // Se não encontrou no SafeHaven, procura nas criaturas no tabuleiro
         for (Creature creature : personagens) {
             if (creature.getId() == id) {
                 StringBuilder info = new StringBuilder();
 
-                // Verifica se a criatura está dentro de um Safe Haven
-                for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-                    if (safeHaven.getCriaturasDentro().contains(creature)) {
-                        info.append(creature.getId()).append(" | ")
-                                .append(creature.getTipoCriatura()).append(" | ")
-                                .append(creature.getNome()).append(" @ Safe Haven");
-                        return info.toString();
-                    }
-                }
-
                 // Caso específico: Cão
                 if (creature.getTipoCriatura().equals("Cão")) {
-                    info.append(creature.getId()).append(" | ")         // ID
-                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Cão)
-                            .append(creature.getNome()).append(" @ (")      // Nome
-                            .append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    info.append(creature.getId())
+                            .append(" | ")
+                            .append(creature.getTipoCriatura())
+                            .append(" | ")
+                            .append(creature.getNome())
+                            .append(" @ (")
+                            .append(creature.getX())
+                            .append(", ")
+                            .append(creature.getY())
+                            .append(")");
                     return info.toString();
                 }
 
                 // Caso específico: Vampiro
                 if (creature.getTipoCriatura().equals("Vampiro")) {
-                    info.append(creature.getId()).append(" | ")         // ID
-                            .append(creature.getTipoCriatura()).append(" | ") // Tipo (Vampiro)
-                            .append(creature.getNome()).append(" | ")      // Nome
-                            .append("-").append(creature.getEquipamentosDestruidos()) // Contador de equipamentos destruídos
-                            .append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                    info.append(creature.getId())
+                            .append(" | ")
+                            .append(creature.getTipoCriatura())
+                            .append(" | ")
+                            .append(creature.getNome())
+                            .append(" | -")
+                            .append(creature.getEquipamentosDestruidos())
+                            .append(" @ (")
+                            .append(creature.getX())
+                            .append(", ")
+                            .append(creature.getY())
+                            .append(")");
                     return info.toString();
                 }
 
-                // Determina o prefixo baseado no tipo da criatura (humano ou zumbi)
-                String vidaPrefix = creature.isHuman() ? "+" : "-";
+                // Outros tipos de criaturas
+                info.append(creature.getId())
+                        .append(" | ")
+                        .append(creature.getTipoCriatura())
+                        .append(" | ");
 
-                info.append(creature.getId()).append(" | ")             // ID
-                        .append(creature.getTipoCriatura()).append(" | ");   // Tipo (Criança, Adulto, etc.)
-
-                // Atualiza o tipo de equipe
                 if (creature.isZombie() && creature.isTransformed()) {
-                    info.append("Zombie (Transformado)"); // Exibe Transformado para zumbis
+                    info.append("Zombie (Transformado)");
                 } else if (creature.isHuman()) {
                     info.append("Humano");
-                } else if (!creature.getTipoCriatura().equals("Vampiro")) {
+                } else {
                     info.append("Zombie");
                 }
 
-                info.append(" | ")                                     // Separador
-                        .append(creature.getNome()).append(" | ")      // Nome
-                        .append(vidaPrefix);
+                info.append(" | ")
+                        .append(creature.getNome())
+                        .append(" | ");
 
-                // Exibe o contador de equipamentos destruídos para zumbis
-                if (creature.isZombie()) {
-                    info.append(creature.getEquipamentosDestruidos());
+                // Adiciona o prefixo correto baseado no tipo
+                if (creature.isHuman()) {
+                    info.append("+").append(creature.getContadorEquipamentos());
                 } else {
-                    info.append(creature.getContadorEquipamentos());
+                    info.append("-").append(creature.getEquipamentosDestruidos());
                 }
 
-                info.append(" @ (").append(creature.getX()).append(", ").append(creature.getY()).append(")"); // Posição
+                info.append(" @ (")
+                        .append(creature.getX())
+                        .append(", ")
+                        .append(creature.getY())
+                        .append(")");
 
-                // Adiciona informações de equipamento, se aplicável
+                // Adiciona informações do equipamento se houver
                 if (creature.getEquipamentoAtual() != null) {
                     Equipamento equipamento = creature.getEquipamentoAtual();
-                    info.append(" | ").append(equipamento.getId()).append(" | ")
-                            .append(equipamento.getNome()).append(" @ (")
-                            .append(equipamento.getX()).append(", ").append(equipamento.getY()).append(")");
+                    info.append(" | ")
+                            .append(equipamento.getId())
+                            .append(" | ")
+                            .append(equipamento.getNome())
+                            .append(" @ (")
+                            .append(equipamento.getX())
+                            .append(", ")
+                            .append(equipamento.getY())
+                            .append(")");
+
                     String additionalInfo = equipamento.getInfo();
                     if (!additionalInfo.isEmpty()) {
                         info.append(" | ").append(additionalInfo);
@@ -756,12 +794,12 @@ public class GameManager {
             equipamentos.remove(equipamentoParaInteragir);
         }
 
-        // Interação com Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                    // Remove a criatura do tabuleiro
-                    tabuleiro.removerCriatura(creatureToMove);
+                    // Mantém as coordenadas originais antes de entrar no SafeHaven
+                    creatureToMove.setX(xO);
+                    creatureToMove.setY(yO);
 
                     // Adiciona a criatura ao Safe Haven
                     safeHaven.entrar(creatureToMove);
@@ -769,25 +807,13 @@ public class GameManager {
                     // Remove a criatura da lista de personagens
                     personagens.remove(creatureToMove);
 
-                    // Atualiza as coordenadas da criatura para (-1, -1)
-                    creatureToMove.setX(-1);
-                    creatureToMove.setY(-1);
-
-                    // Avança o turno após a criatura entrar no Safe Haven
                     advanceTurn();
-
-                    return true; // Confirma o movimento
+                    return true;
                 }
             }
         }
 
-
-
-        // Só atualiza coordenadas SE NÃO entrou no Safe Haven
-        creatureToMove.setX(xD);
-        creatureToMove.setY(yD);
-
-        advanceTurn(); // Avança o turno
+        advanceTurn();
         return true;
     }
 
@@ -937,15 +963,16 @@ public class GameManager {
 
 
 
-
-
     public List<Integer> getIdsInSafeHaven() {
         List<Integer> idsInSafeHaven = new ArrayList<>();
 
+        // Percorre todos os Safe Havens existentes
         for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-            for (Creature criatura : safeHaven.getCriaturasDentro()) {
-
-                idsInSafeHaven.add(criatura.getId());
+            // Para cada Safe Haven, obtém todas as criaturas dentro dele
+            List<Creature> criaturas = safeHaven.getCriaturasDentro();
+            // Para cada criatura, adiciona seu ID à lista
+            for (Creature creature : criaturas) {
+                idsInSafeHaven.add(creature.getId());
             }
         }
 

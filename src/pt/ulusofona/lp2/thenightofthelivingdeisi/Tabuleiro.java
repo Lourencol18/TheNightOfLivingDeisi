@@ -45,7 +45,6 @@ public class Tabuleiro {
     }
 
 
-    // Adiciona um Safe Haven ao tabuleiro
     public boolean adicionarSafeHaven(int x, int y) {
         if (!dentroDosLimites(x, y)) {
             throw new IllegalArgumentException("Coordenadas fora dos limites do tabuleiro.");
@@ -58,8 +57,12 @@ public class Tabuleiro {
             }
         }
 
-        // Adiciona um novo Safe Haven
-        safeHavens.add(new SafeHaven(x, y));
+        // Cria e adiciona um novo Safe Haven
+        SafeHaven novoSafeHaven = new SafeHaven(x, y);
+        safeHavens.add(novoSafeHaven);
+        // Registra no conjunto estático de SafeHavens
+        SafeHaven.add(novoSafeHaven);
+
         return true;
     }
 
