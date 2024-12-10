@@ -29,8 +29,9 @@ public class GameManager {
         equipamentos.clear();
         turnoAtual = equipaInicial;
         SafeHaven.getSafeHavens().clear();
+
         try (Scanner scanner = new Scanner(file)) {
-            int currentLine = -1; // Para rastrear erros de linha
+            int currentLine = -1;
 
             // Lê dimensões do tabuleiro
             if (!scanner.hasNextLine()) {
@@ -43,13 +44,12 @@ public class GameManager {
             }
             int width, height;
             try {
-                height = Integer.parseInt(tamanho[0]); // Linhas (altura)
-                width = Integer.parseInt(tamanho[1]); // Colunas (largura)
+                height = Integer.parseInt(tamanho[0]);
+                width = Integer.parseInt(tamanho[1]);
             } catch (NumberFormatException e) {
                 throw new InvalidFileException("Dimensões do tabuleiro não são números válidos.", currentLine);
             }
 
-            // Inicializa o tabuleiro
             tabuleiro = new Tabuleiro(width, height);
             System.out.println("Tabuleiro criado com dimensões: " + height + "x" + width);
 
@@ -68,132 +68,11 @@ public class GameManager {
             }
             equipaAtual = equipaInicial;
 
-            // Lê o número de criaturas
-            if (!scanner.hasNext()) {
-                throw new InvalidFileException("Arquivo inválido: número de criaturas ausente.", currentLine);
-            }
-            currentLine++;
-            int numCreatures;
-            try {
-                numCreatures = Integer.parseInt(scanner.next());
-            } catch (NumberFormatException e) {
-                throw new InvalidFileException("Número de criaturas não é um número válido.", currentLine);
-            }
-            if (numCreatures < 0) {
-                throw new InvalidFileException("Número de criaturas não pode ser negativo.", currentLine);
-            }
+            // Carrega criaturas e equipamentos
+            loadCriaturas(scanner, currentLine);
+            loadEquipamentos(scanner, currentLine);
 
-            // Processa cada criatura
-            for (int i = 0; i < numCreatures; i++) {
-                currentLine++;
-                String linhaCriatura = scanner.nextLine().trim();
-                if (linhaCriatura.isEmpty()) {
-                    i--;
-                    continue;
-                }
-
-                String[] criaturaData = linhaCriatura.split(" : ");
-                if (criaturaData.length != 6) {
-                    throw new InvalidFileException("Dados da criatura mal formatados.", currentLine);
-                }
-
-                try {
-                    int id = Integer.parseInt(criaturaData[0]);
-                    int equipa = Integer.parseInt(criaturaData[1]);
-                    int tipoCriatura = Integer.parseInt(criaturaData[2]);
-                    String nome = criaturaData[3];
-                    int x = Integer.parseInt(criaturaData[4]); // Coluna
-                    int y = Integer.parseInt(criaturaData[5]); // Linha
-
-                    if (!tabuleiro.dentroDosLimites(x, y)) {
-                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Criatura ignorada.");
-                        continue; // Ignora criaturas fora dos limites
-                    }
-
-                    Creature criatura;
-                    if (equipa == 20) { // Humanos
-                        switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true);
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true);
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true);
-                            case 3 -> criatura = new Cao(id, nome, x, y, equipa, true);
-                            default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
-                        }
-                    } else if (equipa == 10) { // Zumbis
-                        switch (tipoCriatura) {
-                            case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false);
-                            case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false);
-                            case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false);
-                            case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
-                            default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
-                        }
-                    } else {
-                        throw new InvalidFileException("Equipe inválida.", currentLine);
-                    }
-
-                    personagens.add(criatura);
-
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Dados da criatura contêm valores inválidos.", currentLine);
-                }
-            }
-
-            // Lê o número de equipamentos
-            if (!scanner.hasNext()) {
-                throw new InvalidFileException("Arquivo inválido: número de equipamentos ausente.", currentLine);
-            }
-            currentLine++;
-            int numEquipments;
-            try {
-                numEquipments = Integer.parseInt(scanner.next());
-            } catch (NumberFormatException e) {
-                throw new InvalidFileException("Número de equipamentos não é um número válido.", currentLine);
-            }
-            if (numEquipments < 0) {
-                throw new InvalidFileException("Número de equipamentos não pode ser negativo.", currentLine);
-            }
-
-            // Processa cada equipamento
-            for (int i = 0; i < numEquipments; i++) {
-                currentLine++;
-                String linhaEquipamento = scanner.nextLine().trim();
-                if (linhaEquipamento.isEmpty()) {
-                    i--;
-                    continue;
-                }
-
-                String[] equipamentoData = linhaEquipamento.split(" : ");
-                if (equipamentoData.length != 4) {
-                    throw new InvalidFileException("Dados do equipamento mal formatados.", currentLine);
-                }
-
-                try {
-                    int id = Integer.parseInt(equipamentoData[0]);
-                    int tipo = Integer.parseInt(equipamentoData[1]);
-                    int x = Integer.parseInt(equipamentoData[2]);
-                    int y = Integer.parseInt(equipamentoData[3]);
-
-                    if (!tabuleiro.dentroDosLimites(x, y)) {
-                        System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Equipamento ignorado.");
-                        continue; // Ignora equipamentos fora dos limites
-                    }
-
-                    Equipamento equipamento;
-                    switch (tipo) {
-                        case 0 -> equipamento = new EscudoDeMadeira(id, tipo, x, y);
-                        case 1 -> equipamento = new EspadaSamurai(id, tipo, x, y);
-                        case 2 -> equipamento = new PistolaWaltherPPK(id, tipo, x, y);
-                        case 3 -> equipamento = new Lixivia(id, tipo, x, y);
-                        default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
-                    }
-
-                    equipamentos.add(equipamento);
-
-                } catch (NumberFormatException e) {
-                    throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
-                }
-            }
-
+            // Carrega Safe Havens
             if (scanner.hasNext()) {
                 currentLine++;
                 try {
@@ -205,7 +84,6 @@ public class GameManager {
                     throw new InvalidFileException("Número de Safe Havens não pode ser negativo.", currentLine);
                 }
 
-                // Processa cada Safe Haven
                 for (int i = 0; i < numSafeHavens; i++) {
                     currentLine++;
                     String linhaSafeHaven = scanner.nextLine().trim();
@@ -224,14 +102,11 @@ public class GameManager {
                         int y = Integer.parseInt(coordenadas[1]);
 
                         if (!tabuleiro.dentroDosLimites(x, y)) {
-                            continue; // Ignora Safe Havens fora dos limites
+                            continue;
                         }
 
-                        // Cria um novo SafeHaven
                         SafeHaven safeHaven = new SafeHaven(x, y);
-                        // Adiciona ao tabuleiro
                         tabuleiro.adicionarSafeHaven(x, y);
-                        // Registra no conjunto estático de SafeHavens
                         SafeHaven.add(safeHaven);
 
                     } catch (NumberFormatException e) {
@@ -245,7 +120,131 @@ public class GameManager {
         }
     }
 
+    private void loadCriaturas(Scanner scanner, int currentLine) throws InvalidFileException {
+        if (!scanner.hasNext()) {
+            throw new InvalidFileException("Arquivo inválido: número de criaturas ausente.", currentLine);
+        }
+        currentLine++;
+        int numCreatures;
+        try {
+            numCreatures = Integer.parseInt(scanner.next());
+        } catch (NumberFormatException e) {
+            throw new InvalidFileException("Número de criaturas não é um número válido.", currentLine);
+        }
+        if (numCreatures < 0) {
+            throw new InvalidFileException("Número de criaturas não pode ser negativo.", currentLine);
+        }
 
+        for (int i = 0; i < numCreatures; i++) {
+            currentLine++;
+            String linhaCriatura = scanner.nextLine().trim();
+            if (linhaCriatura.isEmpty()) {
+                i--;
+                continue;
+            }
+
+            String[] criaturaData = linhaCriatura.split(" : ");
+            if (criaturaData.length != 6) {
+                throw new InvalidFileException("Dados da criatura mal formatados.", currentLine);
+            }
+
+            try {
+                int id = Integer.parseInt(criaturaData[0]);
+                int equipa = Integer.parseInt(criaturaData[1]);
+                int tipoCriatura = Integer.parseInt(criaturaData[2]);
+                String nome = criaturaData[3];
+                int x = Integer.parseInt(criaturaData[4]);
+                int y = Integer.parseInt(criaturaData[5]);
+
+                if (!tabuleiro.dentroDosLimites(x, y)) {
+                    System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Criatura ignorada.");
+                    continue;
+                }
+
+                Creature criatura;
+                if (equipa == 20) {
+                    switch (tipoCriatura) {
+                        case 0 -> criatura = new Crianca(id, nome, x, y, equipa, true);
+                        case 1 -> criatura = new Adulto(id, nome, x, y, equipa, true);
+                        case 2 -> criatura = new Idoso(id, nome, x, y, equipa, true);
+                        case 3 -> criatura = new Cao(id, nome, x, y, equipa, true);
+                        default -> throw new InvalidFileException("Tipo de criatura inválido para humanos.", currentLine);
+                    }
+                } else if (equipa == 10) {
+                    switch (tipoCriatura) {
+                        case 0 -> criatura = new Crianca(id, nome, x, y, equipa, false);
+                        case 1 -> criatura = new Adulto(id, nome, x, y, equipa, false);
+                        case 2 -> criatura = new Idoso(id, nome, x, y, equipa, false);
+                        case 4 -> criatura = new Vampiro(id, nome, x, y, equipa);
+                        default -> throw new InvalidFileException("Tipo de criatura inválido para zumbis.", currentLine);
+                    }
+                } else {
+                    throw new InvalidFileException("Equipe inválida.", currentLine);
+                }
+
+                personagens.add(criatura);
+
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Dados da criatura contêm valores inválidos.", currentLine);
+            }
+        }
+    }
+
+    private void loadEquipamentos(Scanner scanner, int currentLine) throws InvalidFileException {
+        if (!scanner.hasNext()) {
+            throw new InvalidFileException("Arquivo inválido: número de equipamentos ausente.", currentLine);
+        }
+        currentLine++;
+        int numEquipments;
+        try {
+            numEquipments = Integer.parseInt(scanner.next());
+        } catch (NumberFormatException e) {
+            throw new InvalidFileException("Número de equipamentos não é um número válido.", currentLine);
+        }
+        if (numEquipments < 0) {
+            throw new InvalidFileException("Número de equipamentos não pode ser negativo.", currentLine);
+        }
+
+        for (int i = 0; i < numEquipments; i++) {
+            currentLine++;
+            String linhaEquipamento = scanner.nextLine().trim();
+            if (linhaEquipamento.isEmpty()) {
+                i--;
+                continue;
+            }
+
+            String[] equipamentoData = linhaEquipamento.split(" : ");
+            if (equipamentoData.length != 4) {
+                throw new InvalidFileException("Dados do equipamento mal formatados.", currentLine);
+            }
+
+            try {
+                int id = Integer.parseInt(equipamentoData[0]);
+                int tipo = Integer.parseInt(equipamentoData[1]);
+                int x = Integer.parseInt(equipamentoData[2]);
+                int y = Integer.parseInt(equipamentoData[3]);
+
+                if (!tabuleiro.dentroDosLimites(x, y)) {
+                    System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Equipamento ignorado.");
+                    continue;
+                }
+
+                Equipamento equipamento;
+                switch (tipo) {
+                    case 0 -> equipamento = new EscudoDeMadeira(id, tipo, x, y);
+                    case 1 -> equipamento = new EspadaSamurai(id, tipo, x, y);
+                    case 2 -> equipamento = new PistolaWaltherPPK(id, tipo, x, y);
+                    case 3 -> equipamento = new Lixivia(id, tipo, x, y);
+                    default -> throw new InvalidFileException("Tipo de equipamento inválido.", currentLine);
+                }
+
+                equipamentos.add(equipamento);
+
+            } catch (NumberFormatException e) {
+                throw new InvalidFileException("Dados do equipamento contêm valores inválidos.", currentLine);
+            }
+        }
+    }
 
 
 
@@ -486,32 +485,16 @@ public class GameManager {
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
-                // Identifica o tipo numérico com base na classe do equipamento
-                String tipoNumerico;
-                if (equipment instanceof EscudoDeMadeira) {
-                    tipoNumerico = "0";
-                } else if (equipment instanceof EspadaSamurai) {
-                    tipoNumerico = "1";
-                } else if (equipment instanceof PistolaWaltherPPK) {
-                    tipoNumerico = "2";
-                } else if (equipment instanceof Lixivia) {
-                    tipoNumerico = "3";
-                } else {
-                    tipoNumerico = "-1"; // Tipo desconhecido
-                }
-
                 // Retorna as informações no formato esperado
                 return new String[]{
-                        String.valueOf(equipment.getId()), // ID
-                        tipoNumerico,                     // Tipo numérico (0, 1, 2, 3)
-                        String.valueOf(equipment.getX()), // Posição X
-                        String.valueOf(equipment.getY()), // Posição Y
-                        null                             // Placeholder para ícones ou imagens
+                        String.valueOf(equipment.getId()),    // ID
+                        String.valueOf(equipment.getTipo()),  // Tipo numérico (0, 1, 2, 3)
+                        String.valueOf(equipment.getX()),     // Posição X
+                        String.valueOf(equipment.getY()),     // Posição Y
+                        null                                 // Placeholder para ícones ou imagens
                 };
             }
         }
-
-        // Se não encontrar o equipamento, retorna null
         return null;
     }
 
@@ -583,12 +566,10 @@ public class GameManager {
 
 
     public boolean move(int xO, int yO, int xD, int yD) {
-        // Verifica se as coordenadas de destino estão dentro do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;
         }
 
-        // Encontra a criatura na posição de origem
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
@@ -597,68 +578,52 @@ public class GameManager {
             }
         }
 
-        // Se não houver criatura na origem, retorna falso
         if (creatureToMove == null) {
             return false;
         }
 
-        // Lógica específica para o cão
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 return false;
             }
         }
 
-        // Verifica se é a vez da equipe correta
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             return false;
         }
 
-        // Regras específicas para idosos
-        if (creatureToMove instanceof Idoso) {
+        if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman()) {
-                // Idoso humano só pode se mover durante o turno dos humanos e de dia
                 if (!turnoParaHumanos || !isDay()) {
                     return false;
                 }
             } else if (creatureToMove.isZombie()) {
-                // Idoso zumbi só pode se mover durante o turno dos zumbis
                 if (turnoParaHumanos) {
                     return false;
                 }
             }
-            // Verifica se o idoso está carregando um equipamento
             if (creatureToMove.getEquipamentoAtual() != null) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-
-                // Deixa o equipamento na posição original antes de mover o idoso
                 equipamentoAtual.setX(xO);
                 equipamentoAtual.setY(yO);
-
-                // Adiciona o equipamento à lista de equipamentos no tabuleiro
                 equipamentos.add(equipamentoAtual);
-
-                // Remove o equipamento do idoso
                 creatureToMove.soltarEquipamento();
             }
         }
 
-        // Verifica se o vampiro está tentando se mover de dia
-        if (creatureToMove instanceof Vampiro && isDay()) {
+        if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
             return false;
         }
 
-        // Verifica se o movimento é válido
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
             return false;
         }
-        // Verifica se a criatura é um zumbi e está tentando ir para um Safe Haven
+
         if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
-            return false; // Movimento inválido
+            return false;
         }
 
-        // Verifica se há outra criatura na posição de destino
         Creature targetCreature = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
@@ -666,100 +631,91 @@ public class GameManager {
                 break;
             }
         }
-        // Lógica de interação entre criaturas
+
         if (targetCreature != null) {
-            if ((creatureToMove.isZombie() || creatureToMove instanceof Vampiro) &&
+            if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
                 return false;
             }
+
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
                 if (equipamentoAtual != null) {
-                    if (equipamentoAtual instanceof PistolaWaltherPPK) {
+                    if (equipamentoAtual.getTipo() == 2) { // Pistola
                         PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
                         if (pistola.temBalas()) {
                             pistola.gastarBala();
-                            advanceTurn(); // Conta como jogada
+                            advanceTurn();
                             return true;
                         }
                     }
-                    if (equipamentoAtual instanceof Lixivia) {
-                        Lixivia lixivia = (Lixivia) equipamentoAtual;
 
+                    if (equipamentoAtual.getTipo() == 3) { // Lixivia
+                        Lixivia lixivia = (Lixivia) equipamentoAtual;
                         if (lixivia.getLitros() > 0.0) {
                             if (lixivia.executarAcao(creatureToMove, targetCreature)) {
-                                advanceTurn(); // Conta como jogada
-                                return true; // Defesa bem-sucedida
+                                advanceTurn();
+                                return true;
                             }
                         }
-
-                        // Se a lixívia estiver esgotada
                         if (lixivia.getLitros() <= 0.0) {
                             int equipamentosUsados = targetCreature.getContadorEquipamentos();
                             targetCreature.transformar();
                             targetCreature.setEquipa(10);
-
                             targetCreature.soltarEquipamento();
                             targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
                             humanoTransformado = true;
                             advanceTurn();
-                            return true; // Transformação realizada
+                            return true;
                         }
                     }
 
-                    // Lógica para outros equipamentos defensivos
                     if (equipamentoAtual.getTipo() == 1 || equipamentoAtual.isDefensivo()) {
                         advanceTurn();
                         return true;
                     }
                 }
 
-                // Transformação de humano em zumbi
                 int equipamentosUsados = targetCreature.getContadorEquipamentos();
                 targetCreature.transformar();
                 targetCreature.setEquipa(10);
-
                 targetCreature.soltarEquipamento();
                 targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
                 humanoTransformado = true;
                 advanceTurn();
-
                 return true;
             }
 
-            // Humano com espada mata zumbi
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-                if (equipamentoAtual != null && equipamentoAtual.getTipo() == 1) { // Tipo 1: Espada Samurai
-                    personagens.remove(targetCreature);
-                    zumbiMorto = true; // Nova linha para marcar morte do zumbi
-                    creatureToMove.setX(xD);
-                    creatureToMove.setY(yD);
-                    advanceTurn();
-                    return true;
-                }
-
-                // Lógica para pistola (Tipo 2 ou similar)
-                if (equipamentoAtual != null && equipamentoAtual instanceof PistolaWaltherPPK) {
-                    PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                    if (pistola.temBalas()) {
-                        pistola.gastarBala(); // Consome uma bala
-                        personagens.remove(targetCreature); // Remove o zumbi do jogo
-                        zumbiMorto = true; // Nova linha para marcar morte do zumbi
-                        creatureToMove.setX(xD); // Move o humano para a posição do zumbi
+                if (equipamentoAtual != null) {
+                    if (equipamentoAtual.getTipo() == 1) { // Espada
+                        personagens.remove(targetCreature);
+                        zumbiMorto = true;
+                        creatureToMove.setX(xD);
                         creatureToMove.setY(yD);
                         advanceTurn();
                         return true;
                     }
+
+                    if (equipamentoAtual.getTipo() == 2) { // Pistola
+                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                        if (pistola.temBalas()) {
+                            pistola.gastarBala();
+                            personagens.remove(targetCreature);
+                            zumbiMorto = true;
+                            creatureToMove.setX(xD);
+                            creatureToMove.setY(yD);
+                            advanceTurn();
+                            return true;
+                        }
+                    }
                 }
-                // Caso o humano não tenha espada, não consegue atacar o zumbi
                 return false;
             }
-
-            return false; // Movimento inválido
+            return false;
         }
 
-        // Verifica se há um equipamento na posição de destino
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
@@ -772,52 +728,37 @@ public class GameManager {
             return false;
         }
 
-        // Atualiza a posição da criatura
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
-        // Interação com equipamentos
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
             Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-
             if (equipamentoAtual != null) {
-                // Deixa o equipamento atual na posição original
-                equipamentoAtual.setX(xO); // Define a posição do equipamento para a posição inicial do humano
+                equipamentoAtual.setX(xO);
                 equipamentoAtual.setY(yO);
-                equipamentos.add(equipamentoAtual); // Adiciona o equipamento ao tabuleiro
-                creatureToMove.soltarEquipamento(); // Solta o equipamento atual
+                equipamentos.add(equipamentoAtual);
+                creatureToMove.soltarEquipamento();
             }
 
-            // Pega o novo equipamento
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
-                creatureToMove.pegarEquipamento(equipamentoParaInteragir); // Atualiza o equipamento da criatura
-                equipamentos.remove(equipamentoParaInteragir); // Remove o novo equipamento do tabuleiro
+                creatureToMove.pegarEquipamento(equipamentoParaInteragir);
+                equipamentos.remove(equipamentoParaInteragir);
             }
         }
+
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
-            // Zumbi destrói o equipamento
             creatureToMove.destruirEquipamento();
-
-            // Incrementa o contador de equipamentos destruídos
             creatureToMove.incrementarEquipamentosDestruidos(1);
-
-            // Remove o equipamento do tabuleiro
             equipamentos.remove(equipamentoParaInteragir);
         }
 
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
-                    // Mantém as coordenadas originais antes de entrar no SafeHaven
                     creatureToMove.setX(xO);
                     creatureToMove.setY(yO);
-
-                    // Adiciona a criatura ao Safe Haven
                     safeHaven.entrar(creatureToMove);
-
-                    // Remove a criatura da lista de personagens
                     personagens.remove(creatureToMove);
-
                     advanceTurn();
                     return true;
                 }
