@@ -652,6 +652,7 @@ public class GameManager {
 
                             targetCreature.soltarEquipamento();
                             targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
+                            humanoTransformado = true;
                             advanceTurn();
                             return true; // Transformação realizada
                         }
@@ -795,40 +796,14 @@ public class GameManager {
         // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
-        // Armazenar os IDs dos zumbis antes do turno
-        List<Integer> zumbisAntesDoTurno = new ArrayList<>();
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) {
-                zumbisAntesDoTurno.add(creature.getId());
-            }
-        }
-
-        // Verifica se houve eventos relevantes (transformações ou mortes)
-        boolean houveEventos = false;
-
-        // Lógica para verificação de eventos: transformações e mortes
-        for (Creature creature : personagens) {
-            // Verifica se humanos foram transformados em zumbis
-            if (creature.isTransformed()) {
-                houveEventos = true;
-                break;
-            }
-        }
-
-        // Verifica se algum zumbi foi removido (morto)
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) {
-                // Se algum zumbi que estava antes não estiver mais na lista, ele morreu
-                if (!zumbisAntesDoTurno.contains(creature.getId())) {
-                    houveEventos = true; // Marcar como evento de morte de zumbi
-                    break;
-                }
-            }
-        }
+        // Verifica se houve transformações ou mortes significativas
+        boolean houveEventos = humanoTransformado || zumbiMorto;
 
         // Atualiza o contador de turnos sem eventos
         if (houveEventos) {
-            turnosSemEventos = 0; // Reinicia o contador
+            turnosSemEventos = 0; // Reseta o contador
+            humanoTransformado = false; // Reseta a flag de transformação
+            zumbiMorto = false; // Reseta a flag de morte de zumbi
         } else {
             turnosSemEventos++; // Incrementa o contador se não houve evento
         }
@@ -837,12 +812,8 @@ public class GameManager {
 
 
 
-
-
-
-
     public boolean gameIsOver() {
-        // 1. Verifica se passaram 8 turnos sem eventos significativos
+        // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
         if (turnosSemEventos >= 8) {
             return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
         }
@@ -850,14 +821,6 @@ public class GameManager {
         // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
         boolean existemHumanos = false;
         boolean existemZumbis = false;
-
-        if (zumbiMorto || humanoTransformado) {
-            turnosSemEventos = 0; // Resetando o contador de turnos sem eventos
-            zumbiMorto = false; // Reseta a flag para o próximo turno
-            humanoTransformado = false; // Reseta a flag para o próximo turno
-        }
-
-        // Verificação de presença de humanos e zumbis
         for (Creature creature : personagens) {
             if (creature.isHuman()) {
                 existemHumanos = true;
@@ -865,14 +828,17 @@ public class GameManager {
             if (creature.isZombie()) {
                 existemZumbis = true;
             }
-            if (existemHumanos && existemZumbis) {
-                break; // Ambos existem, o jogo continua
-            }
         }
 
         // O jogo termina se apenas humanos ou apenas zumbis existirem
-        return !existemHumanos || !existemZumbis;
+        if (!existemHumanos || !existemZumbis) {
+            return true;
+        }
+
+        // O jogo continua enquanto houver humanos e zumbis e menos de 8 turnos sem eventos
+        return false;
     }
+
 
 
 
