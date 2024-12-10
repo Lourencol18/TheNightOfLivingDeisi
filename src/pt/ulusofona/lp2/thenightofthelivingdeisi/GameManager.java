@@ -896,38 +896,47 @@ public class GameManager {
 
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
+        ArrayList<Creature> vivos = new ArrayList<>();
 
-        // Adiciona o texto do número de turnos e o número em linhas separadas
-        resultados.add("Nr. de turnos terminados:");
-        resultados.add(String.valueOf(turnoAtual + 1)); // Adiciona o número do turno em uma linha separada
-        resultados.add("");
-
-        // Separador para os vivos
-        resultados.add("OS VIVOS");
+        // Coleta todos os humanos vivos (tanto do tabuleiro quanto do SafeHaven)
         for (Creature creature : personagens) {
-            if (creature.isHuman()) { // Tipo 1 representa humano
-                resultados.add(creature.getId() + " " + creature.getNome());
+            if (creature.isHuman()) {
+                vivos.add(creature);
             }
         }
-// Adiciona humanos que estão no Safe Haven
+
+        // Adiciona humanos do Safe Haven à lista de vivos
         for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
             for (Creature creature : safeHaven.getCriaturasDentro()) {
                 if (creature.isHuman()) {
-                    resultados.add(creature.getId() + " " + creature.getNome());
+                    vivos.add(creature);
                 }
             }
         }
 
-        resultados.add(""); // Linha em branco entre os vivos e os outros
+        // Ordena a lista de vivos por ID
+        vivos.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
 
-        // Separador para os outros (zumbis)
+        // Adiciona cabeçalho
+        resultados.add("Nr. de turnos terminados:");
+        resultados.add(String.valueOf(turnoAtual + 1));
+        resultados.add("");
+
+        // Adiciona os vivos ordenados
+        resultados.add("OS VIVOS");
+        for (Creature creature : vivos) {
+            resultados.add(creature.getId() + " " + creature.getNome());
+        }
+        resultados.add("");
+
+        // Adiciona os outros (zumbis)
         resultados.add("OS OUTROS");
         for (Creature creature : personagens) {
-            if (creature.isZombie()) { // Tipo 0 representa zumbi
+            if (creature.isZombie()) {
                 resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
             }
         }
-        resultados.add("-----"); // Separador final
+        resultados.add("-----");
 
         return resultados;
     }
