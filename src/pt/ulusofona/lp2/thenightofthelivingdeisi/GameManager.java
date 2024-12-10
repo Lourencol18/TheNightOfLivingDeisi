@@ -844,7 +844,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
-        if (turnosSemEventos >= 10) {
+        if (turnosSemEventos >= 8) {
             return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
         }
 
