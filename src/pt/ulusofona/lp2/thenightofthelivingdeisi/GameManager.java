@@ -365,11 +365,7 @@ public class GameManager {
                             .append(" | ")
                             .append(creature.getTipoCriatura())
                             .append(" | ")
-                            .append(creature.isHuman() ? "Humano" : "Zombie")
-                            .append(" | ")
                             .append(creature.getNome())
-                            .append(" | +")
-                            .append(creature.getContadorEquipamentos())
                             .append(" @ Safe Haven");
                     return info.toString();
                 }
@@ -470,6 +466,9 @@ public class GameManager {
 
 
 
+
+
+
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
@@ -501,9 +500,6 @@ public class GameManager {
         // Se não encontrar o equipamento, retorna null
         return null;
     }
-
-
-
 
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipamento : equipamentos) {
@@ -886,38 +882,40 @@ public class GameManager {
 
     public ArrayList<String> getSurvivors() {
         ArrayList<String> resultados = new ArrayList<>();
+        ArrayList<Creature> vivos = new ArrayList<>();
+        ArrayList<Creature> outros = new ArrayList<>();
 
-        // Adiciona o texto do número de turnos e o número em linhas separadas
+        // Separa as criaturas em vivos e outros
+        for (Creature creature : personagens) {
+            if (creature.isHuman()) {
+                vivos.add(creature);
+            } else if (creature.isZombie()) {
+                outros.add(creature);
+            }
+        }
+
+        // Ordena as listas pelo ID
+        vivos.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
+        outros.sort((c1, c2) -> Integer.compare(c1.getId(), c2.getId()));
+
+        // Adiciona o cabeçalho
         resultados.add("Nr. de turnos terminados:");
-        resultados.add(String.valueOf(turnoAtual + 1)); // Adiciona o número do turno em uma linha separada
+        resultados.add(String.valueOf(turnoAtual + 1));
         resultados.add("");
 
-        // Separador para os vivos
+        // Adiciona os vivos em ordem
         resultados.add("OS VIVOS");
-        for (Creature creature : personagens) {
-            if (creature.isHuman()) { // Tipo 1 representa humano
-                resultados.add(creature.getId() + " " + creature.getNome());
-            }
+        for (Creature creature : vivos) {
+            resultados.add(creature.getId() + " " + creature.getNome());
         }
-// Adiciona humanos que estão no Safe Haven
-        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-            for (Creature creature : safeHaven.getCriaturasDentro()) {
-                if (creature.isHuman()) {
-                    resultados.add(creature.getId() + " " + creature.getNome());
-                }
-            }
-        }
+        resultados.add("");
 
-        resultados.add(""); // Linha em branco entre os vivos e os outros
-
-        // Separador para os outros (zumbis)
+        // Adiciona os outros em ordem
         resultados.add("OS OUTROS");
-        for (Creature creature : personagens) {
-            if (creature.isZombie()) { // Tipo 0 representa zumbi
-                resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
-            }
+        for (Creature creature : outros) {
+            resultados.add(creature.getId() + " (antigamente conhecido como " + creature.getNome() + ")");
         }
-        resultados.add("-----"); // Separador final
+        resultados.add("-----");
 
         return resultados;
     }
