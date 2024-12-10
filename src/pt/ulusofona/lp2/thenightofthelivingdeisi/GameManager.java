@@ -470,24 +470,21 @@ public class GameManager {
 
 
 
-
-
-
     public String[] getEquipmentInfo(int id) {
         for (Equipamento equipment : equipamentos) {
             if (equipment.getId() == id) {
                 // Identifica o tipo numérico com base na classe do equipamento
                 String tipoNumerico;
                 if (equipment instanceof EscudoDeMadeira) {
-                    tipoNumerico = "0"; // Tipo numérico para Escudo de Madeira
+                    tipoNumerico = "0";
                 } else if (equipment instanceof EspadaSamurai) {
-                    tipoNumerico = "1"; // Tipo numérico para Espada Samurai
+                    tipoNumerico = "1";
                 } else if (equipment instanceof PistolaWaltherPPK) {
-                    tipoNumerico = "2"; // Tipo numérico para Pistola
+                    tipoNumerico = "2";
                 } else if (equipment instanceof Lixivia) {
-                    tipoNumerico = "3"; // Tipo numérico para Lixívia
+                    tipoNumerico = "3";
                 } else {
-                    throw new IllegalArgumentException("Tipo desconhecido para equipamento com ID: " + id);
+                    tipoNumerico = "-1"; // Tipo desconhecido
                 }
 
                 // Retorna as informações no formato esperado
@@ -500,8 +497,13 @@ public class GameManager {
                 };
             }
         }
-        throw new IllegalArgumentException("Equipamento não encontrado para o ID: " + id);
+
+        // Se não encontrar o equipamento, retorna array com mensagem de erro
+        return new String[]{"Equipamento não encontrado", null, null, null, null};
     }
+
+
+
 
     public String getEquipmentInfoAsString(int id) {
         for (Equipamento equipamento : equipamentos) {
