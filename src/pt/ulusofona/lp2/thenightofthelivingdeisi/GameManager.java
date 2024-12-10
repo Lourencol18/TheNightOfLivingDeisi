@@ -498,8 +498,8 @@ public class GameManager {
             }
         }
 
-        // Se não encontrar o equipamento, retorna array com mensagem de erro
-        return new String[]{"Equipamento não encontrado", null, null, null, null};
+        // Se não encontrar o equipamento, retorna null
+        return null;
     }
 
 
