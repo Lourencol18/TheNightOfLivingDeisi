@@ -365,12 +365,12 @@ public class GameManager {
                             .append(" | ")
                             .append(creature.getTipoCriatura())
                             .append(" | ")
+                            .append(creature.isHuman() ? "Humano" : "Zombie")
+                            .append(" | ")
                             .append(creature.getNome())
-                            .append(" @ (")
-                            .append(creature.getX())
-                            .append(", ")
-                            .append(creature.getY())
-                            .append(")");
+                            .append(" | +")
+                            .append(creature.getContadorEquipamentos())
+                            .append(" @ Safe Haven");
                     return info.toString();
                 }
             }
@@ -431,7 +431,6 @@ public class GameManager {
                         .append(creature.getNome())
                         .append(" | ");
 
-                // Adiciona o prefixo correto baseado no tipo
                 if (creature.isHuman()) {
                     info.append("+").append(creature.getContadorEquipamentos());
                 } else {
@@ -845,7 +844,7 @@ public class GameManager {
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
-        if (turnosSemEventos >= 8) {
+        if (turnosSemEventos >= 10) {
             return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
         }
 
@@ -898,6 +897,15 @@ public class GameManager {
                 resultados.add(creature.getId() + " " + creature.getNome());
             }
         }
+// Adiciona humanos que estão no Safe Haven
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature creature : safeHaven.getCriaturasDentro()) {
+                if (creature.isHuman()) {
+                    resultados.add(creature.getId() + " " + creature.getNome());
+                }
+            }
+        }
+
         resultados.add(""); // Linha em branco entre os vivos e os outros
 
         // Separador para os outros (zumbis)
