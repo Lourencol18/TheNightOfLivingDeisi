@@ -143,11 +143,16 @@ public abstract class Creature {
 
 
 
+
     public String getInfoAsString() {
-        String tipoEquipe = isHuman() ? "Humano" : "Zombie";
-        String modificador = isHuman() ? "+0" : "-0";
-        return id + " | " + getTipoCriatura() + " | " + tipoEquipe + " | " + nome + " | " + modificador + " @ (" + x + ", " + y + ")";
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            if (safeHaven.getCriaturasDentro().contains(this)) {
+                return id + " | " + getTipoCriatura() + " | " + nome + " @ Safe Haven";
+            }
+        }
+        return id + " | " + getTipoCriatura() + " | " + nome + " @ (" + x + ", " + y + ")";
     }
+
 
     @Override
     public String toString() {

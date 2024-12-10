@@ -756,10 +756,13 @@ public class GameManager {
             equipamentos.remove(equipamentoParaInteragir);
         }
 
-        // Interação com Safe Haven - ANTES de atualizar coordenadas
+        // Interação com Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
-            for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
+                    // Remove a criatura do tabuleiro
+                    tabuleiro.removerCriatura(creatureToMove);
+
                     // Adiciona a criatura ao Safe Haven
                     safeHaven.entrar(creatureToMove);
 
@@ -773,10 +776,12 @@ public class GameManager {
                     // Avança o turno após a criatura entrar no Safe Haven
                     advanceTurn();
 
-                    return true; // Retorna true para confirmar o movimento
+                    return true; // Confirma o movimento
                 }
             }
         }
+
+
 
         // Só atualiza coordenadas SE NÃO entrou no Safe Haven
         creatureToMove.setX(xD);
