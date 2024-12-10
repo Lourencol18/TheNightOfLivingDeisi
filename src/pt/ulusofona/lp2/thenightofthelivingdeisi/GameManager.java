@@ -250,7 +250,8 @@ public class GameManager {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -564,7 +565,9 @@ public class GameManager {
         return false; // Criatura não encontrada
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean move(int xO, int yO, int xD, int yD) {
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;
@@ -639,79 +642,11 @@ public class GameManager {
             }
 
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
-                Equipamento equipamentoAtual = targetCreature.getEquipamentoAtual();
-                if (equipamentoAtual != null) {
-                    if (equipamentoAtual.getTipo() == 2) { // Pistola
-                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                        if (pistola.temBalas()) {
-                            pistola.gastarBala();
-                            advanceTurn();
-                            return true;
-                        }
-                    }
-
-                    if (equipamentoAtual.getTipo() == 3) { // Lixivia
-                        Lixivia lixivia = (Lixivia) equipamentoAtual;
-                        if (lixivia.getLitros() > 0.0) {
-                            if (lixivia.executarAcao(creatureToMove, targetCreature)) {
-                                advanceTurn();
-                                return true;
-                            }
-                        }
-                        if (lixivia.getLitros() <= 0.0) {
-                            int equipamentosUsados = targetCreature.getContadorEquipamentos();
-                            targetCreature.transformar();
-                            targetCreature.setEquipa(10);
-                            targetCreature.soltarEquipamento();
-                            targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
-                            humanoTransformado = true;
-                            advanceTurn();
-                            return true;
-                        }
-                    }
-
-                    if (equipamentoAtual.getTipo() == 1 || equipamentoAtual.isDefensivo()) {
-                        advanceTurn();
-                        return true;
-                    }
-                }
-
-                int equipamentosUsados = targetCreature.getContadorEquipamentos();
-                targetCreature.transformar();
-                targetCreature.setEquipa(10);
-                targetCreature.soltarEquipamento();
-                targetCreature.incrementarEquipamentosDestruidos(equipamentosUsados);
-                humanoTransformado = true;
-                advanceTurn();
-                return true;
+                return processarDefesa(creatureToMove, targetCreature);
             }
 
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
-                Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
-                if (equipamentoAtual != null) {
-                    if (equipamentoAtual.getTipo() == 1) { // Espada
-                        personagens.remove(targetCreature);
-                        zumbiMorto = true;
-                        creatureToMove.setX(xD);
-                        creatureToMove.setY(yD);
-                        advanceTurn();
-                        return true;
-                    }
-
-                    if (equipamentoAtual.getTipo() == 2) { // Pistola
-                        PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
-                        if (pistola.temBalas()) {
-                            pistola.gastarBala();
-                            personagens.remove(targetCreature);
-                            zumbiMorto = true;
-                            creatureToMove.setX(xD);
-                            creatureToMove.setY(yD);
-                            advanceTurn();
-                            return true;
-                        }
-                    }
-                }
-                return false;
+                return processarAtaque(creatureToMove, targetCreature, xD, yD);
             }
             return false;
         }
@@ -769,31 +704,101 @@ public class GameManager {
         return true;
     }
 
+    private boolean processarDefesa(Creature zumbi, Creature humano) {
+        Equipamento equipamentoAtual = humano.getEquipamentoAtual();
+        if (equipamentoAtual != null) {
+            if (equipamentoAtual.getTipo() == 2) { // Pistola
+                PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                if (pistola.temBalas()) {
+                    pistola.gastarBala();
+                    advanceTurn();
+                    return true;
+                }
+            }
+
+            if (equipamentoAtual.getTipo() == 3) { // Lixivia
+                Lixivia lixivia = (Lixivia) equipamentoAtual;
+                if (lixivia.getLitros() > 0.0) {
+                    if (lixivia.executarAcao(zumbi, humano)) {
+                        advanceTurn();
+                        return true;
+                    }
+                }
+                if (lixivia.getLitros() <= 0.0) {
+                    int equipamentosUsados = humano.getContadorEquipamentos();
+                    humano.transformar();
+                    humano.setEquipa(10);
+                    humano.soltarEquipamento();
+                    humano.incrementarEquipamentosDestruidos(equipamentosUsados);
+                    humanoTransformado = true;
+                    advanceTurn();
+                    return true;
+                }
+            }
+
+            if (equipamentoAtual.getTipo() == 1 || equipamentoAtual.isDefensivo()) {
+                advanceTurn();
+                return true;
+            }
+        }
+
+        int equipamentosUsados = humano.getContadorEquipamentos();
+        humano.transformar();
+        humano.setEquipa(10);
+        humano.soltarEquipamento();
+        humano.incrementarEquipamentosDestruidos(equipamentosUsados);
+        humanoTransformado = true;
+        advanceTurn();
+        return true;
+    }
+
+    private boolean processarAtaque(Creature humano, Creature zumbi, int xD, int yD) {
+        Equipamento equipamentoAtual = humano.getEquipamentoAtual();
+        if (equipamentoAtual != null) {
+            if (equipamentoAtual.getTipo() == 1) { // Espada
+                personagens.remove(zumbi);
+                zumbiMorto = true;
+                humano.setX(xD);
+                humano.setY(yD);
+                advanceTurn();
+                return true;
+            }
+
+            if (equipamentoAtual.getTipo() == 2) { // Pistola
+                PistolaWaltherPPK pistola = (PistolaWaltherPPK) equipamentoAtual;
+                if (pistola.temBalas()) {
+                    pistola.gastarBala();
+                    personagens.remove(zumbi);
+                    zumbiMorto = true;
+                    humano.setX(xD);
+                    humano.setY(yD);
+                    advanceTurn();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     private void advanceTurn() {
-        turnoAtual++; // Avança o turno
-
-        // Alterna entre turnos de dia e noite
+        turnoAtual++;
         dia = ((turnoAtual + 1) / 2) % 2 == 0;
-
-        // Alterna a equipe
         equipaAtual = (equipaAtual == 10) ? 20 : 10;
 
-        // Verifica se houve transformações ou mortes significativas
         boolean houveEventos = humanoTransformado || zumbiMorto;
-
-        // Atualiza o contador de turnos sem eventos
         if (houveEventos) {
-            turnosSemEventos = 0; // Reseta o contador
-            humanoTransformado = false; // Reseta a flag de transformação
-            zumbiMorto = false; // Reseta a flag de morte de zumbi
+            turnosSemEventos = 0;
+            humanoTransformado = false;
+            zumbiMorto = false;
         } else {
-            turnosSemEventos++; // Incrementa o contador se não houve evento
+            turnosSemEventos++;
         }
     }
 
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean gameIsOver() {
         // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
