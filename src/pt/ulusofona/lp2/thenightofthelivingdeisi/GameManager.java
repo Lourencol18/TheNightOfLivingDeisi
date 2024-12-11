@@ -14,8 +14,6 @@ public class GameManager {
    private ArrayList<Creature> personagens = new ArrayList<>();
    private int turnoAtual = 0;
    private static boolean dia = true;
-   private boolean terminado = false;
-   private int turnoSemEventos = 0;
     private int numSafeHavens = 0;
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
     private boolean zumbiMorto = false;

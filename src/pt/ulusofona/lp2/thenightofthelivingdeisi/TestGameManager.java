@@ -1,131 +1,101 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestGameManager {
-    private static final String TEST_GAME_FILE = "6x6.txt";
-    private GameManager gameManager;
+    GameManager gameManager;
+    File initialFile;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() throws Exception {
         gameManager = new GameManager();
-        loadTestGame();
-    }
-
-    private void loadTestGame() {
-        try {
-            gameManager.loadGame(new File(TEST_GAME_FILE));
-        } catch (InvalidFileException | IOException e) {
-            fail("Erro ao carregar o jogo de teste: " + e.getMessage());
-        }
+        initialFile = new File("6x6.txt");
+        gameManager.loadGame(initialFile); // Carrega o jogo usando o método loadGame
     }
 
     @Test
-    void testGetWorldSize() {
-        int[] worldSize = gameManager.getWorldSize();
-        assertEquals(7, worldSize[0], "Altura do mundo inválida");
-        assertEquals(7, worldSize[1], "Largura do mundo inválida");
+    public void testLoadGame() {
+        // Verifica se o jogo foi carregado corretamente
+        assertNotNull(gameManager);
+        assertEquals(10, gameManager.getWorldSize()[0] * gameManager.getWorldSize()[1]); // Confirma o tamanho do tabuleiro
     }
 
     @Test
-    void testGetInitialTeamId() {
-        int initialTeamId = gameManager.getInitialTeamId();
-        assertEquals(10, initialTeamId, "Equipe inicial inválida");
+    public void testCreatureMovement() {
+        // Movimenta um humano para uma posição válida
+        assertTrue(gameManager.move(5, 6, 5, 5)); // Movimenta "James Bond"
+        assertEquals("James Bond", gameManager.getCreatureInfoAsString(9));
+
+        // Movimenta um zumbi para uma posição inválida (fora dos limites)
+        assertFalse(gameManager.move(0, 1, -1, 1));
+
+        // Movimenta um zumbi para um Safe Haven (deve ser inválido)
+        assertFalse(gameManager.move(0, 1, 6, 0));
     }
 
     @Test
-    void testGetCurrentTeamId() {
-        int currentTeamId = gameManager.getCurrentTeamId();
-        assertTrue(currentTeamId == 10 || currentTeamId == 20, "Equipe atual inválida");
-    }
+    public void testSafeHavenEntry() {
+        // Verifica se humanos podem entrar no Safe Haven
+        assertTrue(gameManager.move(6, 5, 6, 0)); // Move "John Wayne" para o Safe Haven
 
-    @Test
-    void testIsDay() {
-        assertTrue(gameManager.isDay() || !gameManager.isDay(), "Horário do dia inválido");
-    }
-
-    @Test
-    void testGetSquareInfo() {
-        assertEquals("Z:1", gameManager.getSquareInfo(5, 4), "Informações da posição inválidas");
-        assertEquals("H:6", gameManager.getSquareInfo(3, 4), "Informações da posição inválidas");
-        assertEquals("", gameManager.getSquareInfo(0, 0), "Informações da posição inválidas");
-    }
-
-    @Test
-    void testGetCreatureInfo() {
-        String[] creatureInfo = gameManager.getCreatureInfo(1);
-        assertEquals("1", creatureInfo[0], "ID da criatura inválido");
-        assertEquals("Criança", creatureInfo[1], "Tipo de criatura inválido");
-        assertEquals("Zombie", creatureInfo[2], "Equipe da criatura inválida");
-        assertEquals("Melanie", creatureInfo[3], "Nome da criatura inválido");
-        assertEquals("5", creatureInfo[4], "Coordenada X da criatura inválida");
-        assertEquals("4", creatureInfo[5], "Coordenada Y da criatura inválida");
-    }
-
-    @Test
-    void testGetCreatureInfoAsString() {
-        String creatureInfoAsString = gameManager.getCreatureInfoAsString(1);
-        assertNotNull(creatureInfoAsString, "Informações da criatura como string inválidas");
-    }
-
-    @Test
-    void testGetEquipmentInfo() {
-        String[] equipmentInfo = gameManager.getEquipmentInfo(1);
-        assertNotNull(equipmentInfo, "Informações do equipamento inválidas");
-    }
-
-    @Test
-    void testGetEquipmentInfoAsString() {
-        String equipmentInfoAsString = gameManager.getEquipmentInfoAsString(1);
-        assertNotNull(equipmentInfoAsString, "Informações do equipamento como string inválidas");
-    }
-
-    @Test
-    void testHasEquipment() {
-        boolean hasEquipment = gameManager.hasEquipment(6, 0);
-        assertTrue(hasEquipment, "Criatura não possui equipamento");
-    }
-
-    @Test
-    void testMove() {
-        boolean moved = gameManager.move(5, 4, 5, 3);
-        assertTrue(moved, "Movimento inválido");
-    }
-
-    @Test
-    void testGameIsOver() {
-        boolean gameOver = gameManager.gameIsOver();
-        assertFalse(gameOver, "Jogo terminou indevidamente");
-    }
-
-    @Test
-    void testGetSurvivors() {
-        ArrayList<String> survivors = gameManager.getSurvivors();
-        assertNotNull(survivors, "Informações dos sobreviventes inválidas");
-    }
-
-    @Test
-    void testSaveGame() {
-        try {
-            gameManager.saveGame(new File("test_game_saved.txt"));
-            // Adicione asserções para verificar se o jogo foi salvo corretamente
-        } catch (IOException e) {
-            fail("Erro ao salvar o jogo: " + e.getMessage());
-        }
-    }
-
-    @Test
-    void testGetIdsInSafeHaven() {
         List<Integer> idsInSafeHaven = gameManager.getIdsInSafeHaven();
-        assertNotNull(idsInSafeHaven, "Ids das criaturas no Safe Haven inválidos");
+        assertTrue(idsInSafeHaven.contains(9)); // "John Wayne" deve estar no Safe Haven
+    }
+
+    @Test
+    public void testTransformations() {
+        // Simula um ataque de zumbi a humano
+        gameManager.move(5, 3, 5, 4); // "Walker" ataca "Melanie"
+        String[] creatureInfo = gameManager.getCreatureInfo(7);
+        assertNotNull(creatureInfo);
+        assertEquals("Zombie", creatureInfo[2]); // "Melanie" foi transformada
+    }
+
+    @Test
+    public void testEquipmentDestruction() {
+        // Verifica a destruição de equipamentos por zumbis
+        gameManager.move(1, 1, 1, 2); // "Babe" se move para um equipamento
+        assertNull(gameManager.getSquareInfo(1, 2)); // Equipamento foi destruído
+    }
+
+    @Test
+    public void testGameOverConditions() {
+        // Simula condições de fim de jogo
+
+        // Todos humanos entram no Safe Haven
+        gameManager.move(6, 5, 6, 0); // "John Wayne"
+        gameManager.move(5, 6, 6, 0); // "James Bond"
+
+        // Verifica se o jogo termina com todos humanos salvos
+        assertTrue(gameManager.gameIsOver());
+
+        // Todos zumbis mortos
+        gameManager.move(5, 4, 5, 3); // "Melanie" mata "Walker"
+        assertFalse(gameManager.getSurvivors().contains("Walker")); // "Walker" foi removido
+        assertTrue(gameManager.gameIsOver());
+    }
+
+    @Test
+    public void testGetSurvivors() {
+        // Movimenta humanos para Safe Haven e verifica os sobreviventes
+        gameManager.move(6, 5, 6, 0); // "John Wayne"
+
+        List<String> survivors = gameManager.getSurvivors();
+        assertTrue(survivors.contains("9 John Wayne"));
+        assertFalse(survivors.contains("James Bond")); // "James Bond" ainda está no jogo
+    }
+
+    @Test
+    public void testInvalidMoves() {
+        // Testa movimentos inválidos
+        assertFalse(gameManager.move(5, 3, 7, 3)); // Movimento fora dos limites
+        assertFalse(gameManager.move(5, 3, 5, 4)); // Zumbi tenta atacar sem sucesso
     }
 }
 
