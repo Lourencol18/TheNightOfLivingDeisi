@@ -55,16 +55,6 @@ public class Crianca extends Creature {
         return false;
     }
 
-    @Override
-    public boolean podeSerAtacado() {
-        if(equipamentoAtual.isDefensivo() ){
-            return false;
-        }
-        if (isZombie()){
-            return false;
-        }
-        return true;
-    }
 
 
     public void pegarEquipamento(Equipamento equipamento) {

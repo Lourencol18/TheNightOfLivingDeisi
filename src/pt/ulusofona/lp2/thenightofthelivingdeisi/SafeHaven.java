@@ -45,37 +45,6 @@ public class SafeHaven {
         safeHavens.add(safeHaven);  // Adiciona o Safe Haven ao conjunto
     }
 
-    // Remove um Safe Haven do conjunto
-    public static void remove(SafeHaven safeHaven) {
-        safeHavens.remove(safeHaven);  // Remove o Safe Haven do conjunto
-    }
-
-    // Verifica se um Safe Haven existe na posição
-    public static boolean contains(int x, int y) {
-        for (SafeHaven safeHaven : safeHavens) {
-            if (safeHaven.getX() == x && safeHaven.getY() == y) {
-                return true;  // Verifica se existe um Safe Haven na posição
-            }
-        }
-        return false;
-    }
-
-    // Método para exibir as criaturas dentro do Safe Haven
-    public String getCriaturasNoSafeHaven() {
-        if (criaturasDentro.isEmpty()) {
-            return "Nenhuma criatura no Safe Haven.";
-        }
-
-        StringBuilder criaturas = new StringBuilder("Criaturas no Safe Haven:\n");
-        for (Creature creature : criaturasDentro) {
-            criaturas.append(creature.getNome())
-                    .append(" (")
-                    .append(creature.getTipoCriatura())
-                    .append(")\n");
-        }
-        return criaturas.toString();
-    }
-
     // Retorna todos os Safe Havens registrados
     public static Set<SafeHaven> getSafeHavens() {
         return safeHavens;  // Retorna o conjunto de Safe Havens

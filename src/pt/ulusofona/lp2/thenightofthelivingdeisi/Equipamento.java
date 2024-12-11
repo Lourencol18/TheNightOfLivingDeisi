@@ -7,7 +7,6 @@ public abstract class Equipamento {
     protected int x;
     protected int y;
 
-    protected int idDoTipo = 0;
 
     public Equipamento(int id, int tipo,String nome, int x, int y) {
         this.id = id;
@@ -50,7 +49,7 @@ public abstract class Equipamento {
 
     public abstract String getInfo();
 
-    abstract boolean isOfType (int typeId);
+
 
     public abstract boolean isDefensivo();
 }

@@ -23,9 +23,6 @@ public class Lixivia extends Equipamento {
     }
 
 
-    public boolean temLitros() {
-        return litros > 0.0;
-    }
 
     @Override
      public String toString() {

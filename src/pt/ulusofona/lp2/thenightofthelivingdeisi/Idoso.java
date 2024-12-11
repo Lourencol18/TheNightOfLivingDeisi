@@ -55,10 +55,7 @@ public class Idoso extends Creature {
         return true;
     }
 
-    @Override
-    public boolean podeSerAtacado() {
-        return true;
-    }
+
 
 
     @Override

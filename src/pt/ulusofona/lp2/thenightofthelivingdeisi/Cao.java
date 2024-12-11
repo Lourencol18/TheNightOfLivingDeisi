@@ -52,15 +52,9 @@ public class Cao extends Creature {
         return false;
     }
 
-    @Override
-    public boolean podeSerAtacado() {
-        return false;
-    }
 
 
-    @Override
-    public String getInfoAsString() {
-        return id + " | Cão | " + nome + " @ (" + x + ", " + y + ")";
-    }
+
+
 
 }

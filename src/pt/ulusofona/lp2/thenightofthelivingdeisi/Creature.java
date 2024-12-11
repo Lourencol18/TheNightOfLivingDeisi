@@ -88,9 +88,6 @@ public abstract class Creature {
         return equipamentoAtual;
     }
 
-    public List<Equipamento> getHistoricoEquipamentos() {
-        return equipamentos;
-    }
 
     public int getContadorEquipamentos() {
         return contadorEquipamentos;
@@ -115,9 +112,6 @@ public abstract class Creature {
             equipamentoAtual = null;
         }
     }
-    public void setEquipamentoAtual(Equipamento equipamentoAtual) {
-        this.equipamentoAtual = equipamentoAtual; // Atualiza ou remove o equipamento atual
-    }
 
     public abstract String getTipoCriatura();
 
@@ -137,22 +131,6 @@ public abstract class Creature {
     public abstract boolean podeMover(int xO, int yO, int xD, int yD, boolean isDay);
 
     public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
-
-    public abstract boolean podeSerAtacado();
-
-
-
-
-
-    public String getInfoAsString() {
-        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-            if (safeHaven.getCriaturasDentro().contains(this)) {
-                return id + " | " + getTipoCriatura() + " | " + nome + " @ Safe Haven";
-            }
-        }
-        return id + " | " + getTipoCriatura() + " | " + nome + " @ (" + x + ", " + y + ")";
-    }
-
 
     @Override
     public String toString() {

@@ -46,16 +46,10 @@ public class Vampiro extends Creature {
         return true;
     }
 
-    @Override
-    public boolean podeSerAtacado() {
-        return false;
-    }
 
 
-    @Override
-    public String getInfoAsString() {
-        return id + " | Vampiro | " + nome + " @ (" + x + ", " + y + ")";
-    }
+
+
 
 
 }

@@ -37,12 +37,7 @@ public class Tabuleiro {
         grid[criatura.getX()][criatura.getY()] = criatura; // Adiciona a criatura no grid
     }
 
-    // Remove uma criatura da posição do tabuleiro
-    public void removerCriatura(Creature criatura) {
-        if (dentroDosLimites(criatura.getX(), criatura.getY())) {
-            grid[criatura.getX()][criatura.getY()] = null; // Remove a criatura do grid
-        }
-    }
+
 
 
     public boolean adicionarSafeHaven(int x, int y) {
@@ -66,10 +61,7 @@ public class Tabuleiro {
         return true;
     }
 
-    // Remove um Safe Haven do tabuleiro
-    public boolean removerSafeHaven(int x, int y) {
-        return safeHavens.removeIf(safeHaven -> safeHaven.getX() == x && safeHaven.getY() == y);
-    }
+
 
     // Verifica se uma posição é um Safe Haven
     public boolean isSafeHaven(int x, int y) {
@@ -89,11 +81,5 @@ public class Tabuleiro {
         return safeHavens;
     }
 
-    // Verifica se existe uma criatura na posição específica
-    public Creature getCriaturaAtPosition(int x, int y) {
-        if (dentroDosLimites(x, y)) {
-            return (Creature) grid[x][y]; // Retorna a criatura na posição, se houver
-        }
-        return null; // Caso não haja criatura nessa posição
-    }
+
 }

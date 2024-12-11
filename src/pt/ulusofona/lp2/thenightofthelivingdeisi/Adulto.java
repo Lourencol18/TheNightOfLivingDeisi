@@ -59,14 +59,7 @@ public class Adulto extends Creature {
         return true;
     }
 
-    @Override
-    public boolean podeSerAtacado() {
-        if (!isHuman){
-            return false;
-        }
 
-        return true;
-    }
 
 
     public void pegarEquipamento(Equipamento equipamento) {
