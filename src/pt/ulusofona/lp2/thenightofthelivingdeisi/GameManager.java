@@ -13,13 +13,14 @@ public class GameManager {
    private ArrayList<Equipamento> equipamentos = new ArrayList<>();
    private ArrayList<Creature> personagens = new ArrayList<>();
    private int turnoAtual = 0;
-   private static boolean dia = true;
+   private  boolean dia = true;
     private int numSafeHavens = 0;
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
     private boolean zumbiMorto = false;
     private boolean humanoTransformado = false;
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
+        dia = false;
         tabuleiro = null;
         equipaInicial = -1;
         equipaAtual = -1;

@@ -4,7 +4,7 @@
 1 : 10 : 0 : Melanie : 5 : 4
 2 : 10 : 1 : Walker : 5 : 3
 3 : 10 : 2 : Frankenstein : 2 : 4
-4 : 10 : 4 : Crawler : 0 : 1
+4 : 10 : 4 : Crawler : 5 : 1
 5 : 10 : 0 : Babe : 1 : 1
 6 : 20 : 0 : Karate Kid : 3 : 4
 7 : 20 : 1 : Freddie M. : 4 : 3
