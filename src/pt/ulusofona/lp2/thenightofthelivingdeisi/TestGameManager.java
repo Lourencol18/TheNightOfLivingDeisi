@@ -13,9 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestGameManager {
     private GameManager gameManager;
+
     @BeforeEach
     void setUp() {
         gameManager = new GameManager();
+        initializeGameManager();
+    }
+
+    private void initializeGameManager() {
+        try {
+            gameManager.loadGame(new File("test_game.txt"));
+        } catch (InvalidFileException | FileNotFoundException e) {
+            fail("Erro ao carregar o jogo: " + e.getMessage());
+        }
     }
 
     @Test
@@ -121,4 +131,3 @@ public class TestGameManager {
         assertNotNull(idsInSafeHaven, "Ids das criaturas no Safe Haven inválidos");
     }
 }
-
