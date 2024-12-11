@@ -20,7 +20,6 @@ public class GameManager {
     private boolean humanoTransformado = false;
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
-        dia = false;
         tabuleiro = null;
         equipaInicial = -1;
         equipaAtual = -1;
