@@ -1,6 +1,7 @@
 package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 import org.junit.Before;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
