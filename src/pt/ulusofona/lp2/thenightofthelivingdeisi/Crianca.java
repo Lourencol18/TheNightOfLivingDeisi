@@ -64,17 +64,10 @@ public class Crianca extends Creature {
         } else {
             throw new IllegalStateException("A criança não pode pegar este equipamento.");
         }
-        // Incrementa o contador
     }
 
 
 
 
-    @Override
-    public String toString() {
-        String equipamentoInfo = (equipamentoAtual != null) ? equipamentoAtual.toString() : "Sem equipamento";
-        return id + " | " + getTipoCriatura() + " | " + getTipo() + " | " + nome
-                + " | Equipamentos usados: " + equipamentos.size()
-                + " | " + equipamentoInfo + " @ (" + x + ", " + y + ")";
-    }
+
 }

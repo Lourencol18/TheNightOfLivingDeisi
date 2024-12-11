@@ -71,11 +71,5 @@ public class Adulto extends Creature {
     }
 
 
-    @Override
-    public String toString() {
-        String equipamentoInfo = (equipamentoAtual != null) ? equipamentoAtual.toString() : "Sem equipamento";
-        return id + " | " + getTipoCriatura() + " | " + getTipo() + " | " + nome
-                + " | Equipamentos usados: " + equipamentos.size()
-                + " | " + equipamentoInfo + " @ (" + x + ", " + y + ")";
-    }
+
 }

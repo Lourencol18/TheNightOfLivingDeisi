@@ -6,9 +6,6 @@ public class EscudoDeMadeira extends Equipamento {
         super(id, 0 ,"Escudo de madeira", x, y);
     }
 
-    boolean isOfType(int id) {
-        return id == 0;
-    }
 
     @Override
     public boolean executarAcao(Creature atacante, Creature alvo) {
@@ -20,10 +17,7 @@ public class EscudoDeMadeira extends Equipamento {
         return ""; // Sem informações adicionais
     }
 
-    @Override
-    public String toString() {
-        return nome;
-    }
+
 
 
     @Override

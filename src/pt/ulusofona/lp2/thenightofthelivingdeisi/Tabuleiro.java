@@ -29,16 +29,6 @@ public class Tabuleiro {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    // Adiciona uma criatura na posição do tabuleiro
-    public void adicionarCriatura(Creature criatura) {
-        if (!dentroDosLimites(criatura.getX(), criatura.getY())) {
-            throw new IllegalArgumentException("Coordenadas fora dos limites do tabuleiro.");
-        }
-        grid[criatura.getX()][criatura.getY()] = criatura; // Adiciona a criatura no grid
-    }
-
-
-
 
     public boolean adicionarSafeHaven(int x, int y) {
         if (!dentroDosLimites(x, y)) {

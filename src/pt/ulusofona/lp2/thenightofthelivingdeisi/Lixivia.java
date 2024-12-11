@@ -24,10 +24,7 @@ public class Lixivia extends Equipamento {
 
 
 
-    @Override
-     public String toString() {
-        return nome + " (" + litros + " L restantes)";
-    }
+
 
     public double getLitros() {
         return litros;
@@ -38,9 +35,6 @@ public class Lixivia extends Equipamento {
         return litros + " litros";
     }
 
-    boolean isOfType(int id) {
-        return id == -3;
-    }
 
     @Override
     public boolean isDefensivo() {

@@ -50,8 +50,5 @@ public class SafeHaven {
         return safeHavens;  // Retorna o conjunto de Safe Havens
     }
 
-    @Override
-    public String toString() {
-        return "Safe Haven @ (" + x + ", " + y + "), Criaturas: " + criaturasDentro.size();
-    }
+
 }

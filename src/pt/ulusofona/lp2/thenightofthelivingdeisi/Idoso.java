@@ -58,10 +58,5 @@ public class Idoso extends Creature {
 
 
 
-    @Override
-    public String toString() {
-        String contadorInfo = isHuman ? "+" + getContadorEquipamentos() : "-" + contadorEquipamentos;
-        return id + " | " + getTipoCriatura() + " | " + getTipo() + " | " + nome
-                + " | " + contadorInfo + " @ (" + x + ", " + y + ")";
-    }
+
 }

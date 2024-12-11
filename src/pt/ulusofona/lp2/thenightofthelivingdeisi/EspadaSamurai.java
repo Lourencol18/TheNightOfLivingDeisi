@@ -22,14 +22,7 @@ public class EspadaSamurai extends Equipamento {
 
 
 
-    @Override
-    public String toString() {
-        return nome;
-    }
 
-    boolean isOfType(int id) {
-        return id == 1;
-    }
 
     @Override
     public boolean isDefensivo() {

@@ -9,10 +9,7 @@ public class Cao extends Creature {
         super(id, nome, x, y, equipa); // Chama o construtor da classe pai (Creature)
         this.isHuman = isHuman;  // Define se é humano ou zumbi
     }
-    @Override
-    public boolean isHuman() {
-        return this.isHuman; // Usa a variável específica do Cão
-    }
+
     @Override
     public String getTipoCriatura() {
         return "Cão";

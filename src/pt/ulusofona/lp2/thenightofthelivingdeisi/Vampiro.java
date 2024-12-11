@@ -2,7 +2,6 @@ package pt.ulusofona.lp2.thenightofthelivingdeisi;
 
 public class Vampiro extends Creature {
 
-    private boolean isDay;
 
     public Vampiro(int id, String nome, int x, int y, int equipa) {
         super(id, nome, x, y, equipa);

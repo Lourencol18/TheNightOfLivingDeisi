@@ -132,9 +132,5 @@ public abstract class Creature {
 
     public abstract boolean podeMoverParaComEquipamento(Equipamento equipamento);
 
-    @Override
-    public String toString() {
-        String equipamentoInfo = (equipamentoAtual != null) ? equipamentoAtual.toString() : "Sem equipamento";
-        return id + " | " + nome + " | " + equipamentoInfo + " @ (" + x + ", " + y + ")";
-    }
+
 }
