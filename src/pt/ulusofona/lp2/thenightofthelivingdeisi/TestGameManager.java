@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,42 +11,34 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestGameManager {
+    private static final String TEST_GAME_FILE = "6x6.txt";
     private GameManager gameManager;
 
     @BeforeEach
     void setUp() {
         gameManager = new GameManager();
-        initializeGameManager();
+        loadTestGame();
     }
 
-    private void initializeGameManager() {
+    private void loadTestGame() {
         try {
-            gameManager.loadGame(new File("test_game.txt"));
-        } catch (InvalidFileException | FileNotFoundException e) {
-            fail("Erro ao carregar o jogo: " + e.getMessage());
-        }
-    }
-
-    @Test
-    void testLoadGame() {
-        try {
-            gameManager.loadGame(new File("test_game.txt"));
-            // Adicione asserções para verificar se o jogo foi carregado corretamente
-        } catch (InvalidFileException | FileNotFoundException e) {
-            fail("Erro ao carregar o jogo: " + e.getMessage());
+            gameManager.loadGame(new File(TEST_GAME_FILE));
+        } catch (InvalidFileException | IOException e) {
+            fail("Erro ao carregar o jogo de teste: " + e.getMessage());
         }
     }
 
     @Test
     void testGetWorldSize() {
         int[] worldSize = gameManager.getWorldSize();
-        assertTrue(worldSize[0] > 0 && worldSize[1] > 0, "Tamanho do mundo inválido");
+        assertEquals(7, worldSize[0], "Altura do mundo inválida");
+        assertEquals(7, worldSize[1], "Largura do mundo inválida");
     }
 
     @Test
     void testGetInitialTeamId() {
         int initialTeamId = gameManager.getInitialTeamId();
-        assertTrue(initialTeamId == 10 || initialTeamId == 20, "Equipe inicial inválida");
+        assertEquals(10, initialTeamId, "Equipe inicial inválida");
     }
 
     @Test
@@ -63,14 +54,20 @@ public class TestGameManager {
 
     @Test
     void testGetSquareInfo() {
-        String squareInfo = gameManager.getSquareInfo(0, 0);
-        assertNotNull(squareInfo, "Informações da posição inválidas");
+        assertEquals("Z:1", gameManager.getSquareInfo(5, 4), "Informações da posição inválidas");
+        assertEquals("H:6", gameManager.getSquareInfo(3, 4), "Informações da posição inválidas");
+        assertEquals("", gameManager.getSquareInfo(0, 0), "Informações da posição inválidas");
     }
 
     @Test
     void testGetCreatureInfo() {
         String[] creatureInfo = gameManager.getCreatureInfo(1);
-        assertNotNull(creatureInfo, "Informações da criatura inválidas");
+        assertEquals("1", creatureInfo[0], "ID da criatura inválido");
+        assertEquals("Criança", creatureInfo[1], "Tipo de criatura inválido");
+        assertEquals("Zombie", creatureInfo[2], "Equipe da criatura inválida");
+        assertEquals("Melanie", creatureInfo[3], "Nome da criatura inválido");
+        assertEquals("5", creatureInfo[4], "Coordenada X da criatura inválida");
+        assertEquals("4", creatureInfo[5], "Coordenada Y da criatura inválida");
     }
 
     @Test
@@ -93,20 +90,20 @@ public class TestGameManager {
 
     @Test
     void testHasEquipment() {
-        boolean hasEquipment = gameManager.hasEquipment(1, 0);
-        assertTrue(hasEquipment || !hasEquipment, "Informações de equipamento inválidas");
+        boolean hasEquipment = gameManager.hasEquipment(6, 0);
+        assertTrue(hasEquipment, "Criatura não possui equipamento");
     }
 
     @Test
     void testMove() {
-        boolean moved = gameManager.move(0, 0, 1, 1);
-        assertTrue(moved || !moved, "Movimento inválido");
+        boolean moved = gameManager.move(5, 4, 5, 3);
+        assertTrue(moved, "Movimento inválido");
     }
 
     @Test
     void testGameIsOver() {
         boolean gameOver = gameManager.gameIsOver();
-        assertTrue(gameOver || !gameOver, "Status do jogo inválido");
+        assertFalse(gameOver, "Jogo terminou indevidamente");
     }
 
     @Test
@@ -118,7 +115,7 @@ public class TestGameManager {
     @Test
     void testSaveGame() {
         try {
-            gameManager.saveGame(new File("test_game.txt"));
+            gameManager.saveGame(new File("test_game_saved.txt"));
             // Adicione asserções para verificar se o jogo foi salvo corretamente
         } catch (IOException e) {
             fail("Erro ao salvar o jogo: " + e.getMessage());
@@ -131,3 +128,5 @@ public class TestGameManager {
         assertNotNull(idsInSafeHaven, "Ids das criaturas no Safe Haven inválidos");
     }
 }
+
+
