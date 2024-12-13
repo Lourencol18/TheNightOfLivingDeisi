@@ -49,7 +49,6 @@ public class GameManager {
             }
 
             tabuleiro = new Tabuleiro(width, height);
-            System.out.println("Tabuleiro criado com dimensões: " + height + "x" + width);
 
             // Lê a equipe inicial
             if (!scanner.hasNext()) {
@@ -155,7 +154,6 @@ public class GameManager {
                 int y = Integer.parseInt(criaturaData[5]);
 
                 if (!tabuleiro.dentroDosLimites(x, y)) {
-                    System.out.println("Coordenadas fora dos limites: (" + x + ", " + y + "). Criatura ignorada.");
                     continue;
                 }
 
