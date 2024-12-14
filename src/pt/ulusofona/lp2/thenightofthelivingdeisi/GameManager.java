@@ -402,7 +402,22 @@ public class GameManager {
                     return info.toString();
                 }
 
-
+                // Caso específico: Vampiro
+                if (creature.getTipoCriatura().equals("Vampiro")) {
+                    info.append(creature.getId())
+                            .append(" | ")
+                            .append(creature.getTipoCriatura())
+                            .append(" | ")
+                            .append(creature.getNome())
+                            .append(" | -")
+                            .append(creature.getEquipamentosDestruidos())
+                            .append(" @ (")
+                            .append(creature.getX())
+                            .append(", ")
+                            .append(creature.getY())
+                            .append(")");
+                    return info.toString();
+                }
 
                 // Outros tipos de criaturas
                 info.append(creature.getId())
