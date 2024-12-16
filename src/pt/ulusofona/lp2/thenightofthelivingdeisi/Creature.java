@@ -28,9 +28,6 @@ public abstract class Creature {
         return equipamentosDestruidos;
     }
 
-
-
-
     public boolean isTransformed() {
         return transformado;
     }
