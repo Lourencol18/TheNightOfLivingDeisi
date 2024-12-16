@@ -1,3 +1,3 @@
-![image](https://github.com/user-attachments/assets/8122d64c-6477-4c0a-a0be-c72f88552b91)
+![UML_LP2 drawio](https://github.com/user-attachments/assets/7cc02f0b-a185-474e-b624-542cf4978729)
 
-
+Video: https://youtu.be/catEmDER5EY
