@@ -19,7 +19,7 @@ public class TestGameManager {
         testFile = createTestFile();
     }
 
-    private File createTestFile() {
+    public File createTestFile() {
         try {
             File tempFile = File.createTempFile("test-game", ".txt");
             try (java.io.PrintWriter writer = new java.io.PrintWriter(tempFile)) {
@@ -1201,7 +1201,7 @@ public class TestGameManager {
         }
     }
 
-    private File createBasicTestFile() {
+    public File createBasicTestFile() {
         try {
             File tempFile = File.createTempFile("test-game", ".txt");
             try (PrintWriter writer = new PrintWriter(tempFile)) {
