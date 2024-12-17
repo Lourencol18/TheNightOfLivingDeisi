@@ -893,36 +893,7 @@ public class TestGameManager {
         }
     }
 
-    @Test
-    public void testPistolaCompleto() {
-        try {
-            File testFile = new File("pistola-test.txt");
-            try (PrintWriter writer = new PrintWriter(testFile)) {
-                writer.println("10 10");
-                writer.println("20");
-                writer.println("2");
-                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Adulto
-                writer.println("2 : 10 : 4 : Vampiro : 5 : 5");  // Vampiro longe
-                writer.println("1");
-                writer.println("1 : 2 : 1 : 2"); // Pistola adjacente
-                writer.println("0");
-            }
 
-            gameManager.loadGame(testFile);
-
-            // Pega a pistola
-            assertTrue(gameManager.move(1, 1, 1, 2),
-                    "Humano deve poder pegar a pistola");
-
-            // Verifica se pegou a pistola
-            assertTrue(gameManager.hasEquipment(1, 2),
-                    "Humano deve ter equipamento tipo 2 (pistola)");
-
-            testFile.delete();
-        } catch (Exception e) {
-            fail("Teste falhou: " + e.getMessage());
-        }
-    }
 
     @Test
     public void testGameManagerStates() {
@@ -954,6 +925,451 @@ public class TestGameManager {
             String squareInfo = gameManager.getSquareInfo(1, 2);
             assertTrue(squareInfo.startsWith("H:"),
                     "Deve mostrar humano na posição");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testIdosoMovementComplete() {
+        try {
+            File testFile = new File("idoso-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 2 : Idoso : 2 : 2");  // Idoso no centro
+                writer.println("1");
+                writer.println("1 : 0 : 3 : 3"); // Escudo
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Testa movimento diagonal (deve ser permitido)
+            assertTrue(gameManager.move(2, 2, 3, 3),
+                    "Idoso deve poder mover na diagonal");
+
+            // Testa pegar equipamento
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Idoso deve poder pegar equipamento defensivo");
+
+            // Testa movimento inválido (horizontal)
+            assertFalse(gameManager.move(3, 3, 4, 3),
+                    "Idoso não deve poder mover horizontalmente");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIdosoMovimentoDiagonal() {
+        try {
+            File testFile = new File("idoso-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 2 : IdosoTeste : 2 : 2");  // Idoso no centro
+                writer.println("0");  // sem equipamentos
+                writer.println("0");  // sem safe havens
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Movimento diagonal permitido para Idoso
+            assertTrue(gameManager.move(2, 2, 3, 3),
+                    "Idoso deve poder mover na diagonal");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testPistolaWaltherPPKBalas() {
+        try {
+            File testFile = new File("pistola-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Adulto
+                writer.println("2 : 10 : 4 : Vampiro : 5 : 1");  // Vampiro na mesma linha
+                writer.println("1");
+                writer.println("1 : 2 : 1 : 2");  // Pistola adjacente
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pegar a pistola
+            assertTrue(gameManager.move(1, 1, 1, 2),
+                    "Humano deve poder pegar a pistola");
+
+            // Verificar se tem a pistola
+            assertTrue(gameManager.hasEquipment(1, 2),
+                    "Humano deve ter a pistola equipada");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEspadaSamuraiAtaque() {
+        try {
+            File testFile = new File("espada-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 2 : 2");  // Adulto
+                writer.println("2 : 10 : 4 : Vampiro : 2 : 3");  // Vampiro adjacente
+                writer.println("1");
+                writer.println("1 : 1 : 2 : 1");  // Espada
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pegar a espada
+            assertTrue(gameManager.move(2, 2, 2, 1),
+                    "Humano deve poder pegar a espada");
+
+            // Verificar se pegou a espada
+            assertTrue(gameManager.hasEquipment(1, 1),
+                    "Humano deve ter a espada equipada");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCriarLixivia() {
+        try {
+            File testFile = new File("lixivia-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Adulto
+                writer.println("1");
+                writer.println("1 : 3 : 2 : 2");  // Lixívia em (2,2)
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pegar a lixívia
+            assertTrue(gameManager.move(1, 1, 2, 2),
+                    "Humano deve poder pegar a lixívia");
+
+            // Verificar se tem a lixívia
+            assertTrue(gameManager.hasEquipment(1, 3),
+                    "Humano deve ter a lixívia equipada");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEscudoDeMadeiraDefesa() {
+        try {
+            File testFile = new File("escudo-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Adulto
+                writer.println("1");
+                writer.println("1 : 0 : 2 : 2");  // Escudo em (2,2)
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pegar o escudo
+            assertTrue(gameManager.move(1, 1, 2, 2),
+                    "Humano deve poder pegar o escudo");
+
+            // Verificar se tem o escudo
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Humano deve ter o escudo equipado");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testMovimentosEspeciaisIdoso() {
+        try {
+            File testFile = new File("idoso-especial-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 2 : IdosoTeste : 2 : 2");
+                writer.println("1");
+                writer.println("1 : 0 : 3 : 3"); // Escudo na diagonal
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Movimento na horizontal não permitido
+            assertFalse(gameManager.move(2, 2, 3, 2),
+                    "Idoso não deve poder mover horizontalmente");
+
+            // Movimento na vertical não permitido
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Idoso não deve poder mover verticalmente");
+
+            // Movimento diagonal de duas casas não permitido
+            assertFalse(gameManager.move(2, 2, 4, 4),
+                    "Idoso não deve poder mover duas casas na diagonal");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testCaoEspecial() {
+        try {
+            File testFile = new File("cao-especial.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 3 : Cão : 2 : 2"); // Cão no centro
+                writer.println("1");
+                writer.println("1 : 0 : 3 : 2"); // Equipamento
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Tentar pegar equipamento
+            assertFalse(gameManager.move(2, 2, 3, 2),
+                    "Cão não deve poder pegar equipamento");
+
+            // Movimento diagonal não permitido
+            assertFalse(gameManager.move(2, 2, 3, 3),
+                    "Cão não deve poder mover na diagonal");
+
+            // Movimento duas casas permitido
+            assertTrue(gameManager.move(2, 2, 2, 4),
+                    "Cão deve poder mover duas casas em linha reta");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testLixiviaCompleto() {
+        try {
+            File testFile = new File("lixivia-completo.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1"); // Humano
+                writer.println("2 : 10 : 4 : Vampiro : 3 : 1"); // Vampiro na mesma linha
+                writer.println("1");
+                writer.println("1 : 3 : 1 : 2"); // Lixívia
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pegar a lixívia
+            assertTrue(gameManager.move(1, 1, 1, 2),
+                    "Deve poder pegar a lixívia");
+
+            // Verificar se tem a lixívia
+            assertTrue(gameManager.hasEquipment(1, 3),
+                    "Deve ter a lixívia equipada");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCriancaComEquipamentos() {
+        try {
+            File testFile = new File("crianca-equipamentos.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 0 : Criança : 2 : 2");
+                writer.println("2");
+                writer.println("1 : 0 : 3 : 2"); // Escudo (defensivo)
+                writer.println("2 : 1 : 2 : 3"); // Espada (ofensivo)
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Tentar pegar espada (não deve conseguir)
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Criança não deve poder pegar equipamento ofensivo");
+
+            // Pode pegar escudo
+            assertTrue(gameManager.move(2, 2, 3, 2),
+                    "Criança deve poder pegar equipamento defensivo");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCriancaLimitacoes() {
+        try {
+            File testFile = new File("crianca-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 0 : Crianca : 2 : 2");  // Criança no centro
+                writer.println("2");  // dois equipamentos
+                writer.println("1 : 0 : 2 : 3"); // escudo (defensivo)
+                writer.println("2 : 1 : 2 : 1"); // espada (ofensivo)
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Testa movimento na diagonal (não deve ser permitido)
+            assertFalse(gameManager.move(2, 2, 3, 3),
+                    "Criança não deve poder mover na diagonal");
+
+            // Testa mover duas casas (não deve ser permitido)
+            assertFalse(gameManager.move(2, 2, 2, 4),
+                    "Criança não deve poder mover duas casas");
+
+            // Testa movimento vertical válido
+            assertTrue(gameManager.move(2, 2, 2, 3),
+                    "Criança deve poder mover uma casa na vertical");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testIdosoLimitacoes() {
+        try {
+            File testFile = new File("idoso-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 2 : Idoso : 2 : 2");  // Idoso no centro
+                writer.println("0");  // sem equipamentos
+                writer.println("0");  // sem safe havens
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Não deve permitir movimento horizontal
+            assertFalse(gameManager.move(2, 2, 3, 2),
+                    "Idoso não deve poder mover horizontalmente");
+
+            // Não deve permitir movimento vertical
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Idoso não deve poder mover verticalmente");
+
+            // Deve permitir movimento diagonal
+            assertTrue(gameManager.move(2, 2, 3, 3),
+                    "Idoso deve poder mover na diagonal");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEscudoEPosicao() {
+        try {
+            File testFile = new File("escudo-posicao-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Adulto : 2 : 2");  // Adulto
+                writer.println("1");
+                writer.println("1 : 0 : 2 : 3");  // Escudo adjacente
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Verifica posição inicial do escudo
+            String infoInicial = gameManager.getEquipmentInfo(1)[0];
+            assertNotNull(infoInicial, "Deve retornar info do escudo");
+
+            // Pega o escudo
+            assertTrue(gameManager.move(2, 2, 2, 3),
+                    "Deve poder pegar o escudo");
+
+            // Verifica se escudo está com o jogador
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Jogador deve ter o escudo");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCaoMovimentos() {
+        try {
+            File testFile = new File("cao-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 3 : Cao : 2 : 2");  // Cão no centro
+                writer.println("0");
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Não deve permitir movimento diagonal
+            assertFalse(gameManager.move(2, 2, 3, 3),
+                    "Cão não deve poder mover na diagonal");
+
+            // Deve permitir movimento vertical de duas casas
+            assertTrue(gameManager.move(2, 2, 2, 4),
+                    "Cão deve poder mover duas casas na vertical");
 
             testFile.delete();
         } catch (Exception e) {
