@@ -626,6 +626,341 @@ public class TestGameManager {
         }
     }
 
+    @Test
+    public void testEquipmentInfoMethods() {
+        try {
+            File testFile = new File("equipment-info-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");
+                writer.println("3");                          // 3 equipamentos diferentes
+                writer.println("1 : 0 : 2 : 2");  // Escudo
+                writer.println("2 : 1 : 3 : 3");  // Espada
+                writer.println("3 : 2 : 4 : 4");  // Pistola
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Teste getEquipmentInfo
+            String[] infoEscudo = gameManager.getEquipmentInfo(1);
+            assertNotNull(infoEscudo, "Info do escudo não deve ser nula");
+            assertEquals("1", infoEscudo[0], "ID do escudo deve ser 1");
+            assertEquals("0", infoEscudo[1], "Tipo do escudo deve ser 0");
+
+            // Teste getEquipmentInfoAsString
+            String infoEscudoString = gameManager.getEquipmentInfoAsString(1);
+            assertNotNull(infoEscudoString, "String info do escudo não deve ser nula");
+            assertTrue(infoEscudoString.contains("1"), "String deve conter ID do escudo");
+
+            // Teste hasEquipment antes de pegar
+            assertFalse(gameManager.hasEquipment(1, 0),
+                    "Humano não deve ter equipamento inicialmente");
+
+            // Humano pega escudo
+            assertTrue(gameManager.move(1, 1, 2, 2),
+                    "Humano deve poder pegar escudo");
+
+            // Teste hasEquipment depois de pegar
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Humano deve ter escudo após pegá-lo");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSafeHavenIds() {
+        try {
+            File testFile = new File("safehaven-ids-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");  // Começa com humanos
+                writer.println("3");   // 3 criaturas
+                writer.println("1 : 20 : 1 : Humano1 : 2 : 2");  // Humano mais perto do Safe Haven
+                writer.println("2 : 20 : 1 : Humano2 : 1 : 1");
+                writer.println("3 : 10 : 1 : Zumbi : 3 : 3");
+                writer.println("1");   // 1 equipamento
+                writer.println("1 : 0 : 2 : 3");  // Escudo em (2,3)
+                writer.println("1");   // 1 Safe Haven
+                writer.println("2 : 4"); // Safe Haven em (2,4)
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Inicialmente não deve haver ninguém no Safe Haven
+            List<Integer> ids = gameManager.getIdsInSafeHaven();
+            assertTrue(ids.isEmpty(), "Safe Haven deve começar vazio");
+
+            // Primeiro humano pega o equipamento
+            assertTrue(gameManager.move(2, 2, 2, 3),
+                    "Humano1 deve poder pegar o escudo");
+
+            // Zumbi se move
+            assertTrue(gameManager.move(3, 3, 3, 2),
+                    "Zumbi deve poder se mover");
+
+            // Primeiro humano entra no Safe Haven
+            assertTrue(gameManager.move(2, 3, 2, 4),
+                    "Humano1 deve poder entrar no Safe Haven");
+
+            // Verifica se o primeiro humano está no Safe Haven
+            ids = gameManager.getIdsInSafeHaven();
+            assertTrue(ids.contains(1), "ID 1 deve estar no Safe Haven");
+            assertEquals(1, ids.size(), "Deve haver apenas 1 ID no Safe Haven");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEquipmentInfoNonExistent() {
+        try {
+            File testFile = new File("equipment-nonexistent-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");
+                writer.println("1");
+                writer.println("1 : 0 : 2 : 2");  // Apenas um escudo
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Testa ID inexistente
+            assertNull(gameManager.getEquipmentInfo(999),
+                    "Info de equipamento inexistente deve ser null");
+            assertNull(gameManager.getEquipmentInfoAsString(999),
+                    "String info de equipamento inexistente deve ser null");
+
+            // Testa hasEquipment com ID inexistente
+            assertFalse(gameManager.hasEquipment(999, 0),
+                    "hasEquipment deve retornar false para ID inexistente");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testMultipleEquipmentTypes() {
+        try {
+            File testFile = new File("equipment-types-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");
+                writer.println("4");  // Todos os tipos de equipamento
+                writer.println("1 : 0 : 2 : 2");  // Escudo
+                writer.println("2 : 1 : 3 : 3");  // Espada
+                writer.println("3 : 2 : 4 : 4");  // Pistola
+                writer.println("4 : 3 : 5 : 5");  // Lixívia
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Verifica info de cada tipo de equipamento
+            for (int i = 1; i <= 4; i++) {
+                String[] info = gameManager.getEquipmentInfo(i);
+                assertNotNull(info, "Info do equipamento " + i + " não deve ser nula");
+                assertEquals(String.valueOf(i), info[0], "ID deve corresponder");
+            }
+
+            // Verifica hasEquipment antes e depois de pegar cada equipamento
+            for (int type = 0; type <= 3; type++) {
+                assertFalse(gameManager.hasEquipment(1, type),
+                        "Não deve ter equipamento tipo " + type + " inicialmente");
+            }
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCaoMethods() {
+        try {
+            File testFile = new File("cao-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 3 : Rex : 1 : 1");  // Cão em (1,1)
+                writer.println("2 : 10 : 4 : Vampiro : 3 : 3");  // Vampiro em (3,3)
+                writer.println("2");  // 2 equipamentos
+                writer.println("1 : 0 : 2 : 2"); // Escudo
+                writer.println("2 : 1 : 4 : 4"); // Espada
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Teste movimento do cão
+            assertTrue(gameManager.move(1, 1, 1, 3),
+                    "Cão deve poder mover 2 casas em linha reta");
+
+            assertFalse(gameManager.move(1, 3, 2, 4),
+                    "Cão não deve poder mover na diagonal");
+
+            // Tenta pegar equipamento (não deve conseguir)
+            assertFalse(gameManager.move(1, 3, 2, 2),
+                    "Cão não deve poder pegar equipamento");
+
+            // Verifica informações do cão
+            String[] infoCao = gameManager.getCreatureInfo(1);
+            assertEquals("Cão", infoCao[1], "Tipo deve ser Cão");
+            assertTrue(infoCao[2].equals("Humano"), "Cão deve ser do tipo Humano");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testEspadaSamuraiUsage() {
+        try {
+            File testFile = new File("espada-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Humano
+                writer.println("2 : 10 : 4 : Vampiro : 3 : 3");  // Vampiro
+                writer.println("1");
+                writer.println("1 : 1 : 1 : 2"); // Espada adjacente ao humano
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pega a espada
+            assertTrue(gameManager.move(1, 1, 1, 2),
+                    "Humano deve poder pegar a espada");
+
+            // Verifica se pegou a espada
+            assertTrue(gameManager.hasEquipment(1, 1),
+                    "Humano deve ter equipamento tipo 1 (espada)");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCriancaCompleto() {
+        try {
+            File testFile = new File("crianca-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");           // Começa com turno dos humanos
+                writer.println("1");            // Uma criatura
+                writer.println("1 : 20 : 0 : Crianca : 2 : 2");  // Criança em (2,2)
+                writer.println("1");            // Um equipamento
+                writer.println("1 : 0 : 2 : 3"); // Escudo defensivo em (2,3)
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Verifica se a criança está na posição correta
+            assertNotNull(gameManager.getCreatureInfo(1), "Deve encontrar a criança");
+
+            // Testa movimento ortogonal
+            assertTrue(gameManager.move(2, 2, 2, 3),
+                    "Criança deve poder mover uma casa na vertical para pegar escudo");
+
+            // Verifica se pegou o escudo
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Criança deve ter o escudo (tipo 0)");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testPistolaCompleto() {
+        try {
+            File testFile = new File("pistola-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");  // Adulto
+                writer.println("2 : 10 : 4 : Vampiro : 5 : 5");  // Vampiro longe
+                writer.println("1");
+                writer.println("1 : 2 : 1 : 2"); // Pistola adjacente
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Pega a pistola
+            assertTrue(gameManager.move(1, 1, 1, 2),
+                    "Humano deve poder pegar a pistola");
+
+            // Verifica se pegou a pistola
+            assertTrue(gameManager.hasEquipment(1, 2),
+                    "Humano deve ter equipamento tipo 2 (pistola)");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGameManagerStates() {
+        try {
+            File testFile = new File("gamemanager-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("2");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");
+                writer.println("2 : 10 : 4 : Vampiro : 2 : 2");
+                writer.println("0");
+                writer.println("0");
+            }
+
+            gameManager.loadGame(testFile);
+
+            // Testa estados do jogo
+            assertTrue(gameManager.isDay(), "Jogo deve começar de dia");
+            assertEquals(20, gameManager.getCurrentTeamId(),
+                    "Deve começar com equipe humana");
+
+            // Faz um movimento e verifica mudança de turno
+            assertTrue(gameManager.move(1, 1, 1, 2));
+            assertEquals(10, gameManager.getCurrentTeamId(),
+                    "Deve mudar para equipe zumbi");
+
+            // Testa informações do tabuleiro
+            String squareInfo = gameManager.getSquareInfo(1, 2);
+            assertTrue(squareInfo.startsWith("H:"),
+                    "Deve mostrar humano na posição");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
 }
 
 
