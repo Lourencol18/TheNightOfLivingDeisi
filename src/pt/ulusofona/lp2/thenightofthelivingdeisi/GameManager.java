@@ -18,6 +18,8 @@ public class GameManager {
     private int turnosSemEventos = 0; // Contador de turnos sem eventos
     private boolean zumbiMorto = false;
     private boolean humanoTransformado = false;
+    private int invalidMovesHumanos = 0;
+    private int invalidMovesZombies = 0;
 
     public void loadGame(File file) throws InvalidFileException, FileNotFoundException {
         tabuleiro = null;
@@ -595,6 +597,7 @@ public class GameManager {
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se o destino está dentro dos limites do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
+            incrementInvalidMoves();
             return false;
         }
 
@@ -609,12 +612,14 @@ public class GameManager {
 
         // Se não encontrou criatura na posição origem, movimento é inválido
         if (creatureToMove == null) {
+            incrementInvalidMoves();
             return false;
         }
 
         // Regra especial para Cão: verifica se pode fazer o movimento
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
+                incrementInvalidMoves();
                 return false;
             }
         }
@@ -622,6 +627,7 @@ public class GameManager {
         // Verifica se é o turno correto para a criatura se mover
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
+            incrementInvalidMoves();
             return false;
         }
 
@@ -630,10 +636,12 @@ public class GameManager {
             // Idoso humano só pode mover de dia no seu turno
             if (creatureToMove.isHuman()) {
                 if (!turnoParaHumanos || !isDay()) {
+                    incrementInvalidMoves();
                     return false;
                 }
             } else if (creatureToMove.isZombie()) {
                 if (turnoParaHumanos) {
+                    incrementInvalidMoves();
                     return false;
                 }
             }
@@ -649,16 +657,19 @@ public class GameManager {
 
         // Vampiro não pode mover durante o dia
         if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
+            incrementInvalidMoves();
             return false;
         }
 
         // Verifica se o movimento é válido para a criatura
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
+            incrementInvalidMoves();
             return false;
         }
 
         // Zumbis não podem entrar em Safe Havens
         if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
+            incrementInvalidMoves();
             return false;
         }
 
@@ -676,6 +687,7 @@ public class GameManager {
             // Zumbis e Vampiros não podem atacar Cães
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
+                incrementInvalidMoves();
                 return false;
             }
 
@@ -688,6 +700,7 @@ public class GameManager {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 return processarAtaque(creatureToMove, targetCreature, xD, yD);
             }
+            incrementInvalidMoves();
             return false;
         }
 
@@ -702,6 +715,7 @@ public class GameManager {
 
         // Verifica se a criatura pode mover para posição com equipamento
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
+            incrementInvalidMoves();
             return false;
         }
 
@@ -866,7 +880,13 @@ public class GameManager {
             turnosSemEventos++;
         }
     }
-
+    private void incrementInvalidMoves() {
+        if (equipaAtual == 20) {
+            invalidMovesHumanos++;
+        } else {
+            invalidMovesZombies++;
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -876,6 +896,10 @@ public class GameManager {
         // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
         if (turnosSemEventos >= 8) {
             return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
+        }
+
+        if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
+            return true;
         }
 
         // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
@@ -937,6 +961,8 @@ public class GameManager {
         // Adiciona cabeçalho
         resultados.add("Nr. de turnos terminados:");
         resultados.add(String.valueOf(turnoAtual + 1));
+        resultados.add("Nr. de jogadas invalidas:");
+        resultados.add("humanos:" + invalidMovesHumanos +" "+"zombies:" + invalidMovesZombies);
         resultados.add("");
 
         // Adiciona os vivos ordenados
