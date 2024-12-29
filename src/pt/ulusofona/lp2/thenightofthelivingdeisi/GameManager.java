@@ -27,7 +27,13 @@ public class GameManager {
         equipaAtual = -1;
         personagens.clear();
         equipamentos.clear();
-        turnoAtual = equipaInicial;
+        turnosSemEventos = 0;
+        invalidMovesHumanos = 0;
+        invalidMovesZombies = 0;
+        zumbiMorto = false;
+        humanoTransformado = false;
+        turnoAtual = 0;
+        dia = true;
         SafeHaven.getSafeHavens().clear();
 
         try (Scanner scanner = new Scanner(file)) {
@@ -964,34 +970,47 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean gameIsOver() {
-        // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
-        if (turnosSemEventos >= 8) {
-            return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
-        }
+        int numVivos = 0;
+        int numZombies = 0;
 
-        if (invalidMovesHumanos >= 5 || invalidMovesZombies >= 5) {
-            return true;
-        }
-
-        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
-        boolean existemHumanos = false;
-        boolean existemZumbis = false;
+        // Percorre todos os personagens
         for (Creature creature : personagens) {
             if (creature.isHuman()) {
-                existemHumanos = true;
-            }
-            if (creature.isZombie()) {
-                existemZumbis = true;
+                numVivos++;
+            } else {
+                numZombies++;
             }
         }
 
-        // O jogo termina se apenas humanos ou apenas zumbis existirem
-        if (!existemHumanos || !existemZumbis) {
+        // Adiciona criaturas em SafeHavens
+        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
+            for (Creature creature : safeHaven.getCriaturasDentro()) {
+                if (creature.isHuman()) {
+                    numVivos++;
+                } else {
+                    numZombies++;
+                }
+            }
+        }
+
+        // Se ainda existem humanos e zumbis
+        if (numVivos > 0 && numZombies > 0) {
+            // Verifica turnos sem transformação
+            if (turnosSemEventos >= 8) {
+                return true;
+            }
+            // Verifica número de jogadas inválidas
+            else if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        // Se não existem humanos ou zumbis
+        else {
             return true;
         }
-
-        // O jogo continua enquanto houver humanos e zumbis e menos de 8 turnos sem eventos
-        return false;
     }
 
 
