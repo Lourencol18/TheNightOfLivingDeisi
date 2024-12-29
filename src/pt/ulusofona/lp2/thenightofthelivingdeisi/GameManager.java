@@ -27,13 +27,7 @@ public class GameManager {
         equipaAtual = -1;
         personagens.clear();
         equipamentos.clear();
-        turnosSemEventos = 0;
-        invalidMovesHumanos = 0;
-        invalidMovesZombies = 0;
-        zumbiMorto = false;
-        humanoTransformado = false;
-        turnoAtual = 0;
-        dia = true;
+        turnoAtual = equipaInicial;
         SafeHaven.getSafeHavens().clear();
 
         try (Scanner scanner = new Scanner(file)) {
@@ -659,16 +653,26 @@ public class GameManager {
             // Apenas permite o movimento se nenhum dos adultos tiver equipamento
             if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
                     targetCreature.getEquipamentoAtual() == null) {
-
-                // Encontra uma posição livre próxima
-                int[] posLivre = encontrarPosicaoLivre(xD, yD);
-                if (posLivre == null) {
-                    incrementInvalidMoves();
-                    return false;
+                // Cria a criança na posição à esquerda do "progenitor"
+                int childX = xD - 1;
+                int childY = yD;
+                if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                    // Tenta outras posições em sentido horário
+                    childX = xD;
+                    childY = yD - 1;
+                    if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                        childX = xD + 1;
+                        childY = yD;
+                        if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                            childX = xD;
+                            childY = yD + 1;
+                            if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                                incrementInvalidMoves();
+                                return false;
+                            }
+                        }
+                    }
                 }
-
-                int childX = posLivre[0];
-                int childY = posLivre[1];
 
                 // Gera o ID concatenando os IDs dos pais
                 int childId = Integer.parseInt(creatureToMove.getId() + "" + targetCreature.getId());
@@ -676,11 +680,11 @@ public class GameManager {
                 Crianca child = new Crianca(childId, childName, childX, childY, 20, true);
                 personagens.add(child);
 
+                // Não movemos nenhum dos adultos, eles ficam nas suas posições originais
                 advanceTurn();
                 return true;
             }
         }
-
 
         // Regras especiais para Idoso
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
@@ -920,97 +924,47 @@ public class GameManager {
         }
     }
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
-    private int[] encontrarPosicaoLivre(int x, int y) {
-        int[][] direcoes = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-
-        for (int[] direcao : direcoes) {
-            int novoX = x + direcao[0];
-            int novoY = y + direcao[1];
-
-            // Verifica limites do tabuleiro
-            if (!tabuleiro.dentroDosLimites(novoX, novoY)) {
-                continue;
-            }
-
-            // Verifica criaturas
-            boolean posicaoOcupada = false;
-            for (Creature creature : personagens) {
-                if (creature.getX() >= 0 && creature.getY() >= 0 &&
-                        creature.getX() == novoX && creature.getY() == novoY) {
-                    posicaoOcupada = true;
-                    break;
-                }
-            }
-
-            // Verifica equipamentos
-            if (!posicaoOcupada) {
-                for (Equipamento equipment : equipamentos) {
-                    if (equipment.getX() == novoX && equipment.getY() == novoY) {
-                        posicaoOcupada = true;
-                        break;
-                    }
-                }
-            }
-
-            // Verifica Safe Havens
-            if (!posicaoOcupada && tabuleiro.isSafeHaven(novoX, novoY)) {
-                posicaoOcupada = true;
-            }
-
-            // Se a posição estiver livre, retorna
-            if (!posicaoOcupada) {
-                return new int[]{novoX, novoY};
+    private boolean isPositionOccupied(int x, int y) {
+        for (Creature creature : personagens) {
+            if (creature.getX() == x && creature.getY() == y) {
+                return true;
             }
         }
-
-        return null;
+        return false;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean gameIsOver() {
-        int numVivos = 0;
-        int numZombies = 0;
-
-        // Percorre todos os personagens
-        for (Creature creature : personagens) {
-            if (creature.isHuman()) {
-                numVivos++;
-            } else {
-                numZombies++;
-            }
+        // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
+        if (turnosSemEventos >= 8) {
+            return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
         }
 
-        // Adiciona criaturas em SafeHavens
-        for (SafeHaven safeHaven : SafeHaven.getSafeHavens()) {
-            for (Creature creature : safeHaven.getCriaturasDentro()) {
-                if (creature.isHuman()) {
-                    numVivos++;
-                } else {
-                    numZombies++;
-                }
-            }
-        }
-
-        // Se ainda existem humanos e zumbis
-        if (numVivos > 0 && numZombies > 0) {
-            // Verifica turnos sem transformação
-            if (turnosSemEventos >= 8) {
-                return true;
-            }
-            // Verifica número de jogadas inválidas
-            else if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        // Se não existem humanos ou zumbis
-        else {
+        if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
             return true;
         }
+
+        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
+        boolean existemHumanos = false;
+        boolean existemZumbis = false;
+        for (Creature creature : personagens) {
+            if (creature.isHuman()) {
+                existemHumanos = true;
+            }
+            if (creature.isZombie()) {
+                existemZumbis = true;
+            }
+        }
+
+        // O jogo termina se apenas humanos ou apenas zumbis existirem
+        if (!existemHumanos || !existemZumbis) {
+            return true;
+        }
+
+        // O jogo continua enquanto houver humanos e zumbis e menos de 8 turnos sem eventos
+        return false;
     }
 
 
