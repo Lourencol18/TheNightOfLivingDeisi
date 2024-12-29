@@ -631,9 +631,59 @@ public class GameManager {
             return false;
         }
 
+        // Nova regra: Movimento de adultos humanos para criar criança
+        if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
+            // Verifica se há outro adulto humano na posição de destino
+            Creature targetCreature = null;
+            for (Creature creature : personagens) {
+                if (creature.getX() == xD && creature.getY() == yD &&
+                        creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
+                    targetCreature = creature;
+                    break;
+                }
+            }
+
+            // Apenas permite o movimento se nenhum dos adultos tiver equipamento
+            if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
+                    targetCreature.getEquipamentoAtual() == null) {
+                // Cria a criança na posição à esquerda do "progenitor"
+                int childX = xD - 1;
+                int childY = yD;
+                if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                    // Tenta outras posições em sentido horário
+                    childX = xD;
+                    childY = yD - 1;
+                    if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                        childX = xD + 1;
+                        childY = yD;
+                        if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                            childX = xD;
+                            childY = yD + 1;
+                            if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+                                incrementInvalidMoves();
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                // Gera o ID concatenando os IDs dos pais
+                int childId = Integer.parseInt(creatureToMove.getId() + "" + targetCreature.getId());
+                String childName = creatureToMove.getNome() + " & " + targetCreature.getNome();
+                Crianca child = new Crianca(childId, childName, childX, childY, 20, true);
+                personagens.add(child);
+
+                // Não movemos nenhum dos adultos, eles ficam nas suas posições originais
+                advanceTurn();
+                return true;
+            } else {
+                incrementInvalidMoves();
+                return false;
+            }
+        }
+
         // Regras especiais para Idoso
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
-            // Idoso humano só pode mover de dia no seu turno
             if (creatureToMove.isHuman()) {
                 if (!turnoParaHumanos || !isDay()) {
                     incrementInvalidMoves();
@@ -645,7 +695,6 @@ public class GameManager {
                     return false;
                 }
             }
-            // Idoso solta equipamento ao se mover
             if (creatureToMove.getEquipamentoAtual() != null) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 equipamentoAtual.setX(xO);
@@ -655,25 +704,21 @@ public class GameManager {
             }
         }
 
-        // Vampiro não pode mover durante o dia
         if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
             incrementInvalidMoves();
             return false;
         }
 
-        // Verifica se o movimento é válido para a criatura
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
             incrementInvalidMoves();
             return false;
         }
 
-        // Zumbis não podem entrar em Safe Havens
         if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
             incrementInvalidMoves();
             return false;
         }
 
-        // Verifica se há uma criatura no destino
         Creature targetCreature = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
@@ -682,21 +727,17 @@ public class GameManager {
             }
         }
 
-        // Processa interações entre criaturas
         if (targetCreature != null) {
-            // Zumbis e Vampiros não podem atacar Cães
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
                 incrementInvalidMoves();
                 return false;
             }
 
-            // Processa ataque de zumbi contra humano
             if (creatureToMove.isZombie() && targetCreature.isHuman()) {
                 return processarDefesa(creatureToMove, targetCreature);
             }
 
-            // Processa ataque de humano contra zumbi
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 return processarAtaque(creatureToMove, targetCreature, xD, yD);
             }
@@ -704,7 +745,6 @@ public class GameManager {
             return false;
         }
 
-        // Verifica se há equipamento no destino
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
@@ -713,19 +753,15 @@ public class GameManager {
             }
         }
 
-        // Verifica se a criatura pode mover para posição com equipamento
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
             incrementInvalidMoves();
             return false;
         }
 
-        // Atualiza posição da criatura
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
 
-        // Processa interação de humano com equipamento
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
-            // Se já tem equipamento, solta na posição origem
             Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
             if (equipamentoAtual != null) {
                 equipamentoAtual.setX(xO);
@@ -734,21 +770,18 @@ public class GameManager {
                 creatureToMove.soltarEquipamento();
             }
 
-            // Pega novo equipamento se puder
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
             }
         }
 
-        // Processa interação de zumbi com equipamento (destruição)
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
             creatureToMove.incrementarEquipamentosDestruidos(1);
             equipamentos.remove(equipamentoParaInteragir);
         }
 
-        // Processa entrada em Safe Haven
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
@@ -761,8 +794,6 @@ public class GameManager {
                 }
             }
         }
-
-        // Avança o turno e retorna sucesso
         advanceTurn();
         return true;
     }
@@ -887,7 +918,15 @@ public class GameManager {
             invalidMovesZombies++;
         }
     }
-
+    // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
+    private boolean isPositionOccupied(int x, int y) {
+        for (Creature creature : personagens) {
+            if (creature.getX() == x && creature.getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
