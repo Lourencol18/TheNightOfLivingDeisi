@@ -918,9 +918,9 @@ public class GameManager {
     }
     private void incrementInvalidMoves() {
         if (equipaAtual == 20) {
-            invalidMovesHumanos++;
-        } else {
             invalidMovesZombies++;
+        } else {
+            invalidMovesHumanos++;
         }
     }
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
@@ -1000,8 +1000,6 @@ public class GameManager {
             }
         }
 
-
-
         // Adiciona cabeçalho
         resultados.add("Nr. de turnos terminados:");
         resultados.add(String.valueOf(turnoAtual + 1));
@@ -1011,6 +1009,7 @@ public class GameManager {
 
         // Adiciona os vivos ordenados
         resultados.add("OS VIVOS");
+        Collections.sort(vivos, (c1, c2) -> Integer.compare(c1.getId(), c2.getId()));  // Ordena por ID
         for (Creature creature : vivos) {
             resultados.add(creature.getId() + " " + creature.getNome());
         }
