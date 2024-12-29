@@ -631,7 +631,7 @@ public class GameManager {
             return false;
         }
 
-        // Nova regra: Movimento de adultos humanos para criar criança
+        // NOVA FUNCIONALIDADE: Procriação entre Adultos
         if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
             // Verifica se há outro adulto humano na posição de destino
             Creature targetCreature = null;
@@ -676,9 +676,6 @@ public class GameManager {
                 // Não movemos nenhum dos adultos, eles ficam nas suas posições originais
                 advanceTurn();
                 return true;
-            } else {
-                incrementInvalidMoves();
-                return false;
             }
         }
 
@@ -794,6 +791,7 @@ public class GameManager {
                 }
             }
         }
+
         advanceTurn();
         return true;
     }
