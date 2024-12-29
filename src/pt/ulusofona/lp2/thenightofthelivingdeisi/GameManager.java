@@ -636,9 +636,16 @@ public class GameManager {
             // Verifica se há outro adulto humano na posição de destino
             Creature targetCreature = null;
             for (Creature creature : personagens) {
-                if (creature.getX() == xD && creature.getY() == yD &&
-                        creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
-                    targetCreature = creature;
+                if (creature.getX() == xD && creature.getY() == yD) {
+                    // Se for o mesmo adulto tentando mover para sua própria posição
+                    if (creature.getId() == creatureToMove.getId()) {
+                        incrementInvalidMoves();
+                        return false;
+                    }
+                    // Verifica se é outro adulto humano
+                    if (creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
+                        targetCreature = creature;
+                    }
                     break;
                 }
             }
