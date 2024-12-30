@@ -612,7 +612,6 @@ public class GameManager {
 
         // Se não encontrou criatura na posição origem, movimento é inválido
         if (creatureToMove == null) {
-            incrementInvalidMoves();
             return false;
         }
 
