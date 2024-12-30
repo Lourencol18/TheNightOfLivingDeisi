@@ -1376,7 +1376,36 @@ public class TestGameManager {
             fail("Teste falhou: " + e.getMessage());
         }
     }
+    @Test
+    public void testGameOverAfterSixInvalidMoves() {
+        try {
+            File testFile = new File("invalid-moves-test.txt");
+            try (PrintWriter writer = new PrintWriter(testFile)) {
+                writer.println("10 10");
+                writer.println("20");
+                writer.println("1");
+                writer.println("1 : 20 : 1 : Humano : 1 : 1");
+                writer.println("0");
+                writer.println("0");
+            }
 
+            gameManager.loadGame(testFile);
+
+            // Faz 6 movimentos inválidos para humanos
+            for (int i = 0; i < 6; i++) {
+                assertFalse(gameManager.move(-1, -1, -1, -1),
+                        "Movimento inválido deve retornar false");
+            }
+
+            // Verifica se o jogo terminou
+            assertTrue(gameManager.gameIsOver(),
+                    "Jogo deve terminar após 6 movimentos inválidos");
+
+            testFile.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
 }
 
 
