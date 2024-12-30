@@ -950,34 +950,32 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean gameIsOver() {
-        // 1. Verifica se passaram exatamente 8 turnos sem eventos significativos
+        // Verifica condição de turnos sem eventos e jogadas inválidas
         if (turnosSemEventos >= 8) {
-            return true; // O jogo termina se não houver eventos por 8 turnos consecutivos
-        }
+            return true;
+        } else if (invalidMovesHumanos <= 5 && invalidMovesZombies <= 5) {
+            // Verifica existência de humanos e zumbis
+            boolean existemHumanos = false;
+            boolean existemZumbis = false;
 
-        if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
+            for (Creature creature : personagens) {
+                if (creature.isHuman()) {
+                    existemHumanos = true;
+                }
+                if (creature.isZombie()) {
+                    existemZumbis = true;
+                }
+            }
+
+            // Retorna true se só existir uma equipe
+            if (!existemHumanos || !existemZumbis) {
+                return true;
+            }
+
+            return false;
+        } else {
             return true;
         }
-
-        // 2. Verifica se restam apenas elementos de uma equipe no tabuleiro
-        boolean existemHumanos = false;
-        boolean existemZumbis = false;
-        for (Creature creature : personagens) {
-            if (creature.isHuman()) {
-                existemHumanos = true;
-            }
-            if (creature.isZombie()) {
-                existemZumbis = true;
-            }
-        }
-
-        // O jogo termina se apenas humanos ou apenas zumbis existirem
-        if (!existemHumanos || !existemZumbis) {
-            return true;
-        }
-
-        // O jogo continua enquanto houver humanos e zumbis e menos de 8 turnos sem eventos
-        return false;
     }
 
 
