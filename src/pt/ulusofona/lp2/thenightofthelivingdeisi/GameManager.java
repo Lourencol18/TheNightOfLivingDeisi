@@ -950,32 +950,27 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean gameIsOver() {
-        // Verifica condição de turnos sem eventos e jogadas inválidas
         if (turnosSemEventos >= 8) {
             return true;
-        } else if (invalidMovesHumanos <= 5 && invalidMovesZombies <= 5) {
-            // Verifica existência de humanos e zumbis
-            boolean existemHumanos = false;
-            boolean existemZumbis = false;
-
-            for (Creature creature : personagens) {
-                if (creature.isHuman()) {
-                    existemHumanos = true;
-                }
-                if (creature.isZombie()) {
-                    existemZumbis = true;
-                }
-            }
-
-            // Retorna true se só existir uma equipe
-            if (!existemHumanos || !existemZumbis) {
-                return true;
-            }
-
-            return false;
-        } else {
+        } else if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
             return true;
         }
+
+        // Verifica existência de humanos e zumbis
+        boolean existemHumanos = false;
+        boolean existemZumbis = false;
+
+        for (Creature creature : personagens) {
+            if (creature.isHuman()) {
+                existemHumanos = true;
+            }
+            if (creature.isZombie()) {
+                existemZumbis = true;
+            }
+        }
+
+        // Retorna true se só existir uma equipe
+        return !existemHumanos || !existemZumbis;
     }
 
 
