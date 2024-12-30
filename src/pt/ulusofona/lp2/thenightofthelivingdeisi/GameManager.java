@@ -646,26 +646,24 @@ public class GameManager {
                     if (creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
                         targetCreature = creature;
                     }
-                    break;
                 }
             }
 
-            // Apenas permite o movimento se nenhum dos adultos tiver equipamento
             if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
                     targetCreature.getEquipamentoAtual() == null) {
-                // Cria a criança na posição à esquerda do "progenitor"
-                int childX = xD - 1;
-                int childY = yD;
+                // Tenta criar a criança ao redor do progenitor (xO, yO)
+                int childX = xO - 1; // Começa tentando à esquerda do progenitor
+                int childY = yO;
+
                 if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                    // Tenta outras posições em sentido horário
-                    childX = xD;
-                    childY = yD - 1;
+                    childX = xO;
+                    childY = yO - 1; // Tenta acima
                     if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                        childX = xD + 1;
-                        childY = yD;
+                        childX = xO + 1; // Tenta à direita
+                        childY = yO;
                         if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                            childX = xD;
-                            childY = yD + 1;
+                            childX = xO;
+                            childY = yO + 1; // Tenta abaixo
                             if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
                                 incrementInvalidMoves();
                                 return false;
