@@ -925,11 +925,26 @@ public class GameManager {
     }
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
     private boolean isPositionOccupied(int x, int y) {
+        // Verifica criaturas
         for (Creature creature : personagens) {
-            if (creature.getX() == x && creature.getY() == y) {
+            if (creature.getX() >= 0 && creature.getY() >= 0 &&
+                    creature.getX() == x && creature.getY() == y) {
                 return true;
             }
         }
+
+        // Verifica equipamentos
+        for (Equipamento equipment : equipamentos) {
+            if (equipment.getX() == x && equipment.getY() == y) {
+                return true;
+            }
+        }
+
+        // Verifica Safe Havens
+        if (tabuleiro.isSafeHaven(x, y)) {
+            return true;
+        }
+
         return false;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
