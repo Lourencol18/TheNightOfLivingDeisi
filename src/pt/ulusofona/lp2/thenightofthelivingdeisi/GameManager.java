@@ -1010,7 +1010,7 @@ public class GameManager {
         resultados.add("Nr. de turnos terminados:");
         resultados.add(String.valueOf(turnoAtual + 1));
         resultados.add("Nr. de jogadas invalidas:");
-        resultados.add("humanos:" + invalidMovesHumanos +" "+"zombies:" + invalidMovesZombies);
+        resultados.add("humanos:" + (invalidMovesHumanos + 1 ) +" "+"zombies:" + invalidMovesZombies);
         resultados.add("");
 
         // Adiciona os vivos ordenados
