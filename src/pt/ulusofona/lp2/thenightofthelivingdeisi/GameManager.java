@@ -965,7 +965,7 @@ public class GameManager {
     public boolean gameIsOver() {
         if (turnosSemEventos >= 8) {
             return true;
-        } else if (invalidMovesHumanos >= 6 || invalidMovesZombies >= 6) {
+        } else if (invalidMovesHumanos >= 10 || invalidMovesZombies >= 10) {
             return true;
         }
 
