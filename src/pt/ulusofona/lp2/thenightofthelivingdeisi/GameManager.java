@@ -597,7 +597,6 @@ public class GameManager {
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se o destino está dentro dos limites do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
-            incrementInvalidMoves(null);
             return false;
         }
 
@@ -915,13 +914,11 @@ public class GameManager {
         }
     }
     private void incrementInvalidMoves(Creature creature) {
-        // Incrementa o contador da equipe da criatura
             if (creature.isHuman()) {
                 invalidMovesHumanos++;
             } else {
                 invalidMovesZombies++;
-            }
-    }
+            }}
 
 
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
