@@ -914,12 +914,24 @@ public class GameManager {
         }
     }
     private void incrementInvalidMoves(Creature creature) {
+        // Se for jogada fora de turno (humano jogando no turno dos zombies ou vice-versa)
+        boolean turnoParaHumanos = equipaAtual == 20;
+        if ((turnoParaHumanos && !creature.isHuman()) || (!turnoParaHumanos && !creature.isZombie())) {
+            // Penaliza a equipe que tentou jogar fora do seu turno
+            if (turnoParaHumanos) {
+                invalidMovesZombies++;  // Zombie tentou mover no turno dos humanos
+            } else {
+                invalidMovesHumanos++;  // Humano tentou mover no turno dos zombies
+            }
+        } else {
+            // Para outras jogadas inválidas, penaliza a equipe da criatura
             if (creature.isHuman()) {
                 invalidMovesHumanos++;
             } else {
                 invalidMovesZombies++;
-            }}
-
+            }
+        }
+    }
 
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
     private boolean isPositionOccupied(int x, int y) {
@@ -1010,7 +1022,7 @@ public class GameManager {
         resultados.add("Nr. de turnos terminados:");
         resultados.add(String.valueOf(turnoAtual + 1));
         resultados.add("Nr. de jogadas invalidas:");
-        resultados.add("humanos:" + (invalidMovesHumanos + 1 ) +" "+"zombies:" + invalidMovesZombies);
+        resultados.add("humanos:" + invalidMovesHumanos  +" "+"zombies:" + invalidMovesZombies);
         resultados.add("");
 
         // Adiciona os vivos ordenados
