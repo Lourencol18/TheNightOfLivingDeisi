@@ -597,7 +597,7 @@ public class GameManager {
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se o destino está dentro dos limites do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(null);
             return false;
         }
 
@@ -612,13 +612,14 @@ public class GameManager {
 
         // Se não encontrou criatura na posição origem, movimento é inválido
         if (creatureToMove == null) {
+            incrementInvalidMoves(null);
             return false;
         }
 
         // Regra especial para Cão: verifica se pode fazer o movimento
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
-                incrementInvalidMoves();
+                incrementInvalidMoves(creatureToMove);
                 return false;
             }
         }
@@ -626,7 +627,7 @@ public class GameManager {
         // Verifica se é o turno correto para a criatura se mover
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
@@ -638,7 +639,7 @@ public class GameManager {
                 if (creature.getX() == xD && creature.getY() == yD) {
                     // Se for o mesmo adulto tentando mover para sua própria posição
                     if (creature.getId() == creatureToMove.getId()) {
-                        incrementInvalidMoves();
+                        incrementInvalidMoves(creatureToMove);
                         return false;
                     }
                     // Verifica se é outro adulto humano
@@ -664,7 +665,7 @@ public class GameManager {
                             childX = xO;
                             childY = yO + 1; // Tenta abaixo
                             if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                                incrementInvalidMoves();
+                                incrementInvalidMoves(creatureToMove);
                                 return false;
                             }
                         }
@@ -687,12 +688,12 @@ public class GameManager {
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman()) {
                 if (!turnoParaHumanos || !isDay()) {
-                    incrementInvalidMoves();
+                    incrementInvalidMoves(creatureToMove);
                     return false;
                 }
             } else if (creatureToMove.isZombie()) {
                 if (turnoParaHumanos) {
-                    incrementInvalidMoves();
+                    incrementInvalidMoves(creatureToMove);
                     return false;
                 }
             }
@@ -706,17 +707,17 @@ public class GameManager {
         }
 
         if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
         if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
         if (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD)) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
@@ -731,7 +732,7 @@ public class GameManager {
         if (targetCreature != null) {
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
-                incrementInvalidMoves();
+                incrementInvalidMoves(creatureToMove);
                 return false;
             }
 
@@ -742,7 +743,7 @@ public class GameManager {
             if (creatureToMove.isHuman() && targetCreature.isZombie()) {
                 return processarAtaque(creatureToMove, targetCreature, xD, yD);
             }
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
@@ -755,7 +756,7 @@ public class GameManager {
         }
 
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
-            incrementInvalidMoves();
+            incrementInvalidMoves(creatureToMove);
             return false;
         }
 
@@ -913,13 +914,14 @@ public class GameManager {
             turnosSemEventos++;
         }
     }
-    private void incrementInvalidMoves() {
-        if (equipaAtual == 20) {
-            invalidMovesZombies++;
-        } else {
+    private void incrementInvalidMoves(Creature creature) {
+        if (creature.isHuman()) {
             invalidMovesHumanos++;
+        } else {
+            invalidMovesZombies++;
         }
     }
+
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
     private boolean isPositionOccupied(int x, int y) {
         // Verifica criaturas
