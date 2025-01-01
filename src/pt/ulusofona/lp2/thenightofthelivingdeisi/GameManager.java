@@ -597,38 +597,30 @@ public class GameManager {
     public boolean move(int xO, int yO, int xD, int yD) {
         // Verifica se o destino está dentro dos limites do tabuleiro
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
-            return false;
-        }
-
+            return false;}
         // Encontra a criatura que vai se mover baseado na posição origem
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
                 creatureToMove = creature;
                 break;
-            }
-        }
+            }}
 
         // Se não encontrou criatura na posição origem, movimento é inválido
         if (creatureToMove == null) {
-            return false;
-        }
-
+            return false;}
         // Regra especial para Cão: verifica se pode fazer o movimento
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 incrementInvalidMoves(creatureToMove);
                 return false;
-            }
-        }
-
+            }}
         // Verifica se é o turno correto para a criatura se mover
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             incrementInvalidMoves(creatureToMove);
             return false;
         }
-
         // NOVA FUNCIONALIDADE: Procriação entre Adultos
         if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
             // Verifica se há outro adulto humano na posição de destino
@@ -638,21 +630,15 @@ public class GameManager {
                     // Se for o mesmo adulto tentando mover para sua própria posição
                     if (creature.getId() == creatureToMove.getId()) {
                         incrementInvalidMoves(creatureToMove);
-                        return false;
-                    }
+                        return false;}
                     // Verifica se é outro adulto humano
                     if (creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
-                        targetCreature = creature;
-                    }
-                }
-            }
-
+                        targetCreature = creature;}}}
             if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
                     targetCreature.getEquipamentoAtual() == null) {
                 // Tenta criar a criança ao redor do progenitor (xO, yO)
                 int childX = xO - 1; // Começa tentando à esquerda do progenitor
                 int childY = yO;
-
                 if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
                     childX = xO;
                     childY = yO - 1; // Tenta acima
@@ -665,44 +651,32 @@ public class GameManager {
                             if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
                                 incrementInvalidMoves(creatureToMove);
                                 return false;
-                            }
-                        }
-                    }
-                }
-
+                            }}}}
                 // Gera o ID concatenando os IDs dos pais
                 int childId = Integer.parseInt(creatureToMove.getId() + "" + targetCreature.getId());
                 String childName = creatureToMove.getNome() + " & " + targetCreature.getNome();
                 Crianca child = new Crianca(childId, childName, childX, childY, 20, true);
                 personagens.add(child);
-
                 // Não movemos nenhum dos adultos, eles ficam nas suas posições originais
                 advanceTurn();
                 return true;
-            }
-        }
-
-        // Regras especiais para Idoso
+            }}// Regras especiais para Idoso
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman()) {
                 if (!turnoParaHumanos || !isDay()) {
                     incrementInvalidMoves(creatureToMove);
                     return false;
-                }
-            } else if (creatureToMove.isZombie()) {
+                }} else if (creatureToMove.isZombie()) {
                 if (turnoParaHumanos) {
                     incrementInvalidMoves(creatureToMove);
-                    return false;
-                }
-            }
+                    return false;}}
             if (creatureToMove.getEquipamentoAtual() != null) {
                 Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
                 equipamentoAtual.setX(xO);
                 equipamentoAtual.setY(yO);
                 equipamentos.add(equipamentoAtual);
                 creatureToMove.soltarEquipamento();
-            }
-        }
+            }}
 
         if (creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) {
             incrementInvalidMoves(creatureToMove);
@@ -724,9 +698,7 @@ public class GameManager {
             if (creature.getX() == xD && creature.getY() == yD) {
                 targetCreature = creature;
                 break;
-            }
-        }
-
+            }}
         if (targetCreature != null) {
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
@@ -744,23 +716,19 @@ public class GameManager {
             incrementInvalidMoves(creatureToMove);
             return false;
         }
-
         Equipamento equipamentoParaInteragir = null;
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
                 equipamentoParaInteragir = equipamento;
                 break;
-            }
-        }
+            }}
 
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
             incrementInvalidMoves(creatureToMove);
             return false;
         }
-
         creatureToMove.setX(xD);
         creatureToMove.setY(yD);
-
         if (creatureToMove.isHuman() && equipamentoParaInteragir != null) {
             Equipamento equipamentoAtual = creatureToMove.getEquipamentoAtual();
             if (equipamentoAtual != null) {
@@ -769,19 +737,15 @@ public class GameManager {
                 equipamentos.add(equipamentoAtual);
                 creatureToMove.soltarEquipamento();
             }
-
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            }
-        }
-
+            }}
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
             creatureToMove.incrementarEquipamentosDestruidos(1);
             equipamentos.remove(equipamentoParaInteragir);
         }
-
         if (creatureToMove.isHuman() && tabuleiro.isSafeHaven(xD, yD)) {
             for (SafeHaven safeHaven : tabuleiro.getSafeHavens()) {
                 if (safeHaven.getX() == xD && safeHaven.getY() == yD) {
@@ -791,10 +755,7 @@ public class GameManager {
                     personagens.remove(creatureToMove);
                     advanceTurn();
                     return true;
-                }
-            }
-        }
-
+                }}}
         advanceTurn();
         return true;
     }
@@ -914,23 +875,11 @@ public class GameManager {
         }
     }
     private void incrementInvalidMoves(Creature creature) {
-        // Se for jogada fora de turno (humano jogando no turno dos zombies ou vice-versa)
-        boolean turnoParaHumanos = equipaAtual == 20;
-        if ((turnoParaHumanos && !creature.isHuman()) || (!turnoParaHumanos && !creature.isZombie())) {
-            // Penaliza a equipe que tentou jogar fora do seu turno
-            if (turnoParaHumanos) {
-                invalidMovesZombies++;  // Zombie tentou mover no turno dos humanos
-            } else {
-                invalidMovesHumanos++;  // Humano tentou mover no turno dos zombies
-            }
-        } else {
-            // Para outras jogadas inválidas, penaliza a equipe da criatura
             if (creature.isHuman()) {
                 invalidMovesHumanos++;
             } else {
                 invalidMovesZombies++;
             }
-        }
     }
 
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
@@ -1022,7 +971,7 @@ public class GameManager {
         resultados.add("Nr. de turnos terminados:");
         resultados.add(String.valueOf(turnoAtual + 1));
         resultados.add("Nr. de jogadas invalidas:");
-        resultados.add("humanos:" + invalidMovesHumanos  +" "+"zombies:" + invalidMovesZombies);
+        resultados.add("humanos:" + (invalidMovesHumanos + 1)  +" "+"zombies:" + invalidMovesZombies);
         resultados.add("");
 
         // Adiciona os vivos ordenados
