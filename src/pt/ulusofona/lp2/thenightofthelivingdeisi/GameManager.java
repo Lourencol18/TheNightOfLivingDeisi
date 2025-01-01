@@ -801,6 +801,7 @@ public class GameManager {
         return true;
     }
 
+
     private boolean processarDefesa(Creature zumbi, Creature humano) {
         // Verifica se o humano tem algum equipamento
         Equipamento equipamentoAtual = humano.getEquipamentoAtual();
@@ -915,12 +916,23 @@ public class GameManager {
         }
     }
     private void incrementInvalidMoves(Creature creature) {
-        if (creature.isHuman()) {
-            invalidMovesHumanos++;
+        if (creature == null) {
+            // Se não há criatura associada, incrementa o contador da equipe do turno atual
+            if (equipaAtual == 20) {
+                invalidMovesHumanos++;
+            } else {
+                invalidMovesZombies++;
+            }
         } else {
-            invalidMovesZombies++;
+            // Incrementa o contador da equipe da criatura
+            if (creature.isHuman()) {
+                invalidMovesHumanos++;
+            } else {
+                invalidMovesZombies++;
+            }
         }
     }
+
 
     // Método auxiliar para verificar se uma posição está ocupada por alguma criatura
     private boolean isPositionOccupied(int x, int y) {
