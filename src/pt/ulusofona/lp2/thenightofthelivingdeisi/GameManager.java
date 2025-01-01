@@ -915,21 +915,12 @@ public class GameManager {
         }
     }
     private void incrementInvalidMoves(Creature creature) {
-        if (creature == null) {
-            // Se não há criatura associada, incrementa o contador da equipe do turno atual
-            if (equipaAtual == 20) {
-                invalidMovesHumanos++;
-            } else {
-                invalidMovesZombies++;
-            }
-        } else {
-            // Incrementa o contador da equipe da criatura
+        // Incrementa o contador da equipe da criatura
             if (creature.isHuman()) {
                 invalidMovesHumanos++;
             } else {
                 invalidMovesZombies++;
             }
-        }
     }
 
 
