@@ -846,6 +846,7 @@ public class GameManager {
                 }
             }
         }
+        incrementInvalidMoves(humano);
         return false;   // Ataque falhou (sem equipamento ou sem balas)
     }
 
