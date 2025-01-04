@@ -843,10 +843,17 @@ public class GameManager {
                     humano.setY(yD);
                     advanceTurn();                 // Avança o turno
                     return true;                   // Ataque bem sucedido
+                } else {
+                    incrementInvalidMoves(humano);  // Movimento inválido - sem balas
+                    return false;
                 }
+            } else {
+                incrementInvalidMoves(humano);  // Movimento inválido - equipamento errado
+                return false;
             }
         }
-        return false;   // Ataque falhou (sem equipamento ou sem balas)
+        incrementInvalidMoves(humano);  // Movimento inválido - sem equipamento
+        return false;
     }
 
     private void advanceTurn() {
