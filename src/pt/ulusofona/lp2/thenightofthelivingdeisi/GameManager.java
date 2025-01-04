@@ -28,6 +28,8 @@ public class GameManager {
         personagens.clear();
         equipamentos.clear();
         turnoAtual = equipaInicial;
+        invalidMovesHumanos = 0;
+         invalidMovesZombies = 0;
         SafeHaven.getSafeHavens().clear();
 
         try (Scanner scanner = new Scanner(file)) {
@@ -623,7 +625,13 @@ public class GameManager {
         }
         // NOVA FUNCIONALIDADE: Procriação entre Adultos
         if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
+            // Primeiro verifica se pode mover para a posição destino
+            if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
+                incrementInvalidMoves(creatureToMove);
+                return false;
+            }
             // Verifica se há outro adulto humano na posição de destino
+
             Creature targetCreature = null;
             for (Creature creature : personagens) {
                 if (creature.getX() == xD && creature.getY() == yD) {
