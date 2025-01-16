@@ -597,7 +597,7 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean move(int xO, int yO, int xD, int yD) {
-        // Verifica se o destino está dentro dos limites do tabuleiro
+        // Verifica se o destino está dentro dos limites do tabuleir
         if (!tabuleiro.dentroDosLimites(xD, yD)) {
             return false;}
         // Encontra a criatura que vai se mover baseado na posição origem
