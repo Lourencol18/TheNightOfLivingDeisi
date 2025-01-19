@@ -1406,6 +1406,213 @@ public class TestGameManager {
             fail("Teste falhou: " + e.getMessage());
         }
     }
+    @Test
+    public void testProcriacaoFalhaZumbi() {
+        try {
+            File file = createTempFile("""
+            5 5
+            20
+            2
+            1 : 20 : 1 : Adulto1 : 2 : 2
+            2 : 10 : 1 : Zumbi1 : 2 : 3
+            0
+            0""");
+
+            gameManager.loadGame(file);
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Adulto não deve poder procriar com zumbi");
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testProcriacaoFalhaIdoso() {
+        try {
+            File file = createTempFile("""
+            5 5
+            20
+            2
+            1 : 20 : 1 : Adulto1 : 2 : 2
+            2 : 20 : 2 : Idoso1 : 2 : 3
+            0
+            0""");
+
+            gameManager.loadGame(file);
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Adulto não deve poder procriar com idoso");
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testProcriacaoFalhaCrianca() {
+        try {
+            File file = createTempFile("""
+            5 5
+            20
+            2
+            1 : 20 : 1 : Adulto1 : 2 : 2
+            2 : 20 : 0 : Crianca1 : 2 : 3
+            0
+            0""");
+
+            gameManager.loadGame(file);
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Adulto não deve poder procriar com criança");
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testProcriacaoComEquipamento() {
+        try {
+            // Coloca o equipamento em (2,1) - uma posição adjacente ao primeiro adulto
+            File file = createTempFile("""
+            5 5
+            20
+            2
+            1 : 20 : 1 : Adulto1 : 2 : 2
+            2 : 20 : 1 : Adulto2 : 2 : 3
+            1
+            1 : 0 : 2 : 1
+            0""");
+
+            gameManager.loadGame(file);
+
+            // Move para posição do equipamento
+            assertTrue(gameManager.move(2, 2, 2, 1),
+                    "Adulto deve poder mover para pegar equipamento");
+
+            // Verifica se pegou o equipamento
+            assertTrue(gameManager.hasEquipment(1, 0),
+                    "Adulto deve ter pegado o equipamento");
+
+            // Avança turno dos zumbis
+            assertFalse(gameManager.move(0, 0, 0, 0));
+
+            // Tenta procriar
+            assertFalse(gameManager.move(2, 1, 2, 3),
+                    "Não deve poder procriar com equipamento");
+
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testProcriacaoSemEspaco() {
+        try {
+            // Cria tabuleiro onde todas as posições adjacentes estão ocupadas
+            File file = createTempFile("""
+            5 5
+            20
+            6
+            1 : 20 : 1 : Adulto1 : 2 : 2
+            2 : 20 : 1 : Adulto2 : 2 : 3
+            3 : 20 : 1 : Block1 : 1 : 2
+            4 : 20 : 1 : Block2 : 3 : 2
+            5 : 20 : 1 : Block3 : 2 : 1
+            6 : 20 : 1 : Block4 : 2 : 4
+            0
+            0""");
+
+            gameManager.loadGame(file);
+            assertFalse(gameManager.move(2, 2, 2, 3),
+                    "Não deve poder procriar sem espaço livre adjacente");
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testProcriacaoBemSucedida() {
+        try {
+            File file = createTempFile("""
+            5 5
+            20
+            2
+            1 : 20 : 1 : Maria : 2 : 2
+            2 : 20 : 1 : Joao : 2 : 3
+            0
+            0""");
+
+            gameManager.loadGame(file);
+            assertTrue(gameManager.move(2, 2, 2, 3),
+                    "Procriação entre adultos deve ser permitida");
+
+            boolean encontrouCrianca = false;
+            int[][] posicoesAdjacentes = {{1,2}, {3,2}, {2,1}, {2,4}};
+
+            for (int[] pos : posicoesAdjacentes) {
+                String info = gameManager.getSquareInfo(pos[0], pos[1]);
+                if (info != null && info.startsWith("H:")) {
+                    int id = Integer.parseInt(info.split(":")[1]);
+                    String[] crianca = gameManager.getCreatureInfo(id);
+
+                    if (crianca != null && crianca[1].equals("Criança")) {
+                        encontrouCrianca = true;
+                        assertEquals("Maria & Joao", crianca[3],
+                                "Nome da criança deve ser concatenação dos nomes dos pais");
+                        assertEquals("12", crianca[0],
+                                "ID da criança deve ser concatenação dos IDs dos pais");
+                        break;
+                    }
+                }
+            }
+            assertTrue(encontrouCrianca, "Uma criança deve ser criada em posição adjacente");
+            file.delete();
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testPosicoesCrianca() {
+        try {
+            // Testa cada posição possível para a criança sendo bloqueada
+            int[][] bloqueios = {
+                    {1,2},  // Bloqueia oeste
+                    {3,2},  // Bloqueia leste
+                    {2,1},  // Bloqueia norte
+                    {2,4}   // Bloqueia sul
+            };
+
+            for (int[] bloqueio : bloqueios) {
+                File file = createTempFile(String.format("""
+                5 5
+                20
+                3
+                1 : 20 : 1 : Adulto1 : 2 : 2
+                2 : 20 : 1 : Adulto2 : 2 : 3
+                3 : 20 : 1 : Block : %d : %d
+                0
+                0""", bloqueio[0], bloqueio[1]));
+
+                gameManager.loadGame(file);
+                assertTrue(gameManager.move(2, 2, 2, 3),
+                        "Procriação deve ser possível com apenas uma posição bloqueada");
+                file.delete();
+            }
+        } catch (Exception e) {
+            fail("Teste falhou: " + e.getMessage());
+        }
+    }
+
+    private File createTempFile(String content) throws IOException {
+        File tempFile = File.createTempFile("test", ".txt");
+        try (PrintWriter writer = new PrintWriter(tempFile)) {
+            writer.print(content);
+        }
+        return tempFile;
+    }
 }
 
 
