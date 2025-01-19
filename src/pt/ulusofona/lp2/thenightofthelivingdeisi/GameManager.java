@@ -597,25 +597,19 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean move(int xO, int yO, int xD, int yD) {
-        if (!tabuleiro.dentroDosLimites(xD, yD)) {
-            return false;
-        }
+        if (!tabuleiro.dentroDosLimites(xD, yD)) {return false;}
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
                 creatureToMove = creature;
-                break;
-            }
-        }
+                break;}}
         if (creatureToMove == null) {
-            return false;
-        }
+            return false;}
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 incrementInvalidMoves(creatureToMove);
                 return false;
-            }
-        }
+            }}
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             incrementInvalidMoves(creatureToMove);
@@ -624,15 +618,9 @@ public class GameManager {
         if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 incrementInvalidMoves(creatureToMove);
-                return false;
-            }
-            // Se procriação foi bem sucedida, retorna true
+                return false;}// Se procriação foi bem sucedida, retorna true
             boolean procriou = processarProcriacao(creatureToMove, xO, yO, xD, yD);
-            if (procriou) {
-                return true;
-            }
-            // Se não procriou, continua com o resto da lógica de movimento
-        }
+            if (procriou) {return true;}} // Se não procriou, continua com o resto da lógica de movimento
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman() && (!turnoParaHumanos || !isDay()) ||
                     creatureToMove.isZombie() && turnoParaHumanos) {
@@ -644,9 +632,7 @@ public class GameManager {
                 equip.setX(xO);
                 equip.setY(yO);
                 equipamentos.add(equip);
-                creatureToMove.soltarEquipamento();
-            }
-        }
+                creatureToMove.soltarEquipamento();}}
         if ((creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) ||
                 !creatureToMove.podeMover(xO, yO, xD, yD, isDay()) ||
                 (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD))) {
@@ -657,9 +643,7 @@ public class GameManager {
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
                 targetCreature = creature;
-                break;
-            }
-        }
+                break;}}
         if (targetCreature != null) {
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
@@ -679,9 +663,7 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
                 equipamentoParaInteragir = equipamento;
-                break;
-            }
-        }
+                break;}}
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
             incrementInvalidMoves(creatureToMove);
             return false;
@@ -699,8 +681,7 @@ public class GameManager {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            }
-        }
+            }}
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
             creatureToMove.incrementarEquipamentosDestruidos(1);
@@ -714,13 +695,7 @@ public class GameManager {
                     safeHaven.entrar(creatureToMove);
                     personagens.remove(creatureToMove);
                     advanceTurn();
-                    return true;
-                }
-            }
-        }
-        advanceTurn();
-        return true;
-    }
+                    return true;}}}advanceTurn();return true;}
 
     private boolean processarProcriacao(Creature creatureToMove, int xO, int yO, int xD, int yD) {
         // Verifica se a criatura no destino é um adulto humano
