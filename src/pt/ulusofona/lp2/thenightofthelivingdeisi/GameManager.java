@@ -626,10 +626,12 @@ public class GameManager {
                 incrementInvalidMoves(creatureToMove);
                 return false;
             }
-            // Tenta processar procriação
-            if (processarProcriacao(creatureToMove, xO, yO, xD, yD)) {
+            // Se procriação foi bem sucedida, retorna true
+            boolean procriou = processarProcriacao(creatureToMove, xO, yO, xD, yD);
+            if (procriou) {
                 return true;
             }
+            // Se não procriou, continua com o resto da lógica de movimento
         }
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
             if (creatureToMove.isHuman() && (!turnoParaHumanos || !isDay()) ||
