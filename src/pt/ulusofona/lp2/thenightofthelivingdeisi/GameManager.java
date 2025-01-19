@@ -597,33 +597,56 @@ public class GameManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean move(int xO, int yO, int xD, int yD) {
-        if (!tabuleiro.dentroDosLimites(xD, yD)) {return false;}
+        if (!tabuleiro.dentroDosLimites(xD, yD)) {
+            return false;
+        }
         Creature creatureToMove = null;
         for (Creature creature : personagens) {
             if (creature.getX() == xO && creature.getY() == yO) {
                 creatureToMove = creature;
-                break;}}
+                break;
+            }
+        }
         if (creatureToMove == null) {
-            return false;}
+            return false;
+        }
         if (creatureToMove.getTipoCriatura().equals("Cão")) {
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 incrementInvalidMoves(creatureToMove);
                 return false;
-            }}
+            }
+        }
         boolean turnoParaHumanos = equipaAtual == 20;
         if ((turnoParaHumanos && !creatureToMove.isHuman()) || (!turnoParaHumanos && !creatureToMove.isZombie())) {
             incrementInvalidMoves(creatureToMove);
             return false;
         }
+        // NOVA FUNCIONALIDADE: Procriação entre Adultos
         if (creatureToMove.getTipoCriatura().equals("Adulto") && creatureToMove.isHuman()) {
-            // Primeiro verifica se pode mover para a posição destino
             if (!creatureToMove.podeMover(xO, yO, xD, yD, isDay())) {
                 incrementInvalidMoves(creatureToMove);
                 return false;
             }
-            // Tenta processar procriação
-            if (processarProcriacao(creatureToMove, xO, yO, xD, yD)) {
-                return true;
+            Creature targetCreature = null;
+            for (Creature creature : personagens) {
+                if (creature.getX() == xD && creature.getY() == yD) {
+                    if (creature.getId() == creatureToMove.getId()) {
+                        incrementInvalidMoves(creatureToMove);
+                        return false;
+                    }
+                    if (creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
+                        targetCreature = creature;
+                    }
+                }
+            }
+            if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
+                    targetCreature.getEquipamentoAtual() == null) {
+                if (criarCrianca(creatureToMove, targetCreature, xO, yO)) {
+                    advanceTurn();
+                    return true;
+                }
+                incrementInvalidMoves(creatureToMove);
+                return false;
             }
         }
         if (creatureToMove.getTipoCriatura().equals("Idoso")) {
@@ -637,7 +660,9 @@ public class GameManager {
                 equip.setX(xO);
                 equip.setY(yO);
                 equipamentos.add(equip);
-                creatureToMove.soltarEquipamento();}}
+                creatureToMove.soltarEquipamento();
+            }
+        }
         if ((creatureToMove.getTipoCriatura().equals("Vampiro") && isDay()) ||
                 !creatureToMove.podeMover(xO, yO, xD, yD, isDay()) ||
                 (creatureToMove.isZombie() && tabuleiro.isSafeHaven(xD, yD))) {
@@ -648,7 +673,9 @@ public class GameManager {
         for (Creature creature : personagens) {
             if (creature.getX() == xD && creature.getY() == yD) {
                 targetCreature = creature;
-                break;}}
+                break;
+            }
+        }
         if (targetCreature != null) {
             if ((creatureToMove.isZombie() || creatureToMove.getTipoCriatura().equals("Vampiro")) &&
                     targetCreature.getTipoCriatura().equals("Cão")) {
@@ -668,7 +695,9 @@ public class GameManager {
         for (Equipamento equipamento : equipamentos) {
             if (equipamento.getX() == xD && equipamento.getY() == yD) {
                 equipamentoParaInteragir = equipamento;
-                break;}}
+                break;
+            }
+        }
         if (equipamentoParaInteragir != null && !creatureToMove.podeMoverParaComEquipamento(equipamentoParaInteragir)) {
             incrementInvalidMoves(creatureToMove);
             return false;
@@ -686,7 +715,8 @@ public class GameManager {
             if (creatureToMove.podePegarEquipamento(equipamentoParaInteragir)) {
                 creatureToMove.pegarEquipamento(equipamentoParaInteragir);
                 equipamentos.remove(equipamentoParaInteragir);
-            }}
+            }
+        }
         if (creatureToMove.isZombie() && equipamentoParaInteragir != null) {
             creatureToMove.destruirEquipamento();
             creatureToMove.incrementarEquipamentosDestruidos(1);
@@ -700,57 +730,42 @@ public class GameManager {
                     safeHaven.entrar(creatureToMove);
                     personagens.remove(creatureToMove);
                     advanceTurn();
-                    return true;}}}advanceTurn();return true;}
-
-    private boolean processarProcriacao(Creature creatureToMove, int xO, int yO, int xD, int yD) {
-        // Verifica se há outro adulto humano na posição de destino
-        Creature targetCreature = null;
-        for (Creature creature : personagens) {
-            if (creature.getX() == xD && creature.getY() == yD) {
-                // Se for o mesmo adulto tentando mover para sua própria posição
-                if (creature.getId() == creatureToMove.getId()) {
-                    incrementInvalidMoves(creatureToMove);
-                    return false;
-                }
-                // Verifica se é outro adulto humano
-                if (creature.getTipoCriatura().equals("Adulto") && creature.isHuman()) {
-                    targetCreature = creature;
+                    return true;
                 }
             }
         }
+        advanceTurn();
+        return true;
+    }
 
-        if (targetCreature != null && creatureToMove.getEquipamentoAtual() == null &&
-                targetCreature.getEquipamentoAtual() == null) {
-            // Tenta criar a criança ao redor do progenitor (xO, yO)
-            int childX = xO - 1; // Começa tentando à esquerda do progenitor
-            int childY = yO;
+    private boolean criarCrianca(Creature pai1, Creature pai2, int xO, int yO) {
+        // Tenta criar a criança ao redor do progenitor (xO, yO)
+        int childX = xO - 1; // Começa tentando à esquerda do progenitor
+        int childY = yO;
+        if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
+            childX = xO;
+            childY = yO - 1; // Tenta acima
             if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                childX = xO;
-                childY = yO - 1; // Tenta acima
+                childX = xO + 1; // Tenta à direita
+                childY = yO;
                 if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                    childX = xO + 1; // Tenta à direita
-                    childY = yO;
+                    childX = xO;
+                    childY = yO + 1; // Tenta abaixo
                     if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                        childX = xO;
-                        childY = yO + 1; // Tenta abaixo
-                        if (!tabuleiro.dentroDosLimites(childX, childY) || isPositionOccupied(childX, childY)) {
-                            incrementInvalidMoves(creatureToMove);
-                            return false;
-                        }
+                        return false;
                     }
                 }
             }
-            // Gera o ID concatenando os IDs dos pais
-            int childId = Integer.parseInt(creatureToMove.getId() + "" + targetCreature.getId());
-            String childName = creatureToMove.getNome() + " & " + targetCreature.getNome();
-            Crianca child = new Crianca(childId, childName, childX, childY, 20, true);
-            personagens.add(child);
-            // Não movemos nenhum dos adultos, eles ficam nas suas posições originais
-            advanceTurn();
-            return true;
         }
-        return false;
+
+        // Gera o ID concatenando os IDs dos pais
+        int childId = Integer.parseInt(pai1.getId() + "" + pai2.getId());
+        String childName = pai1.getNome() + " & " + pai2.getNome();
+        Crianca child = new Crianca(childId, childName, childX, childY, 20, true);
+        personagens.add(child);
+        return true;
     }
+
     private boolean processarDefesa(Creature zumbi, Creature humano) {
         // Verifica se o humano tem algum equipamento
         Equipamento equipamentoAtual = humano.getEquipamentoAtual();
