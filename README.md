@@ -1,4 +1,5 @@
 
-![Diagrama sem nome drawio](https://github.com/user-attachments/assets/3a7d0963-c7b5-4237-b7a7-5bce1649b04b)
+![diagramaLourencoRecurso](https://github.com/user-attachments/assets/270d703d-8e35-4f60-91c1-94a4561b5edc)
+
 
 Video: https://youtu.be/catEmDER5EY
